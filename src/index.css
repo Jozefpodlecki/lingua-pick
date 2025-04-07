@@ -1,4 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
 @import "tailwindcss";
+/* @config "../tailwind.config.js" */
 
 html, body {
     height: 100%;
@@ -8,4 +10,11 @@ html, body {
 
 #root {
     height: 100%;
+}
+
+.noto-sans-kr-300 {
+    font-family: "Noto Sans KR", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
 }

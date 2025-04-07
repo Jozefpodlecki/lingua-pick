@@ -1,9 +1,11 @@
-function App() {
+import WordImageSelector from "./components/WordImageSelector";
+
+const App = () => {
 
 
 	return (
-		<div className="p-4 space-y-4 bg-blue-700">
-			Test
+		<div className="flex flex-col items-center justify-center min-h-screen">
+			<WordImageSelector/>
 		</div>
 	  );
 }
