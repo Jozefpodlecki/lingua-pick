@@ -8,8 +8,19 @@ export interface Option {
     imageSrc: string;
 }
 
+export interface Session {
+    id: string;
+    createdOn: string;
+    completedOn?: string
+    exercises: Exercise[];
+}
+
 export interface Exercise {
-    createdAt: string;
+    id: string;
+    createdOn: string;
+    completedOn?: string;
+    isCompleted: boolean;
+    isCorrect: boolean | null;
     type: "word-image" | "word-word";
     options: Option[];
     question: string;
