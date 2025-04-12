@@ -44,4 +44,31 @@ export const allOptions = [
         translations: ["trash can", "wastebasket"],
         imageSrc: "./trash_can.jpg"
     },
+    {
+        id: 6,
+        word: {
+            hangul: "학생들이",
+            romanized: "haksaengdeul-i",
+        },
+        translations: ["students"],
+        imageSrc: "./student.jpg"
+    },
+    {
+        id: 7,
+        word: {
+            hangul: "복도에",
+            romanized: "bokdo-e",
+        },
+        translations: ["in the hallway"],
+        imageSrc: "./hallway.jpg"
+    },
+    {
+        id: 8,
+        word: {
+            hangul: "비어",
+            romanized: "bieo",
+        },
+        translations: ["empty"],
+        imageSrc: "./empty.jpg"
+    },
 ];

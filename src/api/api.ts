@@ -58,7 +58,26 @@ const computeDuration = (createdOn: string, currentDate: Date): { seconds: numbe
     return { seconds: totalSeconds, hhmmss };
 };
 
-export const completeSession = (session: Session) => {
+export const completeSession = (session: Session): Promise<Session> => {
+    const currentDate = new Date();
+    const duration = computeDuration(session.createdOn, currentDate);
+
+    const updatedSession: Session = {
+        ...session,
+        isFinished: true,
+        duration,
+        updatedOn: currentDate.toISOString(),
+    };
+
+    const data = getSessionData();
+    const updatedSessions = data.sessions.map((s) =>
+        s.id === updatedSession.id ? updatedSession : s
+    );
+
+    const updatedData = { ...data, sessions: updatedSessions, activeSessionId: null };
+    saveSessionData(updatedData);
+
+    return Promise.resolve(updatedSession);
 }
 
 export const saveSession = (session: Session, updatedExercise: Exercise): void => {

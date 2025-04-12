@@ -3,9 +3,11 @@ import WordImageSelector from "./WordImageSelector";
 import BottomPanel from "../BottomPanel";
 import ProgressBar from "./ProgressBar";
 import { useState, useEffect } from "react";
-import { cancelSession, createExercise, getSessionById, saveSession, validateExercise } from "../../api/api";
+import { cancelSession, completeSession, createExercise, getSessionById, saveSession, validateExercise } from "../../api/api";
 import { Exercise, Session } from "../../models";
 import { Home, AlertCircle } from "lucide-react";
+import NotFound from "./NotFound";
+import Completed from "./Completed";
 
 interface State {
     exercise: Exercise | null;
@@ -26,39 +28,43 @@ const SessionComponent: React.FC = () => {
     });
 
     useEffect(() => {
-        const loadSession = async () => {
-            const currentSession = getSessionById(uuid || "");
-            if (!currentSession) {
-                setSession(null);
-                return;
-            }
-
-            setSession(currentSession);
-
-            const lastExercise = currentSession.exercises[currentSession.exercises.length - 1];
-
-            if (!lastExercise || lastExercise.isCompleted) {
-                const [newExercise, session] = await createExercise(currentSession);
-                currentSession.exercises.push(newExercise);
-
-                setState((prevState) => ({
-                    ...prevState,
-                    exercise: newExercise,
-                }));
-            } else {
-                setState((prevState) => ({
-                    ...prevState,
-                    exercise: lastExercise,
-                }));
-            }
-        };
-
-        loadSession();
+        onLoad();
     }, [uuid]);
 
-    const handleCheck = () => {
-        if (state.exercise && session) {
+    async function onLoad() {
+        const currentSession = getSessionById(uuid || "");
+        if (!currentSession) {
+            setSession(null);
+            return;
+        }
 
+        setSession(currentSession);
+
+        const previousExercise = currentSession.exercises[currentSession.exercises.length - 1];
+        const isLastExercise = currentSession.exerciseCount === currentSession.exercises.length;
+
+        if (isLastExercise) {
+            return;
+        }
+
+        if (!previousExercise || previousExercise.isCompleted) {
+            const [newExercise, session] = await createExercise(currentSession);
+            currentSession.exercises.push(newExercise);
+
+            setState((prevState) => ({
+                ...prevState,
+                exercise: newExercise,
+            }));
+        } else {
+            setState((prevState) => ({
+                ...prevState,
+                exercise: previousExercise,
+            }));
+        }
+    }
+
+    const onCheck = () => {
+        if (state.exercise && session) {
             const {
                 isCorrect,
                 session: updatedSession,
@@ -76,8 +82,15 @@ const SessionComponent: React.FC = () => {
         }
     };
 
-    const handleContinue = async () => {
+    const onContinue = async () => {
         if (!session) {
+            return;
+        }
+
+        const isLastExercise = session.exerciseCount === session.exercises.length;
+        if (isLastExercise) {
+            const newSession = await completeSession(session);
+            setSession(newSession);
             return;
         }
 
@@ -94,9 +107,9 @@ const SessionComponent: React.FC = () => {
 
     const onClick = () => {
         if (!state.isCompleted) {
-            handleCheck();
+            onCheck();
         } else {
-            handleContinue();
+            onContinue();
         }
     };
 
@@ -113,19 +126,12 @@ const SessionComponent: React.FC = () => {
     };
 
     if (!session) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white">
-                <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
-                <h1 className="text-4xl font-bold mb-4">Session Not Found</h1>
-                <p className="text-lg mb-8">The session you are looking for does not exist or is no longer active.</p>
-                <Link
-                    to="/"
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                >
-                    Go to Home
-                </Link>
-            </div>
-        );
+        return <NotFound />;
+    }
+
+    const isLastExercise = session.exerciseCount === session.exercises.length;
+    if (isLastExercise && session.isFinished) {
+        return <Completed />;
     }
 
     const correctWord = state.exercise?.options.find(
