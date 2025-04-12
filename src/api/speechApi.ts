@@ -5,6 +5,10 @@ export const loadHistory = (): HistoryItem[] => {
     return savedHistory ? JSON.parse(savedHistory) : [];
 };
 
+export const clearHistory = (): void => {
+    localStorage.removeItem("speechRecognitionHistory");
+}
+
 export const saveToHistory = (item: HistoryItem): void => {
     const history = loadHistory();
     const updatedHistory = [...history, item];

@@ -8,15 +8,31 @@ export interface Option {
     imageSrc: string;
 }
 
+export interface SessionData {
+    sessions: Session[];
+    activeSessionId: string | null;
+}
+
+export interface Duration {
+    seconds: number;
+    hhmmss: string;
+}
+
 export interface Session {
     id: string;
+    isFinished: boolean;
+    duration: Duration;
     createdOn: string;
-    completedOn?: string
+    updatedOn: string;
+    canceledOn?: string;
+    completedOn?: string;
+    exerciseCount: number;
     exercises: Exercise[];
 }
 
 export interface Exercise {
     id: string;
+    duration: Duration;
     createdOn: string;
     completedOn?: string;
     isCompleted: boolean;

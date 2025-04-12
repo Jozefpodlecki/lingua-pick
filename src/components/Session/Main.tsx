@@ -1,20 +1,24 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import WordImageSelector from "./WordImageSelector";
+import BottomPanel from "../BottomPanel";
+import ProgressBar from "./ProgressBar";
 import { useState, useEffect } from "react";
-import { createExercise, getSessionById, saveSession } from "../api/api";
-import { Exercise, Session as SessionType } from "../models";
+import { cancelSession, createExercise, getSessionById, saveSession, validateExercise } from "../../api/api";
+import { Exercise, Session } from "../../models";
 import { Home, AlertCircle } from "lucide-react";
 
-const Session = () => {
+interface State {
+    exercise: Exercise | null;
+    selectedOptionId: number | null;
+    isCorrect: boolean | null;
+    isCompleted: boolean;
+}
+
+const SessionComponent: React.FC = () => {
     const { uuid } = useParams();
     const navigate = useNavigate();
-    const [session, setSession] = useState<SessionType | null>(null);
-    const [state, setState] = useState<{
-        exercise: Exercise | null;
-        selectedOptionId: number | null;
-        isCorrect: boolean | null;
-        isCompleted: boolean;
-    }>({
+    const [session, setSession] = useState<Session | null>(null);
+    const [state, setState] = useState<State>({
         exercise: null,
         selectedOptionId: null,
         isCorrect: null,
@@ -34,7 +38,7 @@ const Session = () => {
             const lastExercise = currentSession.exercises[currentSession.exercises.length - 1];
 
             if (!lastExercise || lastExercise.isCompleted) {
-                const newExercise = await createExercise(currentSession);
+                const [newExercise, session] = await createExercise(currentSession);
                 currentSession.exercises.push(newExercise);
 
                 setState((prevState) => ({
@@ -54,48 +58,38 @@ const Session = () => {
 
     const handleCheck = () => {
         if (state.exercise && session) {
-            const isCorrect = state.selectedOptionId === state.exercise.correctOptionId;
+
+            const {
+                isCorrect,
+                session: updatedSession,
+                exercise: updatedExercise,
+            } = validateExercise(session, state.exercise, state.selectedOptionId!);
+
             setState((prevState) => ({
                 ...prevState,
+                exercise: updatedExercise,
                 isCorrect,
                 isCompleted: true,
             }));
 
-            const updatedExercise: Exercise = {
-                ...state.exercise,
-                completedOn: new Date().toISOString(),
-                isCompleted: true,
-                isCorrect,
-            };
-
-            saveSession(session, updatedExercise);
-            setSession({
-                ...session,
-                exercises: session.exercises.map((ex) =>
-                    ex.createdOn === updatedExercise.createdOn ? updatedExercise : ex
-                ),
-            });
+            setSession(updatedSession);
         }
     };
 
     const handleContinue = async () => {
-        if (session) {
-            const newExercise = await createExercise(session);
-            const updatedSession = {
-                ...session,
-                exercises: [...session.exercises, newExercise],
-            };
-
-            saveSession(updatedSession, newExercise);
-            setSession(updatedSession);
-
-            setState({
-                exercise: newExercise,
-                selectedOptionId: null,
-                isCorrect: null,
-                isCompleted: false,
-            });
+        if (!session) {
+            return;
         }
+
+        const [newExercise, newSession] = await createExercise(session);
+        setSession(newSession);
+
+        setState({
+            exercise: newExercise,
+            selectedOptionId: null,
+            isCorrect: null,
+            isCompleted: false,
+        });
     };
 
     const onClick = () => {
@@ -111,6 +105,11 @@ const Session = () => {
             ...prevState,
             selectedOptionId: id,
         }));
+    };
+
+    const onCancel = () => {
+        cancelSession(session!);
+        navigate("/");
     };
 
     if (!session) {
@@ -129,6 +128,14 @@ const Session = () => {
         );
     }
 
+    const correctWord = state.exercise?.options.find(
+        (option) => option.id === state.exercise?.correctOptionId
+    )?.word.hangul || "unknown";
+
+    const completedExercises = session.exercises.filter((ex) => ex.isCompleted).length;
+    const maxExercises = session.exerciseCount || 5;
+    const progressPercentage = (completedExercises / maxExercises) * 100;
+
     return (
         <div className="flex flex-col min-h-screen bg-black">
             <nav className="bg-gray-800 w-full p-4">
@@ -140,6 +147,7 @@ const Session = () => {
                     <span className="text-gray-400">/ Session</span>
                 </div>
             </nav>
+            <ProgressBar value={progressPercentage} onCancel={onCancel} />
             <div className="p-2 flex-1 flex items-center justify-center">
                 {state.exercise && (
                     <WordImageSelector
@@ -150,36 +158,15 @@ const Session = () => {
                     />
                 )}
             </div>
-            <div
-                className={`flex items-center p-4 text-right transition-colors duration-300 ${
-                    state.isCompleted
-                        ? state.isCorrect
-                            ? "bg-[#568203]"
-                            : "bg-[#58111A]"
-                        : "bg-gray-800"
-                }`}
-            >
-                <div className="text-white text-lg mb-4">
-                    <span className="text-2xl">{state.isCompleted &&
-                        (state.isCorrect
-                            ? "That's right!"
-                            : `That's wrong, it's ${
-                                  state.exercise?.options.find(
-                                      (option) => option.id === state.exercise?.correctOptionId
-                                  )?.translations[0] || "unknown"
-                              }`)}</span>
-                </div>
-                <button
-                    type="button"
-                    disabled={state.selectedOptionId === null && !state.isCompleted}
-                    onClick={onClick}
-                    className="cursor-pointer rounded bg-gray-600 p-4 ml-auto text-2xl text-white hover:bg-sky-500 active:bg-sky-700"
-                >
-                    {state.isCompleted ? "Continue" : "Check"}
-                </button>
-            </div>
+            <BottomPanel
+                isCompleted={state.isCompleted}
+                isCorrect={state.isCorrect}
+                correctWord={correctWord}
+                onClick={onClick}
+                isDisabled={state.selectedOptionId === null && !state.isCompleted}
+            />
         </div>
     );
 };
 
-export default Session;
+export default SessionComponent;

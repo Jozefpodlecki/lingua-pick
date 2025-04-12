@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Landing from "./components/Landing";
-import Session from "./components/Session";
+import Session from "./components/Session/Main";
 import SpeechRecognition from "./components/SpeechRecognition/SpeechRecognizer";
 
 const App = () => {

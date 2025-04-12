@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
-import { startSpeechRecognition, saveToHistory, loadHistory } from "../../api/speechApi";
+import { startSpeechRecognition, saveToHistory, loadHistory, clearHistory } from "../../api/speechApi";
 import Breadcrumbs from "./Breadcrumbs";
 import RecognitionHistory from "./History";
 import Prompt from "./Prompt";
 import Background from "./Background";
 import { HistoryItem } from "@models";
-import { generateMockHistory } from "../../utils";
 import { speechState } from "./speechStates";
 
 const SpeechRecognizer: React.FC = () => {
-    const [history, setHistory] = useState<HistoryItem[]>(generateMockHistory());
+    const [history, setHistory] = useState<HistoryItem[]>(loadHistory());
     const [state, setState] = useState(speechState.idle);
 
     useEffect(() => {
@@ -17,11 +16,12 @@ const SpeechRecognizer: React.FC = () => {
         setHistory(savedHistory);
     }, []);
 
-    const clearHistory = () => {
+    const onClear = () => {
+        clearHistory();
         setHistory([]);
     };
 
-    const handleSpeechRecognition = () => {
+    const onSpeechRecognition = () => {
         if (state.type === "recording") {
             setState(speechState.idle);
             return;
@@ -34,7 +34,7 @@ const SpeechRecognizer: React.FC = () => {
             onResult: (transcript) => {
                 const newHistoryItem: HistoryItem = {
                     word: transcript,
-                    createdOn: new Date().toLocaleTimeString(),
+                    createdOn: new Date().toISOString(),
                 };
                 setHistory((prev) => [...prev, newHistoryItem]);
                 saveToHistory(newHistoryItem);
@@ -44,7 +44,7 @@ const SpeechRecognizer: React.FC = () => {
                 setState(speechState.error(errorMessage));
             },
             onEnd: () => {
-                setState(speechState.idle);
+                // setState(speechState.idle);
             },
         });
     };
@@ -53,9 +53,9 @@ const SpeechRecognizer: React.FC = () => {
         <div className="relative min-h-screen">
             <Background/>
             <Breadcrumbs current="Speech Recognition" />
-            <RecognitionHistory history={history} clearHistory={clearHistory} />
+            <RecognitionHistory history={history} onClear={onClear} />
             <div className="flex flex-col items-center justify-center" style={{ minHeight: "calc(100vh - 4rem)" }}>
-                <Prompt state={state} handleSpeechRecognition={handleSpeechRecognition} />
+                <Prompt state={state} onSpeechRecognition={onSpeechRecognition} />
             </div>
         </div>
     );

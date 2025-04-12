@@ -1,5 +1,5 @@
-import { Exercise } from "../models";
-import ImageOption from "./ImageOption";
+import { Exercise } from "../../models";
+import ImageOption from "../ImageOption";
 interface Props {
     exercise: Exercise;
     selectedOptionId: number | null;
