@@ -131,7 +131,7 @@ const SessionComponent: React.FC = () => {
 
     const isLastExercise = session.exerciseCount === session.exercises.length;
     if (isLastExercise && session.isFinished) {
-        return <Completed />;
+        return <Completed session={session} />;
     }
 
     const correctWord = state.exercise?.options.find(
