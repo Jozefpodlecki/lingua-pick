@@ -1,21 +1,22 @@
 import React from "react";
+import { Option } from "../../models";
 
 interface Props {
     isCompleted: boolean;
     isCorrect: boolean | null;
-    correctWord: string | null;
+    correctOption: Option;
     onClick: () => void;
     isDisabled: boolean;
 }
 
-const BottomPanel: React.FC<Props> = ({ isCompleted, isCorrect, correctWord, onClick, isDisabled }) => {
+const BottomPanel: React.FC<Props> = ({ isCompleted, isCorrect, correctOption, onClick, isDisabled }) => {
     return (
         <div
             className={`flex items-center p-4 text-right transition-colors duration-300 ${
                 isCompleted
                     ? isCorrect
-                        ? "bg-[#568203]" // Green for correct
-                        : "bg-[#58111A]" // Darker red for incorrect
+                        ? "bg-[#568203]"
+                        : "bg-[#58111A]"
                     : "bg-gray-800"
             }`}
         >
@@ -24,7 +25,7 @@ const BottomPanel: React.FC<Props> = ({ isCompleted, isCorrect, correctWord, onC
                     {isCompleted &&
                         (isCorrect
                             ? "That's right!"
-                            : `That's wrong, it's ${correctWord || "unknown"}`)}
+                            : `That's wrong, it's ${correctOption.translations[0]} ${correctOption.word.hangul} (${correctOption.word.romanized})`)}
                 </span>
             </div>
             <button

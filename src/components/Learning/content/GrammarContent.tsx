@@ -76,31 +76,29 @@ const GrammarContent: React.FC = () => {
                     >
                         <h2 className="text-2xl font-semibold mb-2">{rule.title}</h2>
                         <p className="text-lg mb-4">{rule.description}</p>
-                        <div className="flex items-center space-x-4">
-                            <div>
-                                <p className="text-lg font-medium">Example:</p>
-                                <p className="text-lg">
-                                    <span className="font-bold">English:</span> {rule.example.english}
-                                </p>
-                                <p className="text-lg">
-                                    <span className="font-bold">Korean:</span> {rule.example.korean}
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => onPlayExample(rule.example.korean)}
-                                disabled={speakingExample !== null}
-                                className={`flex items-center justify-center w-6 h-6 rounded-full ${
-                                    speakingExample === rule.example.korean
-                                        ? "bg-gray-500"
-                                        : "bg-blue-500 hover:bg-blue-600"
-                                }`}
-                            >
-                                {speakingExample === rule.example.korean ? (
-                                    <Loader className="w-4 h-4 animate-spin text-white" />
-                                ) : (
-                                    <Play className="w-4 h-4 text-white" />
-                                )}
-                            </button>
+                        <div>
+                            <p className="text-lg font-medium">Example:</p>
+                            <p className="text-lg">
+                                <span className="font-bold mr-4">English:</span> {rule.example.english}
+                            </p>
+                            <p className="text-lg flex items-center">
+                                <span className="font-bold mr-4">Korean:</span> {rule.example.korean}
+                                <button
+                                    onClick={() => onPlayExample(rule.example.korean)}
+                                    disabled={speakingExample !== null}
+                                    className={`ml-2 flex items-center justify-center w-6 h-6 rounded-full ${
+                                        speakingExample === rule.example.korean
+                                            ? "bg-gray-500"
+                                            : "bg-blue-500 hover:bg-blue-600"
+                                    }`}
+                                >
+                                    {speakingExample === rule.example.korean ? (
+                                        <Loader className="w-4 h-4 animate-spin text-white" />
+                                    ) : (
+                                        <Play className="w-4 h-4 text-white" />
+                                    )}
+                                </button>
+                            </p>
                         </div>
                     </div>
                 ))}

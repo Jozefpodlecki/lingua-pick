@@ -1,6 +1,6 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import WordImageSelector from "./WordImageSelector";
-import BottomPanel from "../BottomPanel";
+import BottomPanel from "./BottomPanel";
 import ProgressBar from "./ProgressBar";
 import { useState, useEffect } from "react";
 import { cancelSession, completeSession, createExercise, getSessionById, validateExercise } from "../../api/api";
@@ -12,6 +12,7 @@ import Completed from "./Completed";
 interface State {
     exercise: Exercise | null;
     selectedOptionId: number | null;
+    correctOptionId: number | null;
     isCorrect: boolean | null;
     isCompleted: boolean;
 }
@@ -23,6 +24,7 @@ const SessionComponent: React.FC = () => {
     const [state, setState] = useState<State>({
         exercise: null,
         selectedOptionId: null,
+        correctOptionId: null,
         isCorrect: null,
         isCompleted: false,
     });
@@ -79,6 +81,7 @@ const SessionComponent: React.FC = () => {
                 exercise: updatedExercise,
                 isCorrect,
                 isCompleted: true,
+                correctOptionId: updatedExercise.correctWordId,
             }));
 
             setSession(updatedSession);
@@ -103,6 +106,7 @@ const SessionComponent: React.FC = () => {
         setState({
             exercise: newExercise,
             selectedOptionId: null,
+            correctOptionId: null,
             isCorrect: null,
             isCompleted: false,
         });
@@ -137,9 +141,9 @@ const SessionComponent: React.FC = () => {
         return <Completed session={session} />;
     }
 
-    const correctWord = state.exercise?.options.find(
+    const correctOption = state.exercise?.options.find(
         (option) => option.id === state.exercise?.correctWordId
-    )?.word.hangul || "unknown";
+    );
 
     const completedExercises = session.exercises.filter((ex) => ex.isCompleted).length;
     const maxExercises = session.exerciseCount || 5;
@@ -162,7 +166,7 @@ const SessionComponent: React.FC = () => {
                     <WordImageSelector
                         exercise={state.exercise}
                         selectedOptionId={state.selectedOptionId}
-                        isCorrect={state.isCorrect}
+                        correctOptionId={state.correctOptionId}
                         onSelect={onSelect}
                     />
                 )}
@@ -170,7 +174,7 @@ const SessionComponent: React.FC = () => {
             <BottomPanel
                 isCompleted={state.isCompleted}
                 isCorrect={state.isCorrect}
-                correctWord={correctWord}
+                correctOption={correctOption}
                 onClick={onClick}
                 isDisabled={state.selectedOptionId === null && !state.isCompleted}
             />

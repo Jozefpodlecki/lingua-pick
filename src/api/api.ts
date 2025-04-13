@@ -101,7 +101,14 @@ export const completeSession = (session: QuizSession): Promise<QuizSession> => {
         s.id === updatedSession.id ? updatedSession : s
     );
 
-    const updatedData = { ...data, sessions: updatedSessions, activeSessionId: null };
+    const updatedData = {
+        ...data,
+        sessions: updatedSessions,
+        activeSessionId: null
+    };
+
+    updatedData.stats.sessionCount += 1;
+
     saveAppData(updatedData);
 
     return Promise.resolve(updatedSession);
@@ -180,7 +187,11 @@ export const cancelSession = (session: QuizSession): void => {
     const updatedSessions = data.sessions.map((s) =>
         s.id === session.id ? session : s
     );
-    saveAppData({ ...data, sessions: updatedSessions, activeSessionId: null });
+    
+    const appData = { ...data, sessions: updatedSessions, activeSessionId: null }
+    appData.stats.sessionCount += 1;
+
+    saveAppData(appData);
 };
 
 

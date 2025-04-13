@@ -3,11 +3,11 @@ import ImageOption from "../ImageOption";
 interface Props {
     exercise: Exercise;
     selectedOptionId: number | null;
-    isCorrect: boolean | null;
+    correctOptionId: number | null;
     onSelect: (id: number) => void;
 }
 
-const WordImageSelector = ({ exercise, selectedOptionId, isCorrect, onSelect }: Props) => {
+const WordImageSelector = ({ exercise, correctOptionId, selectedOptionId, onSelect }: Props) => {
 
     const onClick = (event: React.MouseEvent<HTMLElement>) => {
 
@@ -22,6 +22,7 @@ const WordImageSelector = ({ exercise, selectedOptionId, isCorrect, onSelect }: 
             <ul className="flex items-center justify-center space-y-4">
                 {exercise.options.map((option) => <ImageOption
                     key={option.id}
+                    correctOptionId={correctOptionId}
                     selectedOptionId={selectedOptionId}
                     onClick={onClick} option={option}/>)}
             </ul>
