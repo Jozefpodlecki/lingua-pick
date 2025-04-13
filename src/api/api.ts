@@ -1,55 +1,72 @@
-import { Exercise, AppData, UserStats } from "../models";
+import { Exercise, AppData, UserStats, ValidateExerciseResult, Language } from "../models";
 import vocabulary from "../data/vocabulary.json";
 
 import { v4 as uuidv4 } from "uuid";
-import { QuizSession } from "@models";
+import { QuizSession } from "../models";
 
-const STORAGE_KEY = "sessionData";
+const STORAGE_KEY = "appData";
 
-const defaultAppData: AppData = {
-    sessions: [],
-    activeSessionId: null,
-    stats: {
-        vocabulary: {
-            words: []
-        }
-    },
+const getDefaultAppData = (): AppData => {
+    const availableLanguages = [
+        { name: "Korean", isoCode: "kr", flagUrl: "https://flagcdn.com/w40/kr.png" },
+        { name: "Chinese", isoCode: "cn", flagUrl: "https://flagcdn.com/w40/cn.png" },
+    ];
+
+    return {
+        sessions: [],
+        activeSessionId: null,
+        stats: {
+            sessionCount: 0,
+            updatedOn: new Date().toISOString(),
+            vocabulary: {
+                words: []
+            }
+        },
+        availableLanguages,
+        selectedLanguage: availableLanguages[0]
+    };
 }
 
-const getSessionData = (): AppData => {
+
+
+export const getAppData = (): AppData => {
     const savedData = localStorage.getItem(STORAGE_KEY);
-    return savedData
+
+    const result = savedData
         ? JSON.parse(savedData)
-        : defaultAppData;
+        : getDefaultAppData();
+
+    return result;
 };
 
 const saveAppData = (data: AppData): void => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 };
 
-export const getSessionById = (sessionId: string): QuizSession | null => {
-    const { sessions } = getSessionData();
-    return sessions.find((session) => session.id === sessionId) || null;
+export const getSessionById = (sessionId: string): Promise<QuizSession | null> => {
+    const { sessions } = getAppData();
+    const session = sessions.find((session) => session.id === sessionId) || null;
+    return Promise.resolve(session);
 };
 
 export const getSessions = (): QuizSession[] => {
-    return getSessionData().sessions;
+    return getAppData().sessions;
 };
 
 export const getActiveSession = (): QuizSession | null => {
-    const { sessions, activeSessionId } = getSessionData();
+    const { sessions, activeSessionId } = getAppData();
     return activeSessionId
         ? sessions.find((session) => session.id === activeSessionId) || null
         : null;
 };
 
 export const setActiveSession = (sessionId: string): void => {
-    const data = getSessionData();
+    const data = getAppData();
     saveAppData({ ...data, activeSessionId: sessionId });
 };
 
 export const saveSessions = (sessions: QuizSession[]): void => {
-    const data = getSessionData();
+    const data = getAppData();
     saveAppData({ ...data, sessions });
 };
 
@@ -79,7 +96,7 @@ export const completeSession = (session: QuizSession): Promise<QuizSession> => {
         updatedOn: currentDate.toISOString(),
     };
 
-    const data = getSessionData();
+    const data = getAppData();
     const updatedSessions = data.sessions.map((s) =>
         s.id === updatedSession.id ? updatedSession : s
     );
@@ -91,7 +108,7 @@ export const completeSession = (session: QuizSession): Promise<QuizSession> => {
 }
 
 export const saveSession = (session: QuizSession, updatedExercise: Exercise): void => {
-    const data = getSessionData();
+    const data = getAppData();
 
     const updatedExercises = session.exercises.map((ex) =>
         ex.createdOn === updatedExercise.createdOn ? updatedExercise : ex
@@ -116,12 +133,15 @@ export const saveSession = (session: QuizSession, updatedExercise: Exercise): vo
     saveAppData(updatedData);
 };
 
-export const createSession = (): QuizSession => {
+export const createSession = (
+    language: Language,
+    exerciseCount: number): QuizSession => {
     const sessionId = uuidv4();
     const createdOn = new Date().toISOString();
 
     const newSession: QuizSession = {
         id: sessionId,
+        language,
         isFinished: false,
         duration: {
             seconds: 0,
@@ -130,15 +150,15 @@ export const createSession = (): QuizSession => {
         createdOn,
         updatedOn: createdOn,
         exercises: [],
-        exerciseCount: 5,
+        exerciseCount,
     };
 
-    const data = getSessionData();
+    const data = getAppData();
     const updatedSessions = [...data.sessions, newSession];
     const appData = {
+        ...data,
         sessions: updatedSessions,
-        stats: data.stats,
-        activeSessionId: sessionId
+        activeSessionId: sessionId,
     };
     saveAppData(appData);
 
@@ -148,41 +168,43 @@ export const createSession = (): QuizSession => {
 export const cancelSession = (session: QuizSession): void => {
 
     const currentDate = new Date();
+    const currentDateStr = currentDate.toISOString();
     const duration = computeDuration(session.createdOn, currentDate);
 
     session.isFinished = true;
     session.duration = duration;
-    session.canceledOn = new Date().toISOString();
-    session.updatedOn = new Date().toISOString();
+    session.canceledOn = currentDateStr;
+    session.updatedOn = currentDateStr;
 
-    const data = getSessionData();
+    const data = getAppData();
     const updatedSessions = data.sessions.map((s) =>
         s.id === session.id ? session : s
     );
     saveAppData({ ...data, sessions: updatedSessions, activeSessionId: null });
 };
 
-interface ValidateExerciseResult {
-    isCorrect: boolean;
-    session: QuizSession;
-    exercise: Exercise;
-}
 
-export const validateExercise = (session: QuizSession, exercise: Exercise, selectedWordId: number): ValidateExerciseResult => {
+
+export const validateExercise = (
+    session: QuizSession,
+    exercise: Exercise,
+    selectedWordId: number): Promise<ValidateExerciseResult> => {
 
     if(exercise.type === "word-image") {
         const result = validateWordImageExercise(session, exercise, selectedWordId);
-        return result;
+        return Promise.resolve(result);
     }
 
     if(exercise.type === "word-word") {
     }
 
-    return {
+    const result = {
         isCorrect: true,
         session,
         exercise,
-    };
+    }
+
+    return Promise.resolve(result);
 }
 
 const validateWordImageExercise = (session: QuizSession, exercise: Exercise, selectedWordId: number): ValidateExerciseResult => {
@@ -205,7 +227,7 @@ const validateWordImageExercise = (session: QuizSession, exercise: Exercise, sel
     session.updatedOn = currentDate.toISOString();
     session.duration = duration;
 
-    const data = getSessionData();
+    const data = getAppData();
     const updatedSessions = data.sessions.map((s) =>
         s.id === session.id ? session : s
     );
@@ -221,7 +243,7 @@ const validateWordImageExercise = (session: QuizSession, exercise: Exercise, sel
     };
 }
 
-const updateStats = (stats: UserStats, wordId: string, isCorrect: boolean): void => {
+const updateStats = (stats: UserStats, wordId: number, isCorrect: boolean): void => {
     const currentDate = new Date().toISOString();
 
     const wordStats = stats.vocabulary.words.find((word) => word.id === wordId);
@@ -231,7 +253,17 @@ const updateStats = (stats: UserStats, wordId: string, isCorrect: boolean): void
         } else {
             wordStats.incorrectCount = (wordStats.incorrectCount || 0) + 1;
         }
+
+        const total = wordStats.correctCount + wordStats.incorrectCount;
+
+        if (total > 0) {
+            wordStats.ratio = wordStats.correctCount / total;
+        } else {
+            wordStats.ratio = 0;
+        }
+
         wordStats.updatedOn = currentDate;
+        
         return;
     }
 
@@ -240,6 +272,7 @@ const updateStats = (stats: UserStats, wordId: string, isCorrect: boolean): void
         correctCount: isCorrect ? 1 : 0,
         incorrectCount: isCorrect ? 0 : 1,
         updatedOn: currentDate,
+        ratio: 0
     };
     stats.vocabulary.words.push(newWordStats);
 };
@@ -277,7 +310,7 @@ const updateSessionWithExercise = (session: QuizSession, exercise: Exercise): Qu
 };
 
 const saveUpdatedSession = (session: QuizSession): void => {
-    const data = getSessionData();
+    const data = getAppData();
     const updatedSessions = data.sessions.map((s) =>
         s.id === session.id ? session : s
     );
@@ -291,4 +324,14 @@ export const createExercise = async (session: QuizSession): Promise<[Exercise, Q
     const updatedSession = updateSessionWithExercise(session, exercise);
     saveUpdatedSession(updatedSession);
     return [exercise, updatedSession];
+};
+
+export const setSelectedLanguage = (language: Language): void => {
+    const data = getAppData();
+    saveAppData({ ...data, selectedLanguage: language });
+};
+
+export const getStats = () => {
+    const appData: AppData = getAppData();
+    return appData.stats;
 };

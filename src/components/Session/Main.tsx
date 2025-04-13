@@ -3,9 +3,9 @@ import WordImageSelector from "./WordImageSelector";
 import BottomPanel from "../BottomPanel";
 import ProgressBar from "./ProgressBar";
 import { useState, useEffect } from "react";
-import { cancelSession, completeSession, createExercise, getSessionById, saveSession, validateExercise } from "../../api/api";
-import { Exercise, Session } from "../../models";
-import { Home, AlertCircle } from "lucide-react";
+import { cancelSession, completeSession, createExercise, getSessionById, validateExercise } from "../../api/api";
+import { Exercise, QuizSession } from "../../models";
+import { Home } from "lucide-react";
 import NotFound from "./NotFound";
 import Completed from "./Completed";
 
@@ -19,7 +19,7 @@ interface State {
 const SessionComponent: React.FC = () => {
     const { uuid } = useParams();
     const navigate = useNavigate();
-    const [session, setSession] = useState<Session | null>(null);
+    const [session, setSession] = useState<QuizSession | null>(null);
     const [state, setState] = useState<State>({
         exercise: null,
         selectedOptionId: null,
@@ -32,7 +32,7 @@ const SessionComponent: React.FC = () => {
     }, [uuid]);
 
     async function onLoad() {
-        const currentSession = getSessionById(uuid || "");
+        const currentSession = await getSessionById(uuid || "");
         if (!currentSession) {
             setSession(null);
             return;
@@ -51,25 +51,28 @@ const SessionComponent: React.FC = () => {
             const [newExercise, session] = await createExercise(currentSession);
             currentSession.exercises.push(newExercise);
 
+            setSession(session);
             setState((prevState) => ({
                 ...prevState,
                 exercise: newExercise,
             }));
-        } else {
-            setState((prevState) => ({
-                ...prevState,
-                exercise: previousExercise,
-            }));
+
+            return;
         }
+
+        setState((prevState) => ({
+            ...prevState,
+            exercise: previousExercise,
+        }));
     }
 
-    const onCheck = () => {
+    const onCheck = async () => {
         if (state.exercise && session) {
             const {
                 isCorrect,
                 session: updatedSession,
                 exercise: updatedExercise,
-            } = validateExercise(session, state.exercise, state.selectedOptionId!);
+            } = await validateExercise(session, state.exercise, state.selectedOptionId!);
 
             setState((prevState) => ({
                 ...prevState,
@@ -135,7 +138,7 @@ const SessionComponent: React.FC = () => {
     }
 
     const correctWord = state.exercise?.options.find(
-        (option) => option.id === state.exercise?.correctOptionId
+        (option) => option.id === state.exercise?.correctWordId
     )?.word.hangul || "unknown";
 
     const completedExercises = session.exercises.filter((ex) => ex.isCompleted).length;

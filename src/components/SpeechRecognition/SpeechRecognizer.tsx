@@ -4,7 +4,7 @@ import Breadcrumbs from "./Breadcrumbs";
 import RecognitionHistory from "./History";
 import Prompt from "./Prompt";
 import Background from "./Background";
-import { HistoryItem } from "@models";
+import { HistoryItem } from "../../models";
 import { speechState } from "./speechStates";
 
 const SpeechRecognizer: React.FC = () => {

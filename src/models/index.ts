@@ -1,3 +1,10 @@
+
+export interface Language {
+    name: string;
+    isoCode: string;
+    flagUrl: string;
+}
+
 export interface Option {
     id: number;
     word: {
@@ -9,7 +16,7 @@ export interface Option {
 }
 
 export interface WordStats {
-    id: string;
+    id: number;
     ratio: number;
     correctCount: number;
     incorrectCount: number;
@@ -17,6 +24,8 @@ export interface WordStats {
 }
 
 export interface UserStats {
+    sessionCount: number;
+    updatedOn: string;
     vocabulary: {
         words: WordStats[]
     }
@@ -26,6 +35,8 @@ export interface AppData {
     sessions: QuizSession[];
     stats: UserStats;
     activeSessionId: string | null;
+    availableLanguages: Language[];
+    selectedLanguage: Language;
 }
 
 export interface Duration {
@@ -35,6 +46,7 @@ export interface Duration {
 
 export interface QuizSession {
     id: string;
+    language: Language;
     isFinished: boolean;
     duration: Duration;
     createdOn: string;
@@ -56,6 +68,12 @@ export interface WordBreakdown {
     part_of_speech: string;
     meaning: string;
     components: WordBreakdown[];
+}
+
+export interface ValidateExerciseResult {
+    isCorrect: boolean;
+    session: QuizSession;
+    exercise: Exercise;
 }
 
 export interface Exercise {
