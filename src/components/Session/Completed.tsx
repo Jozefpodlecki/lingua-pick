@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Session } from "../../models";
+import { QuizSession } from "src/models";
 import ReactECharts from "echarts-for-react";
 
 interface Props {
-    session: Session;
+    session: QuizSession;
 }
 
 const Completed: React.FC<Props> = ({ session }) => {

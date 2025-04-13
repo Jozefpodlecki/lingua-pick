@@ -8,8 +8,23 @@ export interface Option {
     imageSrc: string;
 }
 
-export interface SessionData {
-    sessions: Session[];
+export interface WordStats {
+    id: string;
+    ratio: number;
+    correctCount: number;
+    incorrectCount: number;
+    updatedOn: string;
+}
+
+export interface UserStats {
+    vocabulary: {
+        words: WordStats[]
+    }
+}
+
+export interface AppData {
+    sessions: QuizSession[];
+    stats: UserStats;
     activeSessionId: string | null;
 }
 
@@ -18,7 +33,7 @@ export interface Duration {
     hhmmss: string;
 }
 
-export interface Session {
+export interface QuizSession {
     id: string;
     isFinished: boolean;
     duration: Duration;
@@ -28,6 +43,19 @@ export interface Session {
     completedOn?: string;
     exerciseCount: number;
     exercises: Exercise[];
+}
+
+export interface SentenceBreakdown {
+    sentence: string;
+    translation: string;
+    breakdown: WordBreakdown[];
+}
+
+export interface WordBreakdown {
+    word: string;
+    part_of_speech: string;
+    meaning: string;
+    components: WordBreakdown[];
 }
 
 export interface Exercise {
@@ -40,7 +68,7 @@ export interface Exercise {
     type: "word-image" | "word-word";
     options: Option[];
     question: string;
-    correctOptionId: number;
+    correctWordId: number;
 }
 
 export interface HistoryItem {

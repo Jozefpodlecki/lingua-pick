@@ -1,0 +1,47 @@
+[
+    {
+        "sentence": "지금 컴퓨터 게임을 하고 있어요.",
+        "translation": "I am playing a computer game right now.",
+        "breakdown": [
+            {
+                "word": "지금",
+                "part_of_speech": "adverb",
+                "meaning": "now / right now"
+            },
+            {
+                "word": "컴퓨터 게임을",
+                "part_of_speech": "noun + object particle",
+                "meaning": "computer game (object)",
+                "components": [
+                    {
+                        "word": "컴퓨터 게임",
+                        "part_of_speech": "noun",
+                        "meaning": "computer game"
+                    },
+                    {
+                        "word": "을",
+                        "part_of_speech": "object particle",
+                        "meaning": "marks the object of the verb"
+                    }
+                ]
+            },
+            {
+                "word": "하고 있어요",
+                "part_of_speech": "verb phrase",
+                "meaning": "am doing (currently)",
+                "components": [
+                    {
+                        "word": "하다",
+                        "part_of_speech": "verb",
+                        "meaning": "to do"
+                    },
+                    {
+                        "word": "고 있어요",
+                        "part_of_speech": "progressive aspect",
+                        "meaning": "indicates ongoing action (present progressive)"
+                    }
+                ]
+            }
+        ]
+    }
+]

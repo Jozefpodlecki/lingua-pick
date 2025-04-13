@@ -1,20 +1,18 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { createSession, getActiveSession } from "../api/api";
 import { useEffect } from "react";
 
 const Landing = () => {
-    const navigate = useNavigate();
-
     useEffect(() => {
         const activeSession = getActiveSession();
         if (activeSession) {
-            navigate(`/session/${activeSession.id}`);
+            window.location.href = `/session/${activeSession.id}`;
         }
-    }, [navigate]);
+    }, []);
 
     const handleCreateSession = () => {
         const newSession = createSession();
-        navigate(`/session/${newSession.id}`);
+        window.location.href = `/session/${newSession.id}`;
     };
 
     return (
@@ -27,12 +25,18 @@ const Landing = () => {
             >
                 Start New Session
             </button>
-            <button
-                onClick={() => navigate("/speech-recognition")}
-                className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+            <Link
+                to="/speech-recognition"
+                className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mb-4 text-center"
             >
                 Go to Speech Recognition
-            </button>
+            </Link>
+            <Link
+                to="/docs"
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-center"
+            >
+                View Documentation
+            </Link>
         </div>
     );
 };

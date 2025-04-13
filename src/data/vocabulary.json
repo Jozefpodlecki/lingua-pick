@@ -1,0 +1,74 @@
+[
+    {
+        "id": 1,
+        "word": {
+            "hangul": "고양이",
+            "romanized": "goyangi"
+        },
+        "translations": ["cat"],
+        "imageSrc": "./cat.jpg"
+    },
+    {
+        "id": 2,
+        "word": {
+            "hangul": "풍경",
+            "romanized": "pung-gyeong"
+        },
+        "translations": ["landscape"],
+        "imageSrc": "./landscape.webp"
+    },
+    {
+        "id": 3,
+        "word": {
+            "hangul": "토끼",
+            "romanized": "tokki"
+        },
+        "translations": ["rabbit"],
+        "imageSrc": "./rabbit.webp"
+    },
+    {
+        "id": 4,
+        "word": {
+            "hangul": "놀다",
+            "romanized": "nolda"
+        },
+        "translations": ["to play", "to hang out", "to have fun"],
+        "imageSrc": "./to_play.jpg"
+    },
+    {
+        "id": 5,
+        "word": {
+            "hangul": "휴지통",
+            "romanized": "hyujitong"
+        },
+        "translations": ["trash can", "wastebasket"],
+        "imageSrc": "./trash_can.jpg"
+    },
+    {
+        "id": 6,
+        "word": {
+            "hangul": "학생들이",
+            "romanized": "haksaengdeul-i"
+        },
+        "translations": ["students"],
+        "imageSrc": "./student.jpg"
+    },
+    {
+        "id": 7,
+        "word": {
+            "hangul": "복도에",
+            "romanized": "bokdo-e"
+        },
+        "translations": ["in the hallway"],
+        "imageSrc": "./hallway.jpg"
+    },
+    {
+        "id": 8,
+        "word": {
+            "hangul": "비어",
+            "romanized": "bieo"
+        },
+        "translations": ["empty"],
+        "imageSrc": "./empty.jpg"
+    }
+]
