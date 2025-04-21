@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { getAppData, setSelectedLanguage } from "../api/api";
+import { getAppData, setSelectedLanguage } from "../api";
 import { Language } from "../models";
 
 interface LanguageContextProps {

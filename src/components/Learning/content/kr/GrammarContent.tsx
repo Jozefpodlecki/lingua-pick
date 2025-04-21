@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Play, Loader } from "lucide-react";
-import useSpeechSynthesis from "../../../hooks/useSpeechSynthesis";
+import useSpeechSynthesis from "../../../../hooks/useSpeechSynthesis";
 
 const GrammarContent: React.FC = () => {
     const { speak } = useSpeechSynthesis("ko-KR");

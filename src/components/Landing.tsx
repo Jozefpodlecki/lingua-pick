@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Play, Mic, BookOpen, InfoIcon, BarChart2 } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
 import { useEffect, useState } from "react";
-import { getStats } from "../api/api";
+import { getStats } from "../api";
 
 const Landing: React.FC = () => {
     const [stats, setStats] = useState<{

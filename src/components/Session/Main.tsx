@@ -3,11 +3,12 @@ import WordImageSelector from "./WordImageSelector";
 import BottomPanel from "./BottomPanel";
 import ProgressBar from "./ProgressBar";
 import { useState, useEffect } from "react";
-import { cancelSession, completeSession, createExercise, getSessionById, validateExercise } from "../../api/api";
+import { cancelSession, completeSession, createExercise, getSessionById, validateExercise } from "../../api";
 import { Exercise, QuizSession } from "../../models";
 import { Home } from "lucide-react";
 import NotFound from "./NotFound";
 import Completed from "./Completed";
+import WordWordSelector from "./WordWordSelector";
 
 interface State {
     exercise: Exercise | null;
@@ -162,8 +163,16 @@ const SessionComponent: React.FC = () => {
             </nav>
             <ProgressBar value={progressPercentage} onCancel={onCancel} />
             <div className="p-2 flex-1 flex items-center justify-center">
-                {state.exercise && (
+                {state.exercise && state.exercise.type === "word-image" && (
                     <WordImageSelector
+                        exercise={state.exercise}
+                        selectedOptionId={state.selectedOptionId}
+                        correctOptionId={state.correctOptionId}
+                        onSelect={onSelect}
+                    />
+                )}
+                 {state.exercise && state.exercise.type === "word-word" && (
+                    <WordWordSelector
                         exercise={state.exercise}
                         selectedOptionId={state.selectedOptionId}
                         correctOptionId={state.correctOptionId}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createSession } from "../api/api";
+import { createSession } from "../api";
 import { useLanguage } from "../context/LanguageContext";
 
 const NewQuiz: React.FC = () => {

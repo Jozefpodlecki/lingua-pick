@@ -1,27 +1,105 @@
 [
     {
+        "sentence": "저는 제 핸드폰을 갖고 있어요.",
+        "romanized_sentence": "jeoneun je haendeupon-eul gatgo isseoyo",
+        "translation": "I am carrying my phone.",
+        "breakdown": [
+            {
+                "word": "저는",
+                "part_of_speech": "pronoun + topic particle",
+                "meaning": "as for me / I",
+                "romanized": "jeoneun",
+                "components": [
+                    {
+                        "word": "저",
+                        "part_of_speech": "pronoun",
+                        "meaning": "I (humble/formal)",
+                        "romanized": "jeo"
+                    },
+                    {
+                        "word": "는",
+                        "part_of_speech": "topic particle",
+                        "meaning": "topic marker",
+                        "romanized": "neun"
+                    }
+                ]
+            },
+            {
+                "word": "제",
+                "part_of_speech": "possessive pronoun",
+                "meaning": "my (humble)",
+                "romanized": "je"
+            },
+            {
+                "word": "핸드폰을",
+                "part_of_speech": "noun + object particle",
+                "meaning": "cell phone (object)",
+                "romanized": "haendeupon-eul",
+                "components": [
+                    {
+                        "word": "핸드폰",
+                        "part_of_speech": "noun",
+                        "meaning": "cell phone",
+                        "romanized": "haendeupon"
+                    },
+                    {
+                        "word": "을",
+                        "part_of_speech": "object particle",
+                        "meaning": "marks the object of the verb",
+                        "romanized": "eul"
+                    }
+                ]
+            },
+            {
+                "word": "갖고 있어요",
+                "part_of_speech": "verb phrase",
+                "meaning": "am carrying / currently possessing",
+                "romanized": "gatgo isseoyo",
+                "components": [
+                    {
+                        "word": "갖다",
+                        "part_of_speech": "verb",
+                        "meaning": "to have / to carry",
+                        "romanized": "gatda"
+                    },
+                    {
+                        "word": "고 있어요",
+                        "part_of_speech": "progressive aspect",
+                        "meaning": "indicates ongoing state (currently)",
+                        "romanized": "go isseoyo"
+                    }
+                ]
+            }
+        ]
+    },
+    {
         "sentence": "지금 컴퓨터 게임을 하고 있어요.",
+        "romanized_sentence": "jigeum keompyuteo geim-eul hago isseoyo",
         "translation": "I am playing a computer game right now.",
         "breakdown": [
             {
                 "word": "지금",
                 "part_of_speech": "adverb",
-                "meaning": "now / right now"
+                "meaning": "now / right now",
+                "romanized": "jigeum"
             },
             {
                 "word": "컴퓨터 게임을",
                 "part_of_speech": "noun + object particle",
                 "meaning": "computer game (object)",
+                "romanized": "keompyuteo geim-eul",
                 "components": [
                     {
                         "word": "컴퓨터 게임",
                         "part_of_speech": "noun",
-                        "meaning": "computer game"
+                        "meaning": "computer game",
+                        "romanized": "keompyuteo geim"
                     },
                     {
                         "word": "을",
                         "part_of_speech": "object particle",
-                        "meaning": "marks the object of the verb"
+                        "meaning": "marks the object of the verb",
+                        "romanized": "eul"
                     }
                 ]
             },
@@ -29,16 +107,19 @@
                 "word": "하고 있어요",
                 "part_of_speech": "verb phrase",
                 "meaning": "am doing (currently)",
+                "romanized": "hago isseoyo",
                 "components": [
                     {
                         "word": "하다",
                         "part_of_speech": "verb",
-                        "meaning": "to do"
+                        "meaning": "to do",
+                        "romanized": "hada"
                     },
                     {
                         "word": "고 있어요",
                         "part_of_speech": "progressive aspect",
-                        "meaning": "indicates ongoing action (present progressive)"
+                        "meaning": "indicates ongoing action (present progressive)",
+                        "romanized": "go isseoyo"
                     }
                 ]
             }

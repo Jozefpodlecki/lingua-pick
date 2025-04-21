@@ -21,7 +21,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ tableOfContents, onSe
                         <button
                             data-title={item.title}
                             onClick={_onSelect}
-                            className="w-full text-left text-blue-400 hover:underline"
+                            className="cursor-pointer w-full text-left text-blue-400 hover:underline"
                         >
                             {item.title}
                         </button>
