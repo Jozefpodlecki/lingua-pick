@@ -183,7 +183,7 @@ const SessionComponent: React.FC = () => {
             <BottomPanel
                 isCompleted={state.isCompleted}
                 isCorrect={state.isCorrect}
-                correctOption={correctOption}
+                correctOption={correctOption!}
                 onClick={onClick}
                 isDisabled={state.selectedOptionId === null && !state.isCompleted}
             />

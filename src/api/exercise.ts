@@ -17,10 +17,13 @@ export const generateExercise = (): Exercise => {
     const shuffledOptions = vocabulary.sort(() => Math.random() - 0.5).slice(0, 3);
     const randomIndex = Math.floor(Math.random() * shuffledOptions.length);
     const correctOption = shuffledOptions[randomIndex];
-    const question = `${correctOption.word.hangul} (${correctOption.word.romanized})`;
+    let question = `${correctOption.word.hangul} (${correctOption.word.romanized})`;
     const currentDate = new Date();
     const exerciseType = "word-word";
 
+    if (exerciseType === "word-word") {
+        question = `${correctOption.translations[0]}`;
+    }
 
     return {
         id: uuidv4(),
@@ -49,6 +52,8 @@ export const validateExercise = (
     }
 
     if(exercise.type === "word-word") {
+        const result = validateWordImageExercise(session, exercise, selectedWordId);
+        return Promise.resolve(result);
     }
 
     const result = {
