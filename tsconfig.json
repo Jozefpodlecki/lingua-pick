@@ -2,6 +2,7 @@
 	"files": [],
 	"compilerOptions": {
 		"baseUrl": ".",
+		"allowSyntheticDefaultImports": true,
 		"paths": {
 		    "src/*": ["./src/*"],
 		},

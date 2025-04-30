@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Play, Mic, BookOpen, InfoIcon, BarChart2 } from "lucide-react";
+import { Play, Mic, BookOpen, InfoIcon, BarChart2, Keyboard } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
 import { useEffect, useState } from "react";
 import { getStats } from "../api";
@@ -83,6 +83,13 @@ const Landing: React.FC = () => {
                 >
                     <InfoIcon className="w-8 h-8 mb-2" />
                     Documentation
+                </Link>
+                <Link
+                    to="/typing"
+                    className="flex flex-col items-center justify-center bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-6 px-4 rounded shadow-lg"
+                >
+                    <Keyboard className="w-8 h-8 mb-2" />
+                    Typing
                 </Link>
             </div>
         </div>

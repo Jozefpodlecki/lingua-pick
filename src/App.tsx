@@ -6,6 +6,7 @@ import SpeechRecognition from "./components/SpeechRecognition/SpeechRecognizer";
 import { LanguageProvider } from "./context/LanguageContext";
 import NewQuiz from "./components/NewQuiz";
 import Learning from "./components/Learning/Main";
+import Typer from "./components/Typer";
 
 const App = () => {
     return (
@@ -13,6 +14,7 @@ const App = () => {
             <div className="flex flex-col min-h-screen">
                 <Routes>
                     <Route path="/" element={<Landing />} />
+                    <Route path="/typing" element={<Typer />} />
                     <Route path="/learning" element={<Learning />} />
                     <Route path="/session/new" element={<NewQuiz />} />
                     <Route path="/session/:uuid" element={<QuizSession />} />
