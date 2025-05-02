@@ -1,4 +1,4 @@
-import { Exercise, Language, QuizSession } from "../models";
+import { Exercise, ExerciseTypes, Language, QuizSession } from "../models";
 import { getAppData, saveAppData } from "./appData";
 import { computeDuration } from "./utils";
 import { v4 as uuidv4 } from "uuid";
@@ -85,9 +85,18 @@ export const saveSession = (session: QuizSession, updatedExercise: Exercise): vo
     saveAppData(updatedData);
 };
 
-export const createSession = (
-    language: Language,
-    exerciseCount: number): QuizSession => {
+export interface CreateSessionOptions {
+    language: Language;
+    exerciseCount: number;
+    exerciseTypes: ExerciseTypes[];
+}
+
+export const createSession = (options: CreateSessionOptions): QuizSession => {
+    const {
+        exerciseCount,
+        exerciseTypes,
+        language
+    } = options;
     const sessionId = uuidv4();
     const createdOn = new Date().toISOString();
 
@@ -103,6 +112,8 @@ export const createSession = (
         updatedOn: createdOn,
         exercises: [],
         exerciseCount,
+        exerciseTypes,
+        usedWordIds: []
     };
 
     const data = getAppData();

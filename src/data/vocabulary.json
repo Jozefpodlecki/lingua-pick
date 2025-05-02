@@ -70,5 +70,113 @@
         },
         "translations": ["empty"],
         "imageSrc": "./empty.jpg"
+    },
+    {
+        "id": 9,
+        "word": {
+            "hangul": "사람",
+            "romanized": "saram"
+        },
+        "translations": ["person", "human"],
+        "imageSrc": "./person.jpg"
+    },
+    {
+        "id": 10,
+        "word": {
+            "hangul": "학교",
+            "romanized": "hakgyo"
+        },
+        "translations": ["school"],
+        "imageSrc": "./school.jpg"
+    },
+    {
+        "id": 11,
+        "word": {
+            "hangul": "책",
+            "romanized": "chaek"
+        },
+        "translations": ["book"],
+        "imageSrc": "./book.jpg"
+    },
+    {
+        "id": 12,
+        "word": {
+            "hangul": "커피",
+            "romanized": "keopi"
+        },
+        "translations": ["coffee"],
+        "imageSrc": "./coffee.jpg"
+    },
+    {
+        "id": 13,
+        "word": {
+            "hangul": "음악",
+            "romanized": "eumak"
+        },
+        "translations": ["music"],
+        "imageSrc": "./music.jpg"
+    },
+    {
+        "id": 14,
+        "word": {
+            "hangul": "컴퓨터",
+            "romanized": "keompyuteo"
+        },
+        "translations": ["computer"],
+        "imageSrc": "./computer.jpg"
+    },
+    {
+        "id": 15,
+        "word": {
+            "hangul": "자동차",
+            "romanized": "jadongcha"
+        },
+        "translations": ["car"],
+        "imageSrc": "./car.jpg"
+    },
+    {
+        "id": 16,
+        "word": {
+            "hangul": "바람",
+            "romanized": "baram"
+        },
+        "translations": ["wind"],
+        "imageSrc": "./wind.jpg"
+    },
+    {
+        "id": 17,
+        "word": {
+            "hangul": "날씨",
+            "romanized": "nalssi"
+        },
+        "translations": ["weather"],
+        "imageSrc": "./weather.jpg"
+    },
+    {
+        "id": 18,
+        "word": {
+            "hangul": "가을",
+            "romanized": "gaeul"
+        },
+        "translations": ["fall"],
+        "imageSrc": "./fall.jpg"
+    },
+    {
+        "id": 19,
+        "word": {
+            "hangul": "바람결",
+            "romanized": "baramgyeol"
+        },
+        "translations": ["breeze"],
+        "imageSrc": "./breeze.jpg"
+    },
+    {
+        "id": 20,
+        "word": {
+            "hangul": "추운",
+            "romanized": "chuun"
+        },
+        "translations": ["cold"],
+        "imageSrc": "./cold.jpg"
     }
 ]

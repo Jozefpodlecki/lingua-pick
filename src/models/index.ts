@@ -44,6 +44,8 @@ export interface Duration {
     hhmmss: string;
 }
 
+export type ExerciseTypes = "word-word" | "word-image" | "sentence-typing";
+
 export interface QuizSession {
     id: string;
     language: Language;
@@ -55,6 +57,8 @@ export interface QuizSession {
     completedOn?: string;
     exerciseCount: number;
     exercises: Exercise[];
+    exerciseTypes: ExerciseTypes[];
+    usedWordIds: number[];
 }
 
 export interface SentenceBreakdown {
@@ -76,17 +80,52 @@ export interface ValidateExerciseResult {
     exercise: Exercise;
 }
 
-export interface Exercise {
+export type Exercise = WordWordExercise | WordImageExercise | SentenceTypingExercise | UnknownExercise;
+
+export interface WordWordExercise {
     id: string;
     duration: Duration;
     createdOn: string;
     completedOn?: string;
     isCompleted: boolean;
     isCorrect: boolean | null;
-    type: "word-image" | "word-word";
+    type: "word-word";
     options: Option[];
     question: string;
     correctWordId: number;
+}
+
+export interface WordImageExercise {
+    id: string;
+    duration: Duration;
+    createdOn: string;
+    completedOn?: string;
+    isCompleted: boolean;
+    isCorrect: boolean | null;
+    type: "word-image";
+    options: Option[];
+    question: string;
+    correctWordId: number;
+}
+
+export interface SentenceTypingExercise {
+    id: string;
+    duration: Duration;
+    createdOn: string;
+    completedOn?: string;
+    isCompleted: boolean;
+    isCorrect: boolean | null;
+    type: "sentence-typing";
+}
+
+export interface UnknownExercise {
+    id: string;
+    duration: Duration;
+    createdOn: string;
+    completedOn?: string;
+    isCompleted: boolean;
+    isCorrect: boolean | null;
+    type: "unknown";
 }
 
 export interface HistoryItem {
