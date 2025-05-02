@@ -6,7 +6,7 @@ import SpeechRecognition from "./components/SpeechRecognition/SpeechRecognizer";
 import { LanguageProvider } from "./context/LanguageContext";
 import NewQuiz from "./components/NewQuiz";
 import Learning from "./components/Learning/Main";
-import Typer from "./components/Typer";
+import Typer from "./components/Typing/Typer";
 
 const App = () => {
     return (

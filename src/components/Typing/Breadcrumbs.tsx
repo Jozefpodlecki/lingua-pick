@@ -20,7 +20,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ selectedTitle }) => {
                 </li>
                 <li>
                     <a href="/typing" className="hover:text-white">
-                        Typing
+                        {selectedTitle}
                     </a>
                 </li>
             </ul>

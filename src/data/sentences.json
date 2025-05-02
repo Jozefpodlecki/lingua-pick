@@ -1,7 +1,80 @@
 [
     {
-        "sentence": "저는 제 핸드폰을 갖고 있어요.",
-        "romanized_sentence": "jeoneun je haendeupon-eul gatgo isseoyo",
+        "hangul": "이번 가을은 덜 예뻐요.",
+        "romanized": "ibeon gaeul-eun deol yeppeoyo",
+        "translation": "This fall is less beautiful.",
+        "breakdown": [
+            {
+                "word": "이번",
+                "part_of_speech": "pronoun + noun",
+                "meaning": "this (specific) + fall (autumn)",
+                "romanized": "ibeon",
+                "components": [
+                    {
+                        "word": "이",
+                        "part_of_speech": "pronoun",
+                        "meaning": "this",
+                        "romanized": "i"
+                    },
+                    {
+                        "word": "번",
+                        "part_of_speech": "noun",
+                        "meaning": "fall / autumn",
+                        "romanized": "beon"
+                    }
+                ]
+            },
+            {
+                "word": "가을은",
+                "part_of_speech": "noun + topic particle",
+                "meaning": "fall + topic marker",
+                "romanized": "gaeul-eun",
+                "components": [
+                    {
+                        "word": "가을",
+                        "part_of_speech": "noun",
+                        "meaning": "fall / autumn",
+                        "romanized": "gaeul"
+                    },
+                    {
+                        "word": "은",
+                        "part_of_speech": "topic particle",
+                        "meaning": "topic marker",
+                        "romanized": "eun"
+                    }
+                ]
+            },
+            {
+                "word": "덜",
+                "part_of_speech": "adverb",
+                "meaning": "less",
+                "romanized": "deol"
+            },
+            {
+                "word": "예뻐요",
+                "part_of_speech": "adjective + polite ending",
+                "meaning": "pretty (polite)",
+                "romanized": "yeppeoyo",
+                "components": [
+                    {
+                        "word": "예쁘다",
+                        "part_of_speech": "adjective",
+                        "meaning": "pretty",
+                        "romanized": "yeppeuda"
+                    },
+                    {
+                        "word": "어요",
+                        "part_of_speech": "polite ending",
+                        "meaning": "polite hangul ending",
+                        "romanized": "eoyo"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "hangul": "저는 제 핸드폰을 갖고 있어요.",
+        "romanized": "jeoneun je haendeupon-eul gatgo isseoyo",
         "translation": "I am carrying my phone.",
         "breakdown": [
             {
@@ -73,8 +146,8 @@
         ]
     },
     {
-        "sentence": "지금 컴퓨터 게임을 하고 있어요.",
-        "romanized_sentence": "jigeum keompyuteo geim-eul hago isseoyo",
+        "hangul": "지금 컴퓨터 게임을 하고 있어요.",
+        "romanized": "jigeum keompyuteo geim-eul hago isseoyo",
         "translation": "I am playing a computer game right now.",
         "breakdown": [
             {
