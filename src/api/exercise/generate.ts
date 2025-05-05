@@ -42,6 +42,7 @@ export const generateSentenceTypingExercise = (
 
     return {
         ...base,
+        requiresManualCheck: true,
         type: "sentence-typing" as const,
         sentence,
         sentenceText,
@@ -55,6 +56,7 @@ export const generateWordsWordsExercise = (base: BaseExercise): WordsWordsExerci
 
     return {
         ...base,
+        requiresManualCheck: false,
         type: "words-words" as const,
         left: [],
         right: [],
@@ -63,7 +65,6 @@ export const generateWordsWordsExercise = (base: BaseExercise): WordsWordsExerci
 };
 
 export const generateWordsMatchExercise = (session: QuizSession, base: BaseExercise): WordsMatchExercise => {
-
     const stats = getStats();
     const allPairs = getAvailableWords(stats, session);
 
@@ -90,6 +91,7 @@ export const generateWordsMatchExercise = (session: QuizSession, base: BaseExerc
 
     return {
         ...base,
+        requiresManualCheck: false,
         type: "words-match" as const,
         ids,
         matchedIds: new Set(),
@@ -131,6 +133,7 @@ export const generateHangulMatchExercise = (base: BaseExercise): HangulMatchExer
 
     return {
         ...base,
+        requiresManualCheck: false,
         type: "hangul-match" as const,
         ids,
         matchedIds: new Set(),

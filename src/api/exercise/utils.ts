@@ -11,6 +11,7 @@ export const getExerciseTypes = (languageName: string): ExerciseType[] => {
         { type: "word-word", description: "Match the word to its translation." },
         { type: "sentence-typing", description: "Type the sentence in the target language." },
         { type: "words-words", description: "Match each word with its correct translation." },
+        { type: "words-match", description: "Match each word in a grid with its correct translation." },
     ];
 
     if(languageName === "kr") {
@@ -27,7 +28,8 @@ export const createBaseExercise = (): BaseExercise => {
         createdOn: now.toISOString(),
         duration: { seconds: 0, hhmmss: "00:00:00" },
         isCompleted: false,
-        isCorrect: null
+        isCorrect: null,
+        requiresManualCheck: false
     };
 };
 
@@ -38,16 +40,21 @@ export const shuffleArray = <T>(array: T[]): T[] => {
 };
 
 export const getAvailableWords = (stats: UserStats, session: QuizSession) => {
-    const weakWordIds = new Set(
-        stats.vocabulary.words
-            .filter((entry) => entry.ratio < 0.5)
-            .map((entry) => entry.id)
-    );
+    const hasStats = stats.vocabulary?.words?.length > 0;
 
-    const availableWords = getKrWords().filter(
-        (word) => !session.usedWordIds.includes(word.id) && weakWordIds.has(word.id)
+    const weakWordIds = hasStats
+        ? new Set(
+            stats.vocabulary.words
+                .filter((entry) => entry.ratio < 0.5)
+                .map((entry) => entry.id)
+        )
+        : null;
+    
+    const availableWords = getKrWords().filter((word) =>
+        !session.usedWordIds.includes(word.id) &&
+        (weakWordIds ? weakWordIds.has(word.id) : true)
     );
-
+    
     return availableWords;
 }
     

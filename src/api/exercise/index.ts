@@ -37,13 +37,12 @@ export const generateExercise = (session: QuizSession): Exercise => {
 
 export const validateExercise = (
     session: QuizSession,
-    exercise: Exercise,
-    selectedId: number
+    exercise: Exercise
 ): Promise<ValidateExerciseResult> => {
     switch (exercise.type) {
         case "word-image":
         case "word-word":
-            return Promise.resolve(validateSimpleOptionExercise(session, exercise, selectedId));
+            return Promise.resolve(validateSimpleOptionExercise(session, exercise));
         case "sentence-typing":
             return Promise.resolve(validateSentenceTyping(session, exercise));
         case "words-words":

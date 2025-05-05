@@ -29,6 +29,7 @@ export interface BaseExercise {
     completedOn?: string;
     isCompleted: boolean;
     isCorrect: boolean | null;
+    requiresManualCheck: boolean; 
 }
 
 export interface WordWordExercise extends BaseExercise {
@@ -37,6 +38,7 @@ export interface WordWordExercise extends BaseExercise {
     prompt: string;
     selectedOptionId: number;
     correctOptionId: number;
+    requiresManualCheck: true;
 }
 
 export interface WordImageExercise extends BaseExercise {
@@ -45,6 +47,7 @@ export interface WordImageExercise extends BaseExercise {
     prompt: string;
     selectedOptionId: number;
     correctOptionId: number;
+    requiresManualCheck: true;
 }
 
 export interface SentenceTypingExercise extends BaseExercise {
@@ -53,30 +56,32 @@ export interface SentenceTypingExercise extends BaseExercise {
     sentenceText: string;
     chunks: Option[];
     userTranslation: string;
+    requiresManualCheck: true;
 }
 
 export interface WordsWordsExercise extends BaseExercise {
     type: "words-words";
     left: Option[];
     right: Option[];
+    requiresManualCheck: false;
 }
 
 export interface WordsMatchExercise extends BaseExercise {
     type: "words-match";
     ids: Set<number>;
-    matchedIds: Set<number>;
     items: Option[];
-    correctCount: number;
-    incorrectCount: number;
+    correctIds: Set<number>;
+    incorrectIds: Set<number>;
+    requiresManualCheck: false;
 }
 
 export interface HangulMatchExercise extends BaseExercise {
     type: "hangul-match";
     ids: Set<number>;
-    matchedIds: Set<number>;
     items: Option[];
-    correctCount: number;
-    incorrectCount: number;
+    correctIds: Set<number>;
+    incorrectIds: Set<number>;
+    requiresManualCheck: false;
 }
 
 export interface UnknownExercise extends BaseExercise {

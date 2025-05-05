@@ -3,11 +3,10 @@ import { updateAppDataStats, updateSessionState } from "./utils";
 
 export const validateSimpleOptionExercise = (
     session: QuizSession,
-    exercise: WordImageExercise | WordWordExercise,
-    selectedId: number
+    exercise: WordImageExercise | WordWordExercise
 ): ValidateExerciseResult => {
     const now = new Date();
-    const isCorrect = selectedId === exercise.correctOptionId;
+    const isCorrect = exercise.selectedOptionId === exercise.correctOptionId;
 
     const updated: Exercise = {
         ...exercise,

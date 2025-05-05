@@ -4,10 +4,11 @@ import WordImageSelector from "./WordImageSelector";
 import WordWordSelector from "./WordWord/Selector";
 import WordsWordsSelector from "./WordsWords/Selector";
 import HangulMatcher from "./HangulMatch/Matcher";
+import WordsMatcher from "./WordsMatch/Matcher";
 
 interface Props {
     exercise: Exercise;
-    onChange: (exercise: Exercise) => void;
+    onChange(exercise: Exercise): void;
 }
 
 const ExerciseRenderer: React.FC<Props> = ({ exercise, onChange }) => {
@@ -30,6 +31,8 @@ const ExerciseRenderer: React.FC<Props> = ({ exercise, onChange }) => {
             return <SentenceTyping exercise={exercise} onChange={onChange}/>
         case "words-words":
             return <WordsWordsSelector exercise={exercise} onChange={onChange}/>
+        case "words-match":
+            return <WordsMatcher exercise={exercise} onChange={onChange}/>
         case "hangul-match":
             return <HangulMatcher exercise={exercise} onChange={onChange}/>
         default:

@@ -74,14 +74,13 @@ const SessionComponent: React.FC = () => {
                 isCorrect,
                 session: updatedSession,
                 exercise: updatedExercise,
-            } = await validateExercise(session, state.exercise, state.selectedOptionId!);
+            } = await validateExercise(session, state.exercise);
 
             setState((prevState) => ({
                 ...prevState,
                 exercise: updatedExercise,
                 isCorrect,
-                isCompleted: true,
-                correctOptionId: updatedExercise.correctWordId,
+                isCompleted: true
             }));
 
             setSession(updatedSession);
@@ -118,10 +117,10 @@ const SessionComponent: React.FC = () => {
         }
     };
 
-    const onSelect = (id: number) => {
+    const onChange = (exercise: Exercise) => {
         setState((prevState) => ({
             ...prevState,
-            selectedOptionId: id,
+            exercise,
         }));
     };
 
@@ -163,17 +162,14 @@ const SessionComponent: React.FC = () => {
             {state.exercise && (
                 <ExerciseRenderer
                     exercise={state.exercise}
-                    onSelect={onSelect}
+                    onChange={onChange}
                 />
             )}
             </div>
-            <BottomPanel
-                isCompleted={state.isCompleted}
-                isCorrect={state.isCorrect}
-                correctOption={""}
+            {state.exercise &&<BottomPanel
+                exercise={state.exercise}
                 onClick={onClick}
-                isDisabled={state.selectedOptionId === null && !state.isCompleted}
-            />
+            />}
         </div>
     );
 };

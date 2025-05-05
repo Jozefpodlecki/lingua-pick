@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { HangulMatchExercise, Option } from "../../../models";
+import { Option, WordsMatchExercise } from "../../../models";
 
 type EnhancedOption = Option & { 
     order: number;
@@ -7,14 +7,16 @@ type EnhancedOption = Option & {
 };
 
 interface Props {
-    exercise: HangulMatchExercise;
-    onChange: (updated: HangulMatchExercise) => void;
+    exercise: WordsMatchExercise;
+    onChange: (updated: WordsMatchExercise) => void;
 }
 
 interface State {
     selected: EnhancedOption | null;
     flashRed: number[];
     flashGreen: number[];
+    correctIds: Set<number>;
+    incorrectIds: Set<number>;
     items: EnhancedOption[]
 }
 
@@ -23,6 +25,8 @@ const Matcher = ({ exercise, onChange }: Props) => {
         selected: null,
         flashRed: [],
         flashGreen: [],
+        correctIds: new Set(),
+        incorrectIds: new Set(),
         items: exercise.items.map((pr, index) => ({...pr, order: index, isExcluded: false}))
     });
 
@@ -50,6 +54,7 @@ const Matcher = ({ exercise, onChange }: Props) => {
                 ...s,
                 selected: null,
                 flashRed: [],
+                correctIds: state.correctIds.add(id),
                 flashGreen: newFlash,
             }));
 
@@ -68,6 +73,7 @@ const Matcher = ({ exercise, onChange }: Props) => {
             setState((s) => ({
                 ...s,
                 selected: null,
+                incorrectIds: state.incorrectIds.add(id),
                 flashRed: newFlash,
             }));
 
@@ -99,7 +105,11 @@ const Matcher = ({ exercise, onChange }: Props) => {
 
     useEffect(() => {
         if (state.items.length && !state.items.find(pr => !pr.isExcluded)) {
-            console.log("complete");
+            onChange({
+                ...exercise,
+                incorrectIds: state.incorrectIds,
+                correctIds: state.correctIds,
+            })
         }
     }, [state.items]);
 

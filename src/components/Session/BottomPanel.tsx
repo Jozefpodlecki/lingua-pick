@@ -1,20 +1,17 @@
 import React from "react";
-import { Option } from "../../models";
+import { Exercise } from "../../models";
 
 interface Props {
-    isCompleted: boolean;
-    isCorrect: boolean | null;
-    correctOption: string;
-    onClick: () => void;
-    isDisabled: boolean;
+    exercise: Exercise;
+    onClick(): void;
 }
 
-const BottomPanel: React.FC<Props> = ({ isCompleted, isCorrect, correctOption, onClick, isDisabled }) => {
+const BottomPanel: React.FC<Props> = ({ exercise, onClick }) => {
     return (
         <div
             className={`flex items-center p-4 text-right transition-colors duration-300 ${
-                isCompleted
-                    ? isCorrect
+                exercise.isCompleted
+                    ? exercise.isCorrect
                         ? "bg-[#568203]"
                         : "bg-[#58111A]"
                     : "bg-gray-800"
@@ -22,20 +19,20 @@ const BottomPanel: React.FC<Props> = ({ isCompleted, isCorrect, correctOption, o
         >
             <div className="text-white text-lg mb-4">
                 <span className="text-2xl">
-                    {isCompleted &&
-                        (isCorrect
+                    {exercise.isCompleted &&
+                        (exercise.isCorrect
                             ? "That's right!"
-                            : `That's wrong, it's ${correctOption})`)}
+                            : `That's wrong, it's ${""})`)}
                 </span>
             </div>
-            <button
+            {exercise.requiresManualCheck ?  <button
                 type="button"
-                disabled={isDisabled}
+                disabled={false}
                 onClick={onClick}
                 className="cursor-pointer rounded bg-gray-600 p-4 ml-auto text-2xl text-white hover:bg-sky-500 active:bg-sky-700"
             >
-                {isCompleted ? "Continue" : "Check"}
-            </button>
+                {exercise.isCompleted ? "Continue" : "Check"}
+            </button> : null}
         </div>
     );
 };
