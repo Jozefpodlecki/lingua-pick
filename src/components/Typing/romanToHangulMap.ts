@@ -1,4 +1,4 @@
-import romanizedToHangulJson from "../../data/romanized_to_hangul.json";
+import romanizedToHangulJson from "../../data/kr/romanized_to_hangul.json";
 
 const romanizedToHangul: Record<string, string> = romanizedToHangulJson;
 const wordRegex = /[a-zA-Z0-9]+|[^a-zA-Z0-9\s]/g;

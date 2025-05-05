@@ -4,7 +4,7 @@ import { Option } from "../../models";
 interface Props {
     isCompleted: boolean;
     isCorrect: boolean | null;
-    correctOption: Option;
+    correctOption: string;
     onClick: () => void;
     isDisabled: boolean;
 }
@@ -25,7 +25,7 @@ const BottomPanel: React.FC<Props> = ({ isCompleted, isCorrect, correctOption, o
                     {isCompleted &&
                         (isCorrect
                             ? "That's right!"
-                            : `That's wrong, it's ${correctOption.translations[0]} ${correctOption.word.hangul} (${correctOption.word.romanized})`)}
+                            : `That's wrong, it's ${correctOption})`)}
                 </span>
             </div>
             <button

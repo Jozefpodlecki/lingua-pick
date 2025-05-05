@@ -1,4 +1,4 @@
-import { Option } from "../models";
+import { Option } from "../../models";
 
 interface Props {
     option: Option;

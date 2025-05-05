@@ -79,7 +79,10 @@ export const generateExercise = (session: QuizSession): Exercise => {
             ...baseExercise,
             type: exerciseType,
             isCompleted: false,
-            isCorrect: null
+            isCorrect: null,
+            sentence: {
+                ha
+            }
         };
     }
 
@@ -104,6 +107,10 @@ export const validateExercise = (
     if(exercise.type === "word-word") {
         const result = validateWordImageExercise(session, exercise, selectedWordId);
         return Promise.resolve(result);
+    }
+
+    if(exercise.type === "sentence-typing") {
+      
     }
 
     const result = {

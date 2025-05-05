@@ -1,5 +1,4 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import WordImageSelector from "./WordImageSelector";
 import BottomPanel from "./BottomPanel";
 import ProgressBar from "./ProgressBar";
 import { useState, useEffect } from "react";
@@ -8,12 +7,10 @@ import { Exercise, QuizSession } from "../../models";
 import { Home } from "lucide-react";
 import NotFound from "./NotFound";
 import Completed from "./Completed";
-import WordWordSelector from "./WordWordSelector";
+import ExerciseRenderer from "./ExerciseRenderer";
 
 interface State {
     exercise: Exercise | null;
-    selectedOptionId: number | null;
-    correctOptionId: number | null;
     isCorrect: boolean | null;
     isCompleted: boolean;
 }
@@ -24,8 +21,6 @@ const SessionComponent: React.FC = () => {
     const [session, setSession] = useState<QuizSession | null>(null);
     const [state, setState] = useState<State>({
         exercise: null,
-        selectedOptionId: null,
-        correctOptionId: null,
         isCorrect: null,
         isCompleted: false,
     });
@@ -43,6 +38,10 @@ const SessionComponent: React.FC = () => {
 
         setSession(currentSession);
 
+        if(currentSession.isFinished) {
+            return;
+        }
+
         const previousExercise = currentSession.exercises[currentSession.exercises.length - 1];
         const isLastExercise = currentSession.exerciseCount === currentSession.exercises.length;
 
@@ -50,18 +49,18 @@ const SessionComponent: React.FC = () => {
             return;
         }
 
-        if (!previousExercise || previousExercise.isCompleted) {
-            const [newExercise, session] = await createExercise(currentSession);
-            currentSession.exercises.push(newExercise);
+        // if (!previousExercise || previousExercise.isCompleted) {
+        //     const [newExercise, session] = await createExercise(currentSession);
+        //     currentSession.exercises.push(newExercise);
 
-            setSession(session);
-            setState((prevState) => ({
-                ...prevState,
-                exercise: newExercise,
-            }));
+        //     setSession(session);
+        //     setState((prevState) => ({
+        //         ...prevState,
+        //         exercise: newExercise,
+        //     }));
 
-            return;
-        }
+        //     return;
+        // }
 
         setState((prevState) => ({
             ...prevState,
@@ -106,8 +105,6 @@ const SessionComponent: React.FC = () => {
 
         setState({
             exercise: newExercise,
-            selectedOptionId: null,
-            correctOptionId: null,
             isCorrect: null,
             isCompleted: false,
         });
@@ -142,9 +139,9 @@ const SessionComponent: React.FC = () => {
         return <Completed session={session} />;
     }
 
-    const correctOption = state.exercise?.options.find(
-        (option) => option.id === state.exercise?.correctWordId
-    );
+    // const correctOption = state.exercise?.options.find(
+    //     (option) => option.id === state.exercise?.correctWordId
+    // );
 
     const completedExercises = session.exercises.filter((ex) => ex.isCompleted).length;
     const maxExercises = session.exerciseCount || 5;
@@ -163,27 +160,17 @@ const SessionComponent: React.FC = () => {
             </nav>
             <ProgressBar value={progressPercentage} onCancel={onCancel} />
             <div className="p-2 flex-1 flex items-center justify-center">
-                {state.exercise && state.exercise.type === "word-image" && (
-                    <WordImageSelector
-                        exercise={state.exercise}
-                        selectedOptionId={state.selectedOptionId}
-                        correctOptionId={state.correctOptionId}
-                        onSelect={onSelect}
-                    />
-                )}
-                 {state.exercise && state.exercise.type === "word-word" && (
-                    <WordWordSelector
-                        exercise={state.exercise}
-                        selectedOptionId={state.selectedOptionId}
-                        correctOptionId={state.correctOptionId}
-                        onSelect={onSelect}
-                    />
-                )}
+            {state.exercise && (
+                <ExerciseRenderer
+                    exercise={state.exercise}
+                    onSelect={onSelect}
+                />
+            )}
             </div>
             <BottomPanel
                 isCompleted={state.isCompleted}
                 isCorrect={state.isCorrect}
-                correctOption={correctOption!}
+                correctOption={""}
                 onClick={onClick}
                 isDisabled={state.selectedOptionId === null && !state.isCompleted}
             />

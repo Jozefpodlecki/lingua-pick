@@ -1,6 +1,6 @@
-import wordInner from "../data/vocabulary.json";
+import wordInner from "../data/kr/vocabulary.json";
 
-export interface Word {
+export interface KrWord {
     id: number;
     word: {
         hangul: string;
@@ -10,4 +10,4 @@ export interface Word {
     imageSrc: string;
 }
 
-export const words: Word[] = wordInner;
+export const words: KrWord[] = wordInner;

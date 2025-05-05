@@ -1,24 +1,52 @@
-import React from "react";
+import React, { useCallback } from "react";
+
+const TableOfContentsItem: React.FC<{
+    title: string;
+    onClick: (event: React.MouseEvent<HTMLElement>) => void;
+}> = ({ title, onClick }) => {
+   
+    return (
+        <li>
+            <button
+                data-title={title}
+                type="button"
+                onClick={onClick}
+                className="w-full text-left text-blue-400 hover:underline"
+            >
+                {title}
+            </button>
+        </li>
+    );
+};
+
+interface ContentItem { 
+    title: string;
+    content: string;
+}
 
 interface TableOfContentsProps {
-    tableOfContents: { title: string; content: string }[];
-    onSelect: (title: string, content: string) => void;
+    tableOfContents: ContentItem[];
+    onSelect: (item: ContentItem) => void;
 }
 
 const TableOfContents: React.FC<TableOfContentsProps> = ({ tableOfContents, onSelect }) => {
+    const onClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
+        const target = event.currentTarget as HTMLElement;
+        const title = target.dataset.title!;
+        const contentItem = tableOfContents.find(pr => pr.title === title)!;
+        onSelect(contentItem);
+    }, []);
+
     return (
         <div className="w-64 bg-gray-800 p-4">
             <h2 className="text-lg font-bold mb-4">Table of Contents</h2>
             <ul className="space-y-2">
                 {tableOfContents.map((item, index) => (
-                    <li key={index}>
-                        <button
-                            onClick={() => onSelect(item.title, item.content)}
-                            className="w-full text-left text-blue-400 hover:underline"
-                        >
-                            {item.title}
-                        </button>
-                    </li>
+                    <TableOfContentsItem
+                        key={index}
+                        title={item.title}
+                        onClick={onClick}
+                    />
                 ))}
             </ul>
         </div>

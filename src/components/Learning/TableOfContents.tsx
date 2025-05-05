@@ -1,16 +1,14 @@
 import React from "react";
 
-interface TableOfContentsProps {
+interface Props {
     tableOfContents: { title: string }[];
     onSelect: (title: string) => void;
 }
 
-const TableOfContents: React.FC<TableOfContentsProps> = ({ tableOfContents, onSelect }) => {
+const TableOfContents: React.FC<Props> = ({ tableOfContents, onSelect }) => {
     const _onSelect = (event: React.MouseEvent<HTMLButtonElement>) => {
-        const title = event.currentTarget.getAttribute("data-title");
-        if (title) {
-            onSelect(title);
-        }
+        const title = event.currentTarget.dataset.title!;
+        onSelect(title);
     };
 
     return (
