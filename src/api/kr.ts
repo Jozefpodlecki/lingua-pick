@@ -12,10 +12,8 @@ export const getRomanizedToHangul = (): Record<string, string> => romanizedToHan
 
 export interface KrWord {
     id: number;
-    word: {
-        hangul: string;
-        romanized: string;
-    }
+    hangul: string;
+    romanized: string;
     translations: string[];
     imageSrc: string;
 }

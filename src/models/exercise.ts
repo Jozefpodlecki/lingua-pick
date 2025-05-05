@@ -2,13 +2,14 @@ import { Duration, Sentence } from "./misc";
 
 export type KrExerciseTypes = "hangul-match";
 
-export type ExerciseTypes = "word-word" | "word-image" | "sentence-typing" | "words-words" | KrExerciseTypes;
+export type ExerciseTypes = "word-word" | "word-image" | "sentence-typing" | "words-words" | "words-match" | KrExerciseTypes;
 
 export type Exercise = WordWordExercise 
     | WordImageExercise
     | SentenceTypingExercise
     | UnknownExercise
     | WordsWordsExercise
+    | WordsMatchExercise
     | HangulMatchExercise;
 
 export interface Option {
@@ -50,6 +51,7 @@ export interface SentenceTypingExercise extends BaseExercise {
     type: "sentence-typing";
     sentence: Sentence;
     sentenceText: string;
+    chunks: Option[];
     userTranslation: string;
 }
 
@@ -57,6 +59,15 @@ export interface WordsWordsExercise extends BaseExercise {
     type: "words-words";
     left: Option[];
     right: Option[];
+}
+
+export interface WordsMatchExercise extends BaseExercise {
+    type: "words-match";
+    ids: Set<number>;
+    matchedIds: Set<number>;
+    items: Option[];
+    correctCount: number;
+    incorrectCount: number;
 }
 
 export interface HangulMatchExercise extends BaseExercise {

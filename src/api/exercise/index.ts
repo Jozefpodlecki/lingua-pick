@@ -1,7 +1,7 @@
 import { Exercise, QuizSession, ValidateExerciseResult } from "../../models";
 import { saveUpdatedSession, updateSessionWithExercise } from "./../session";
 import { createBaseExercise, getRandomItem } from "./utils";
-import { generateHangulMatchExercise, generateSentenceTypingExercise, generateWordBasedExercise, generateWordsWordsExercise } from "./generate";
+import { generateHangulMatchExercise, generateSentenceTypingExercise, generateWordBasedExercise, generateWordsMatchExercise, generateWordsWordsExercise } from "./generate";
 import { validateSentenceTyping, validateSimpleOptionExercise, validateWordsWords } from "./validate";
 
 export * from "./utils";
@@ -25,6 +25,8 @@ export const generateExercise = (session: QuizSession): Exercise => {
             return generateSentenceTypingExercise(base);
         case "words-words":
             return generateWordsWordsExercise(base);
+        case "words-match":
+            return generateWordsMatchExercise(session, base);
         case "hangul-match":
             return generateHangulMatchExercise(base);
         default:

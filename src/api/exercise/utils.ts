@@ -33,6 +33,10 @@ export const createBaseExercise = (): BaseExercise => {
 
 export const getRandomItem = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 
+export const shuffleArray = <T>(array: T[]): T[] => {
+    return [...array].sort(() => Math.random() - 0.5);
+};
+
 export const getAvailableWords = (stats: UserStats, session: QuizSession) => {
     const weakWordIds = new Set(
         stats.vocabulary.words

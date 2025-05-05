@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { ContentItem } from "../../models";
 
 const TableOfContentsItem: React.FC<{
     title: string;
@@ -19,11 +20,6 @@ const TableOfContentsItem: React.FC<{
     );
 };
 
-interface ContentItem { 
-    title: string;
-    content: string;
-}
-
 interface TableOfContentsProps {
     tableOfContents: ContentItem[];
     onSelect: (item: ContentItem) => void;
@@ -35,7 +31,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ tableOfContents, onSe
         const title = target.dataset.title!;
         const contentItem = tableOfContents.find(pr => pr.title === title)!;
         onSelect(contentItem);
-    }, []);
+    }, [tableOfContents]);
 
     return (
         <div className="w-64 bg-gray-800 p-4">

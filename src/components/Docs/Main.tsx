@@ -4,6 +4,7 @@ import Breadcrumbs from "./Breadcrumbs";
 import TableOfContents from "./TableOfContents";
 import MarkdownComponents from "./MarkdownComponents";
 import { loadMarkdownFiles, MarkdownFile } from "../../utils/loadMarkdownFiles";
+import { ContentItem } from "../../models";
 
 interface State {
     selectedTitle: string;
@@ -22,7 +23,7 @@ const Docs: React.FC = () => {
         const fetchMarkdownFiles = async () => {
             const contents = await loadMarkdownFiles();
             const content = contents[0];
-
+            debugger;
             setState({
                 selectedTitle: content?.title || "Untitled",
                 selectedContent: content?.content || "No content available.",
@@ -33,11 +34,11 @@ const Docs: React.FC = () => {
         fetchMarkdownFiles();
     }, []);
 
-    const onContentSelection = (title: string, content: string) => {
+    const onContentSelection = (item: ContentItem) => {
         setState((prevState) => ({
             ...prevState,
-            selectedTitle: title,
-            selectedContent: content,
+            selectedTitle: item.title,
+            selectedContent: item.content,
         }));
     };
 

@@ -41,3 +41,9 @@ export type SpeechRecognitionState =
     | { type: "recording" }
     | { type: "error"; message: string }
     | { type: "recognized"; text: string };
+
+export interface ContentItem { 
+    title: string;
+    content: string;
+}
+    

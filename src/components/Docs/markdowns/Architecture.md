@@ -1,8 +1,8 @@
 # 🧱 Architecture Overview
 
-## Session (`QuizSession`)
+## Session
 
-A `Session` represents a single learning attempt by the user. It encapsulates:
+A Session represents a single learning attempt by the user. It encapsulates:
 
 - The selected **language**
 - A list of **exercises** the user goes through

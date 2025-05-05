@@ -1,271 +1,211 @@
 [
     {
         "id": 1,
-        "word": {
-            "hangul": "고양이",
-            "romanized": "goyangi"
-        },
+        "hangul": "고양이",
+        "romanized": "goyangi",
         "translations": ["cat"],
         "imageSrc": "./cat.jpg"
     },
     {
         "id": 2,
-        "word": {
-            "hangul": "풍경",
-            "romanized": "pung-gyeong"
-        },
+        "hangul": "풍경",
+        "romanized": "pung-gyeong",
         "translations": ["landscape"],
         "imageSrc": "./landscape.webp"
     },
     {
         "id": 3,
-        "word": {
-            "hangul": "토끼",
-            "romanized": "tokki"
-        },
+        "hangul": "토끼",
+        "romanized": "tokki",
         "translations": ["rabbit"],
         "imageSrc": "./rabbit.webp"
     },
     {
         "id": 4,
-        "word": {
-            "hangul": "놀다",
-            "romanized": "nolda"
-        },
+        "hangul": "놀다",
+        "romanized": "nolda",
         "translations": ["to play", "to hang out", "to have fun"],
         "imageSrc": "./to_play.jpg"
     },
     {
         "id": 5,
-        "word": {
-            "hangul": "휴지통",
-            "romanized": "hyujitong"
-        },
+        "hangul": "휴지통",
+        "romanized": "hyujitong",
         "translations": ["trash can", "wastebasket"],
         "imageSrc": "./trash_can.jpg"
     },
     {
         "id": 6,
-        "word": {
-            "hangul": "학생들이",
-            "romanized": "haksaengdeul-i"
-        },
+        "hangul": "학생들이",
+        "romanized": "haksaengdeul-i",
         "translations": ["students"],
         "imageSrc": "./student.jpg"
     },
     {
         "id": 7,
-        "word": {
-            "hangul": "복도에",
-            "romanized": "bokdo-e"
-        },
+        "hangul": "복도에",
+        "romanized": "bokdo-e",
         "translations": ["in the hallway"],
         "imageSrc": "./hallway.jpg"
     },
     {
         "id": 8,
-        "word": {
-            "hangul": "비어",
-            "romanized": "bieo"
-        },
+        "hangul": "비어",
+        "romanized": "bieo",
         "translations": ["empty"],
         "imageSrc": "./empty.jpg"
     },
     {
         "id": 9,
-        "word": {
-            "hangul": "사람",
-            "romanized": "saram"
-        },
+        "hangul": "사람",
+        "romanized": "saram",
         "translations": ["person", "human"],
         "imageSrc": "./person.jpg"
     },
     {
         "id": 10,
-        "word": {
-            "hangul": "학교",
-            "romanized": "hakgyo"
-        },
+        "hangul": "학교",
+        "romanized": "hakgyo",
         "translations": ["school"],
         "imageSrc": "./school.jpg"
     },
     {
         "id": 11,
-        "word": {
-            "hangul": "책",
-            "romanized": "chaek"
-        },
+        "hangul": "책",
+        "romanized": "chaek",
         "translations": ["book"],
         "imageSrc": "./book.jpg"
     },
     {
         "id": 12,
-        "word": {
-            "hangul": "커피",
-            "romanized": "keopi"
-        },
+        "hangul": "커피",
+        "romanized": "keopi",
         "translations": ["coffee"],
         "imageSrc": "./coffee.jpg"
     },
     {
         "id": 13,
-        "word": {
-            "hangul": "음악",
-            "romanized": "eumak"
-        },
+        "hangul": "음악",
+        "romanized": "eumak",
         "translations": ["music"],
         "imageSrc": "./music.jpg"
     },
     {
         "id": 14,
-        "word": {
-            "hangul": "컴퓨터",
-            "romanized": "keompyuteo"
-        },
+        "hangul": "컴퓨터",
+        "romanized": "keompyuteo",
         "translations": ["computer"],
         "imageSrc": "./computer.jpg"
     },
     {
         "id": 15,
-        "word": {
-            "hangul": "자동차",
-            "romanized": "jadongcha"
-        },
+        "hangul": "자동차",
+        "romanized": "jadongcha",
         "translations": ["car"],
         "imageSrc": "./car.jpg"
     },
     {
         "id": 16,
-        "word": {
-            "hangul": "바람",
-            "romanized": "baram"
-        },
+        "hangul": "바람",
+        "romanized": "baram",
         "translations": ["wind"],
         "imageSrc": "./wind.jpg"
     },
     {
         "id": 17,
-        "word": {
-            "hangul": "날씨",
-            "romanized": "nalssi"
-        },
+        "hangul": "날씨",
+        "romanized": "nalssi",
         "translations": ["weather"],
         "imageSrc": "./weather.jpg"
     },
     {
         "id": 18,
-        "word": {
-            "hangul": "가을",
-            "romanized": "gaeul"
-        },
+        "hangul": "가을",
+        "romanized": "gaeul",
         "translations": ["fall"],
         "imageSrc": "./fall.jpg"
     },
     {
         "id": 19,
-        "word": {
-            "hangul": "바람결",
-            "romanized": "baramgyeol"
-        },
+        "hangul": "바람결",
+        "romanized": "baramgyeol",
         "translations": ["breeze"],
         "imageSrc": "./breeze.jpg"
     },
     {
         "id": 20,
-        "word": {
-            "hangul": "추운",
-            "romanized": "chuun"
-        },
+        "hangul": "추운",
+        "romanized": "chuun",
         "translations": ["cold"],
         "imageSrc": "./cold.jpg"
     },
     {
         "id": 21,
-        "word": {
-            "hangul": "뜨거운",
-            "romanized": "tteugeoun"
-        },
+        "hangul": "뜨거운",
+        "romanized": "tteugeoun",
         "translations": ["hot"],
         "imageSrc": "./hot.jpg"
     },
     {
         "id": 22,
-        "word": {
-            "hangul": "빠른",
-            "romanized": "ppareun"
-        },
+        "hangul": "빠른",
+        "romanized": "ppareun",
         "translations": ["fast"],
         "imageSrc": "./fast.jpg"
     },
     {
         "id": 23,
-        "word": {
-            "hangul": "느린",
-            "romanized": "neurin"
-        },
+        "hangul": "느린",
+        "romanized": "neurin",
         "translations": ["slow"],
         "imageSrc": "./slow.jpg"
     },
     {
         "id": 24,
-        "word": {
-            "hangul": "행복한",
-            "romanized": "haengbokhan"
-        },
+        "hangul": "행복한",
+        "romanized": "haengbokhan",
         "translations": ["happy"],
         "imageSrc": "./happy.jpg"
     },
     {
         "id": 25,
-        "word": {
-            "hangul": "슬픈",
-            "romanized": "seulpeun"
-        },
+        "hangul": "슬픈",
+        "romanized": "seulpeun",
         "translations": ["sad"],
         "imageSrc": "./sad.jpg"
     },
     {
         "id": 26,
-        "word": {
-            "hangul": "작은",
-            "romanized": "jageun"
-        },
+        "hangul": "작은",
+        "romanized": "jageun",
         "translations": ["small"],
         "imageSrc": "./small.jpg"
     },
     {
         "id": 27,
-        "word": {
-            "hangul": "큰",
-            "romanized": "keun"
-        },
+        "hangul": "큰",
+        "romanized": "keun",
         "translations": ["big"],
         "imageSrc": "./big.jpg"
     },
     {
         "id": 28,
-        "word": {
-            "hangul": "무거운",
-            "romanized": "mugeoun"
-        },
+        "hangul": "무거운",
+        "romanized": "mugeoun",
         "translations": ["heavy"],
         "imageSrc": "./heavy.jpg"
     },
     {
         "id": 29,
-        "word": {
-            "hangul": "가벼운",
-            "romanized": "gabyeoun"
-        },
+        "hangul": "가벼운",
+        "romanized": "gabyeoun",
         "translations": ["light (weight)"],
         "imageSrc": "./light.jpg"
     },
     {
         "id": 30,
-        "word": {
-            "hangul": "예쁜",
-            "romanized": "yeppeun"
-        },
+        "hangul": "예쁜",
+        "romanized": "yeppeun",
         "translations": ["pretty"],
         "imageSrc": "./pretty.jpg"
     }
