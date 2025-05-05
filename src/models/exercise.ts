@@ -1,18 +1,24 @@
 import { Duration, Sentence } from "./misc";
 
-export type ExerciseTypes = "word-word" | "word-image" | "sentence-typing" | "words-words";
+export type KrExerciseTypes = "hangul-match";
 
-export type Exercise = WordWordExercise | WordImageExercise | SentenceTypingExercise | UnknownExercise;
+export type ExerciseTypes = "word-word" | "word-image" | "sentence-typing" | "words-words" | KrExerciseTypes;
+
+export type Exercise = WordWordExercise 
+    | WordImageExercise
+    | SentenceTypingExercise
+    | UnknownExercise
+    | WordsWordsExercise
+    | HangulMatchExercise;
 
 export interface Option {
     id: number;
     value: string;
-    // word: {
-    //     hangul: string;
-    //     romanized: string;
-    // };
-    // translations: string[];
-    // imageSrc: string;
+}
+
+export interface ExerciseType {
+    type: ExerciseTypes;
+    description: string;
 }
 
 export interface BaseExercise {
@@ -44,12 +50,22 @@ export interface SentenceTypingExercise extends BaseExercise {
     type: "sentence-typing";
     sentence: Sentence;
     sentenceText: string;
-    userTranslation?: string;
+    userTranslation: string;
 }
 
 export interface WordsWordsExercise extends BaseExercise {
     type: "words-words";
-    
+    left: Option[];
+    right: Option[];
+}
+
+export interface HangulMatchExercise extends BaseExercise {
+    type: "hangul-match";
+    ids: Set<number>;
+    matchedIds: Set<number>;
+    items: Option[];
+    correctCount: number;
+    incorrectCount: number;
 }
 
 export interface UnknownExercise extends BaseExercise {

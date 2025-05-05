@@ -3,6 +3,8 @@ import { Duration } from "./misc";
 import { UserStats } from "./stats";
 
 export interface AppData {
+    id: string;
+    createdOn: string;
     sessions: QuizSession[];
     stats: UserStats;
     activeSessionId: string | null;

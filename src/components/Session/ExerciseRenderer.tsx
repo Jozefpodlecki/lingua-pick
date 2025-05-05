@@ -3,6 +3,7 @@ import SentenceTyping from "./SentenceTyping";
 import WordImageSelector from "./WordImageSelector";
 import WordWordSelector from "./WordWord/Selector";
 import WordsWordsSelector from "./WordsWords/Selector";
+import HangulMatcher from "./HangulMatch/Matcher";
 
 interface Props {
     exercise: Exercise;
@@ -29,6 +30,8 @@ const ExerciseRenderer: React.FC<Props> = ({ exercise, onChange }) => {
             return <SentenceTyping exercise={exercise} onChange={onChange}/>
         case "words-words":
             return <WordsWordsSelector exercise={exercise} onChange={onChange}/>
+        case "hangul-match":
+            return <HangulMatcher exercise={exercise} onChange={onChange}/>
         default:
             return <div className="text-white">Unknown exercise type.</div>;
     }

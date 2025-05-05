@@ -1,5 +1,6 @@
 import { Exercise, ExerciseTypes, Language, QuizSession } from "../models";
 import { getAppData, saveAppData } from "./appData";
+import { createExercise, generateExercise } from "./exercise";
 import { computeDuration } from "./utils";
 import { v4 as uuidv4 } from "uuid";
 
@@ -117,12 +118,15 @@ export const createSession = (options: CreateSessionOptions): QuizSession => {
     };
 
     const data = getAppData();
-    const updatedSessions = [...data.sessions, newSession];
+    const exercise = generateExercise(newSession);
+    const updatedSession = updateSessionWithExercise(newSession, exercise);
+    const updatedSessions = [...data.sessions, updatedSession];
     const appData = {
         ...data,
         sessions: updatedSessions,
         activeSessionId: sessionId,
     };
+
     saveAppData(appData);
 
     return newSession;

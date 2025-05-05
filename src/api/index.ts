@@ -3,5 +3,5 @@ export * from "./exercise";
 export * from "./session";
 export * from "./misc";
 export * from "./stats";
-export * from "./sentence";
+export * from "./kr";
 export * from "./words";

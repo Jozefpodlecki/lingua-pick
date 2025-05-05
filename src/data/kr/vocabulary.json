@@ -178,5 +178,95 @@
         },
         "translations": ["cold"],
         "imageSrc": "./cold.jpg"
+    },
+    {
+        "id": 21,
+        "word": {
+            "hangul": "뜨거운",
+            "romanized": "tteugeoun"
+        },
+        "translations": ["hot"],
+        "imageSrc": "./hot.jpg"
+    },
+    {
+        "id": 22,
+        "word": {
+            "hangul": "빠른",
+            "romanized": "ppareun"
+        },
+        "translations": ["fast"],
+        "imageSrc": "./fast.jpg"
+    },
+    {
+        "id": 23,
+        "word": {
+            "hangul": "느린",
+            "romanized": "neurin"
+        },
+        "translations": ["slow"],
+        "imageSrc": "./slow.jpg"
+    },
+    {
+        "id": 24,
+        "word": {
+            "hangul": "행복한",
+            "romanized": "haengbokhan"
+        },
+        "translations": ["happy"],
+        "imageSrc": "./happy.jpg"
+    },
+    {
+        "id": 25,
+        "word": {
+            "hangul": "슬픈",
+            "romanized": "seulpeun"
+        },
+        "translations": ["sad"],
+        "imageSrc": "./sad.jpg"
+    },
+    {
+        "id": 26,
+        "word": {
+            "hangul": "작은",
+            "romanized": "jageun"
+        },
+        "translations": ["small"],
+        "imageSrc": "./small.jpg"
+    },
+    {
+        "id": 27,
+        "word": {
+            "hangul": "큰",
+            "romanized": "keun"
+        },
+        "translations": ["big"],
+        "imageSrc": "./big.jpg"
+    },
+    {
+        "id": 28,
+        "word": {
+            "hangul": "무거운",
+            "romanized": "mugeoun"
+        },
+        "translations": ["heavy"],
+        "imageSrc": "./heavy.jpg"
+    },
+    {
+        "id": 29,
+        "word": {
+            "hangul": "가벼운",
+            "romanized": "gabyeoun"
+        },
+        "translations": ["light (weight)"],
+        "imageSrc": "./light.jpg"
+    },
+    {
+        "id": 30,
+        "word": {
+            "hangul": "예쁜",
+            "romanized": "yeppeun"
+        },
+        "translations": ["pretty"],
+        "imageSrc": "./pretty.jpg"
     }
 ]
