@@ -1,6 +1,6 @@
 import { BaseExercise, Exercise, ExerciseType, QuizSession, UserStats } from "../../models";
 import { getAppData, saveAppData } from "../appData";
-import { getKrWords } from "../kr";
+import { getKrWords, KrWord } from "../kr";
 import { updateWordStats } from "../stats";
 import { computeDuration } from "../utils";
 import { v4 as uuidv4 } from "uuid";
@@ -37,6 +37,11 @@ export const getRandomItem = <T>(arr: T[]): T => arr[Math.floor(Math.random() * 
 export const shuffleArray = <T>(array: T[]): T[] => {
     return [...array].sort(() => Math.random() - 0.5);
 };
+
+export const getRandomWord = (): KrWord => {
+    const words = getKrWords().sort(() => Math.random() - 0.5);
+    return words[0];
+}
 
 export const getAvailableWords = (stats: UserStats, usedWordIds: number[], length: number) => {
     const hasStats = stats.vocabulary?.words?.length > 0;

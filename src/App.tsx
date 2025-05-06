@@ -7,6 +7,7 @@ import { LanguageProvider } from "./context/LanguageContext";
 import NewQuiz from "./components/NewQuiz";
 import Learning from "./components/Learning/Main";
 import Typer from "./components/Typing/Typer";
+import Review from "./components/Review/Main";
 
 const App = () => {
     return (
@@ -20,6 +21,7 @@ const App = () => {
                     <Route path="/session/:uuid" element={<QuizSession />} />
                     <Route path="/speech-recognition" element={<SpeechRecognition />} />
                     <Route path="/docs" element={<DocsMain />} />
+                    <Route path="/review" element={<Review />} />
                 </Routes>
             </div>
         </LanguageProvider>
