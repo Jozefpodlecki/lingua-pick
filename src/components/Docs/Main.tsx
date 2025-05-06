@@ -23,7 +23,7 @@ const Docs: React.FC = () => {
         const fetchMarkdownFiles = async () => {
             const contents = await loadMarkdownFiles();
             const content = contents[0];
-            debugger;
+
             setState({
                 selectedTitle: content?.title || "Untitled",
                 selectedContent: content?.content || "No content available.",

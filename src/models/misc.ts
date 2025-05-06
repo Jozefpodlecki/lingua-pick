@@ -26,7 +26,6 @@ export interface WordBreakdown {
 }
 
 export interface ValidateExerciseResult {
-    isCorrect: boolean;
     session: QuizSession;
     exercise: Exercise;
 }

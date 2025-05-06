@@ -1,28 +1,29 @@
-import { BaseExercise, Exercise, HangulMatchExercise, QuizSession, SentenceTypingExercise, WordImageExercise, WordsMatchExercise, WordsWordsExercise, WordWordExercise } from "../../models";
+import { BaseExercise, Exercise, HangulMatchExercise, SentenceTypingExercise, WordImageExercise, WordsMatchExercise, WordsWordsExercise, WordWordExercise } from "../../models";
 import { getRandomSentence, getRomanizedToHangul } from "../kr";
 import { getStats } from "../stats";
 import { getAvailableWords, getRandomItem, shuffleArray } from "./utils";
 
 export const generateWordBasedExercise = (
     type: "word-word" | "word-image",
-    session: QuizSession,
+    usedWordIds: number[],
     base: Partial<Exercise>
 ): WordImageExercise | WordWordExercise => {
     const userStats = getStats();
-    const options = getAvailableWords(userStats, session).sort(() => Math.random() - 0.5).slice(0, 3);
+    const options = getAvailableWords(userStats, usedWordIds, 3);
     const correct = getRandomItem(options);
 
-    session.usedWordIds.push(correct.id);
+    usedWordIds.push(correct.id);
 
     return {
         ...base,
         type,
         isCompleted: false,
-        isCorrect: null,
+        isCorrect: false,
         correctOptionId: correct.id,
         selectedOptionId: 0,
         prompt: correct.translations[0],
-        options: options.map((word) => ({ id: word.id, value: word.hangul })),
+        requiresManualCheck: true,
+        options: options.map((word) => ({ id: word.id, value: `${word.hangul} - ${word.romanized}` })),
     } as WordImageExercise | WordWordExercise;
 };
 
@@ -47,6 +48,7 @@ export const generateSentenceTypingExercise = (
         sentence,
         sentenceText,
         chunks,
+        isCorrect: false,
         userTranslation: "",
     };
 };
@@ -64,13 +66,11 @@ export const generateWordsWordsExercise = (base: BaseExercise): WordsWordsExerci
     };
 };
 
-export const generateWordsMatchExercise = (session: QuizSession, base: BaseExercise): WordsMatchExercise => {
+export const generateWordsMatchExercise = (usedWordIds: number[], base: BaseExercise): WordsMatchExercise => {
     const stats = getStats();
-    const allPairs = getAvailableWords(stats, session);
+    const allPairs = getAvailableWords(stats, usedWordIds, 10);
 
-    const selected = allPairs
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 10)
+    const selected = allPairs.sort(() => Math.random() - 0.5)
 
     const items = [];
     const ids = new Set<number>();
@@ -94,10 +94,9 @@ export const generateWordsMatchExercise = (session: QuizSession, base: BaseExerc
         requiresManualCheck: false,
         type: "words-match" as const,
         ids,
-        matchedIds: new Set(),
         items,
-        correctCount: 0,
-        incorrectCount: 0
+        correctIds: new Set(),
+        incorrectIds: new Set()
     };
 };
 
@@ -108,7 +107,7 @@ export const generateHangulMatchExercise = (base: BaseExercise): HangulMatchExer
 
     const selected = Object.entries(allPairs)
         .sort(() => Math.random() - 0.5)
-        .slice(0, 10)
+        .slice(0, 5)
 
     const items = [];
     const ids = new Set<number>();
@@ -136,9 +135,8 @@ export const generateHangulMatchExercise = (base: BaseExercise): HangulMatchExer
         requiresManualCheck: false,
         type: "hangul-match" as const,
         ids,
-        matchedIds: new Set(),
         items,
-        correctCount: 0,
-        incorrectCount: 0
+        correctIds: new Set(),
+        incorrectIds: new Set()
     };
 };

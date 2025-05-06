@@ -2,7 +2,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import BottomPanel from "./BottomPanel";
 import ProgressBar from "./ProgressBar";
 import { useState, useEffect } from "react";
-import { cancelSession, completeSession, createExercise, getSessionById, validateExercise } from "../../api";
+import { cancelSession, getSessionById, progressSession, validateExercise } from "../../api";
 import { Exercise, QuizSession } from "../../models";
 import { Home } from "lucide-react";
 import NotFound from "./NotFound";
@@ -10,18 +10,21 @@ import Completed from "./Completed";
 import ExerciseRenderer from "./ExerciseRenderer";
 
 interface State {
+    session: QuizSession | null;
     exercise: Exercise | null;
-    isCorrect: boolean | null;
     isCompleted: boolean;
 }
 
 const SessionComponent: React.FC = () => {
     const { uuid } = useParams();
     const navigate = useNavigate();
-    const [session, setSession] = useState<QuizSession | null>(null);
-    const [state, setState] = useState<State>({
+    const [{
+        session,
+        exercise,
+        isCompleted
+    }, setState] = useState<State>({
+        session: null,
         exercise: null,
-        isCorrect: null,
         isCompleted: false,
     });
 
@@ -32,96 +35,76 @@ const SessionComponent: React.FC = () => {
     async function onLoad() {
         const currentSession = await getSessionById(uuid || "");
         if (!currentSession) {
-            setSession(null);
             return;
         }
 
-        setSession(currentSession);
-
-        if(currentSession.isFinished) {
-            return;
-        }
-
-        const previousExercise = currentSession.exercises[currentSession.exercises.length - 1];
-        const isLastExercise = currentSession.exerciseCount === currentSession.exercises.length;
-
-        if (isLastExercise) {
-            return;
-        }
-
-        // if (!previousExercise || previousExercise.isCompleted) {
-        //     const [newExercise, session] = await createExercise(currentSession);
-        //     currentSession.exercises.push(newExercise);
-
-        //     setSession(session);
-        //     setState((prevState) => ({
-        //         ...prevState,
-        //         exercise: newExercise,
-        //     }));
-
-        //     return;
-        // }
-
-        setState((prevState) => ({
-            ...prevState,
-            exercise: previousExercise,
+        setState(state => ({...state,
+            session: currentSession,
+            exercise: currentSession.currentExercise
         }));
+
     }
 
     const onCheck = async () => {
-        if (state.exercise && session) {
-            const {
-                isCorrect,
-                session: updatedSession,
-                exercise: updatedExercise,
-            } = await validateExercise(session, state.exercise);
-
-            setState((prevState) => ({
-                ...prevState,
-                exercise: updatedExercise,
-                isCorrect,
-                isCompleted: true
-            }));
-
-            setSession(updatedSession);
+        if (!exercise || !session) {
+            return;
         }
+
+        await onCheckInner(session, exercise);
     };
+
+    const onCheckInner = async (session: QuizSession, exercise: Exercise) => {
+        const {
+            session: updatedSession,
+            exercise: updatedExercise,
+        } = await validateExercise(session, exercise);
+
+        setState((prevState) => ({
+            ...prevState,
+            session: updatedSession,
+            exercise: updatedExercise,
+            isCompleted: true
+        }));
+    }
 
     const onContinue = async () => {
         if (!session) {
             return;
         }
 
-        const isLastExercise = session.exerciseCount === session.exercises.length;
-        if (isLastExercise) {
-            const newSession = await completeSession(session);
-            setSession(newSession);
-            return;
-        }
-
-        const [newExercise, newSession] = await createExercise(session);
-        setSession(newSession);
+        const newSession = await progressSession(session);
 
         setState({
-            exercise: newExercise,
-            isCorrect: null,
+            session: newSession,
+            exercise: newSession.currentExercise,
             isCompleted: false,
         });
     };
 
     const onClick = () => {
-        if (!state.isCompleted) {
+        if (!isCompleted) {
             onCheck();
-        } else {
-            onContinue();
+            return;
         }
+
+        onContinue();
     };
 
     const onChange = (exercise: Exercise) => {
-        setState((prevState) => ({
-            ...prevState,
-            exercise,
-        }));
+
+        switch(exercise.type) {
+            case "hangul-match":
+            case "words-match":
+                onCheckInner(session!, exercise);
+                return;
+                break;
+            default:
+                setState((prevState) => ({
+                    ...prevState,
+                    exercise,
+                }));
+                break;
+        }
     };
 
     const onCancel = () => {
@@ -133,14 +116,9 @@ const SessionComponent: React.FC = () => {
         return <NotFound />;
     }
 
-    const isLastExercise = session.exerciseCount === session.exercises.length;
-    if (isLastExercise && session.isFinished) {
+    if (session.isFinished) {
         return <Completed session={session} />;
     }
-
-    // const correctOption = state.exercise?.options.find(
-    //     (option) => option.id === state.exercise?.correctWordId
-    // );
 
     const completedExercises = session.exercises.filter((ex) => ex.isCompleted).length;
     const maxExercises = session.exerciseCount || 5;
@@ -159,15 +137,15 @@ const SessionComponent: React.FC = () => {
             </nav>
             <ProgressBar value={progressPercentage} onCancel={onCancel} />
             <div className="p-2 flex-1 flex items-center justify-center">
-            {state.exercise && (
+            {exercise && (
                 <ExerciseRenderer
-                    exercise={state.exercise}
+                    exercise={exercise}
                     onChange={onChange}
                 />
             )}
             </div>
-            {state.exercise &&<BottomPanel
-                exercise={state.exercise}
+            {exercise &&<BottomPanel
+                exercise={exercise}
                 onClick={onClick}
             />}
         </div>

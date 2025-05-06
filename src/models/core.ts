@@ -27,6 +27,7 @@ export interface QuizSession {
     updatedOn: string;
     canceledOn?: string;
     completedOn?: string;
+    currentExercise: Exercise | null;
     exerciseCount: number;
     exercises: Exercise[];
     exerciseTypes: ExerciseTypes[];

@@ -1,4 +1,4 @@
-import { Exercise, QuizSession, SentenceTypingExercise, ValidateExerciseResult, WordImageExercise, WordWordExercise } from "../../models";
+import { Exercise, HangulMatchExercise, QuizSession, SentenceTypingExercise, ValidateExerciseResult, WordImageExercise, WordsMatchExercise, WordsWordsExercise, WordWordExercise } from "../../models";
 import { updateAppDataStats, updateSessionState } from "./utils";
 
 export const validateSimpleOptionExercise = (
@@ -12,14 +12,12 @@ export const validateSimpleOptionExercise = (
         ...exercise,
         completedOn: now.toISOString(),
         isCompleted: true,
-        isCorrect,
     };
 
     const updatedSession = updateSessionState(session, updated, now);
     updateAppDataStats(updatedSession, exercise.correctOptionId, isCorrect);
 
     return {
-        isCorrect,
         session: updatedSession,
         exercise: updated,
     };
@@ -34,7 +32,7 @@ export const validateSentenceTyping = (
         exercise.userTranslation?.trim().toLowerCase() ===
         exercise.sentence.translation.trim().toLowerCase();
 
-    const updated: Exercise = {
+    const updated: typeof exercise = {
         ...exercise,
         completedOn: now.toISOString(),
         isCompleted: true,
@@ -45,7 +43,6 @@ export const validateSentenceTyping = (
     // updateAppDataStats(updatedSession, null, isCorrect);
 
     return {
-        isCorrect,
         session: updatedSession,
         exercise: updated,
     };
@@ -53,11 +50,44 @@ export const validateSentenceTyping = (
 
 export const validateWordsWords = (
     session: QuizSession,
-    exercise: Exercise
+    exercise: WordsWordsExercise
 ): ValidateExerciseResult => {
+
+    const now = new Date();
+
+    const updated: typeof exercise = {
+        ...exercise,
+        completedOn: now.toISOString(),
+        isCompleted: true,
+    };
+
+    const updatedSession = updateSessionState(session, updated, now);
+
     return {
-        isCorrect: true,
-        session,
-        exercise,
+        session: updatedSession,
+        exercise: updated,
     };
 };
+
+export const validateMatchExercise = (
+    session: QuizSession,
+    exercise: WordsMatchExercise | HangulMatchExercise
+): ValidateExerciseResult => {
+
+    const now = new Date();
+
+    const updated: typeof exercise = {
+        ...exercise,
+        completedOn: now.toISOString(),
+        isCompleted: true,
+    };
+
+    const updatedSession = updateSessionState(session, updated, now);
+
+    return {
+        session: updatedSession,
+        exercise: updated,
+    };
+};
+
+

@@ -28,7 +28,6 @@ export interface BaseExercise {
     createdOn: string;
     completedOn?: string;
     isCompleted: boolean;
-    isCorrect: boolean | null;
     requiresManualCheck: boolean; 
 }
 
@@ -38,6 +37,7 @@ export interface WordWordExercise extends BaseExercise {
     prompt: string;
     selectedOptionId: number;
     correctOptionId: number;
+    isCorrect: boolean;
     requiresManualCheck: true;
 }
 
@@ -47,6 +47,7 @@ export interface WordImageExercise extends BaseExercise {
     prompt: string;
     selectedOptionId: number;
     correctOptionId: number;
+    isCorrect: boolean;
     requiresManualCheck: true;
 }
 
@@ -56,6 +57,7 @@ export interface SentenceTypingExercise extends BaseExercise {
     sentenceText: string;
     chunks: Option[];
     userTranslation: string;
+    isCorrect: boolean;
     requiresManualCheck: true;
 }
 

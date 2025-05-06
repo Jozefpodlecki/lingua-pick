@@ -1,6 +1,6 @@
 import { Exercise, ExerciseTypes, Language, QuizSession } from "../models";
 import { getAppData, saveAppData } from "./appData";
-import { createExercise, generateExercise } from "./exercise";
+import { generateExercise } from "./exercise";
 import { computeDuration } from "./utils";
 import { v4 as uuidv4 } from "uuid";
 
@@ -31,7 +31,30 @@ export const saveSessions = (sessions: QuizSession[]): void => {
     saveAppData({ ...data, sessions });
 };
 
-export const completeSession = (session: QuizSession): Promise<QuizSession> => {
+export const progressSession = (session: QuizSession): Promise<QuizSession> => {
+
+    const isLastExercise = session.exerciseCount === session.exercises.length;
+
+    if (isLastExercise) {
+        const newSession = completeSession(session);
+        return Promise.resolve(newSession);
+    }
+
+    const exercise = generateExercise({
+        exerciseTypes: session.exerciseTypes,
+        usedWordIds: session.usedWordIds
+    });
+    const updatedSession = updateSessionWithExercise(session, exercise);
+    saveUpdatedSession(updatedSession);
+    // return [exercise, updatedSession];
+    // const [newExercise, newSession] = createExercise(session);
+
+    return Promise.resolve({
+        ...updatedSession
+    });
+};
+
+export const completeSession = (session: QuizSession): QuizSession => {
     const currentDate = new Date();
     const duration = computeDuration(session.createdOn, currentDate);
 
@@ -57,7 +80,7 @@ export const completeSession = (session: QuizSession): Promise<QuizSession> => {
 
     saveAppData(updatedData);
 
-    return Promise.resolve(updatedSession);
+    return updatedSession;
 }
 
 export const saveSession = (session: QuizSession, updatedExercise: Exercise): void => {
@@ -114,6 +137,7 @@ export const createSession = (options: CreateSessionOptions): QuizSession => {
         exercises: [],
         exerciseCount,
         exerciseTypes,
+        currentExercise: null,
         usedWordIds: []
     };
 
@@ -158,6 +182,7 @@ export const updateSessionWithExercise = (session: QuizSession, exercise: Exerci
     const currentDate = new Date();
     return {
         ...session,
+        currentExercise: exercise,
         exercises: [...session.exercises, exercise],
         updatedOn: currentDate.toISOString(),
     };

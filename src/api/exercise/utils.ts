@@ -28,7 +28,6 @@ export const createBaseExercise = (): BaseExercise => {
         createdOn: now.toISOString(),
         duration: { seconds: 0, hhmmss: "00:00:00" },
         isCompleted: false,
-        isCorrect: null,
         requiresManualCheck: false
     };
 };
@@ -39,7 +38,7 @@ export const shuffleArray = <T>(array: T[]): T[] => {
     return [...array].sort(() => Math.random() - 0.5);
 };
 
-export const getAvailableWords = (stats: UserStats, session: QuizSession) => {
+export const getAvailableWords = (stats: UserStats, usedWordIds: number[], length: number) => {
     const hasStats = stats.vocabulary?.words?.length > 0;
 
     const weakWordIds = hasStats
@@ -50,14 +49,18 @@ export const getAvailableWords = (stats: UserStats, session: QuizSession) => {
         )
         : null;
     
-    const availableWords = getKrWords().filter((word) =>
-        !session.usedWordIds.includes(word.id) &&
+    const words = getKrWords().sort(() => Math.random() - 0.5);
+    let availableWords = words.filter((word) =>
+        !usedWordIds.includes(word.id) &&
         (weakWordIds ? weakWordIds.has(word.id) : true)
     );
+
+    if (!availableWords.length || length != availableWords.length) {
+        availableWords = words;
+    }
     
-    return availableWords;
+    return availableWords.slice(0, length);
 }
-    
 
 export const updateSessionState = (
     session: QuizSession,

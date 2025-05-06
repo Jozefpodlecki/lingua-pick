@@ -12,23 +12,40 @@ interface Props {
 }
 
 interface State {
+    id: string;
     selected: EnhancedOption | null;
     flashRed: number[];
     flashGreen: number[];
-    items: EnhancedOption[]
+    correctIds: Set<number>;
+    incorrectIds: Set<number>;
+    items: EnhancedOption[];
 }
 
 const Matcher = ({ exercise, onChange }: Props) => {
-    const [state, setState] = useState<State>({
-        selected: null,
-        flashRed: [],
-        flashGreen: [],
-        items: exercise.items.map((pr, index) => ({...pr, order: index, isExcluded: false}))
-    });
+    const [state, setState] = useState<State>(getDefaultState(exercise));
 
-    const _onClick = (e: React.MouseEvent<HTMLElement>) => {
-        const id = Number(e.currentTarget.dataset.id);
-        const order = Number(e.currentTarget.dataset.order);
+    useEffect(() => {
+        if(state.id !== exercise.id) {
+            setState(getDefaultState(exercise));
+        }
+    }, [state.id, exercise.id]);
+
+    function getDefaultState(exercise: HangulMatchExercise): State {
+        return {
+            id: exercise.id,
+            selected: null,
+            flashRed: [],
+            flashGreen: [],
+            correctIds: new Set(),
+            incorrectIds: new Set(),
+            items: exercise.items.map((pr, index) => ({...pr, order: index, isExcluded: false}))
+        };
+    }
+
+    const _onClick = (event: React.MouseEvent<HTMLElement>) => {
+        const currentTarget = event.currentTarget;
+        const id = Number(currentTarget.dataset.id);
+        const order = Number(event.currentTarget.dataset.order);
         const item = state.items.find(pr => pr.order === order)!;
         const selected = state.selected;
 
@@ -50,6 +67,7 @@ const Matcher = ({ exercise, onChange }: Props) => {
                 ...s,
                 selected: null,
                 flashRed: [],
+                correctIds: state.correctIds.add(id),
                 flashGreen: newFlash,
             }));
 
@@ -68,6 +86,7 @@ const Matcher = ({ exercise, onChange }: Props) => {
             setState((s) => ({
                 ...s,
                 selected: null,
+                incorrectIds: state.incorrectIds.add(id),
                 flashRed: newFlash,
             }));
 
@@ -99,7 +118,10 @@ const Matcher = ({ exercise, onChange }: Props) => {
 
     useEffect(() => {
         if (state.items.length && !state.items.find(pr => !pr.isExcluded)) {
-            console.log("complete");
+            onChange({
+                ...exercise,
+                correctIds: state.correctIds
+            });
         }
     }, [state.items]);
 
