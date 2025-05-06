@@ -20,7 +20,7 @@ const Main: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-black text-white">
+        <main className="flex flex-col min-h-screen bg-black text-white">
             <div className="p-4">
                 <Breadcrumbs selectedTitle={selectedContent?.title || "Learning"} />
             </div>
@@ -45,7 +45,7 @@ const Main: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     );
 };
 
