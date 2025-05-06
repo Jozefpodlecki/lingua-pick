@@ -8,8 +8,20 @@ interface Props {
 }
 
 const Completed: React.FC<Props> = ({ session }) => {
-    const correctAnswers = session.exercises.filter((ex) => ex.isCorrect).length;
-    const incorrectAnswers = session.exercises.filter((ex) => ex.isCompleted && !ex.isCorrect).length;
+    const { correctAnswers, incorrectAnswers } = session.exercises.reduce(
+        (acc, ex) => {
+
+          if ("isCorrect" in ex) {
+            if (ex.isCorrect === true) {
+                acc.correctAnswers += 1;
+            } else if (ex.isCompleted && ex.isCorrect === false) {
+                acc.incorrectAnswers += 1;
+            }
+          }
+          return acc;
+        },
+        { correctAnswers: 0, incorrectAnswers: 0 }
+      );
 
     const chartOptions = {
         title: {

@@ -1,5 +1,6 @@
 import { Exercise, HangulMatchExercise, QuizSession, SentenceTypingExercise, ValidateExerciseResult, WordImageExercise, WordsMatchExercise, WordsWordsExercise, WordWordExercise } from "../../models";
-import { updateAppDataStats, updateSessionState } from "./utils";
+import { updateStats } from "../stats";
+import { updateSessionState } from "./utils";
 
 export const validateSimpleOptionExercise = (
     session: QuizSession,
@@ -10,12 +11,13 @@ export const validateSimpleOptionExercise = (
 
     const updated: Exercise = {
         ...exercise,
+        isCorrect,
         completedOn: now.toISOString(),
         isCompleted: true,
     };
 
     const updatedSession = updateSessionState(session, updated, now);
-    updateAppDataStats(updatedSession, exercise.correctOptionId, isCorrect);
+    updateStats(exercise);
 
     return {
         session: updatedSession,
@@ -40,7 +42,7 @@ export const validateSentenceTyping = (
     };
 
     const updatedSession = updateSessionState(session, updated, now);
-    // updateAppDataStats(updatedSession, null, isCorrect);
+    updateStats(exercise);
 
     return {
         session: updatedSession,
@@ -62,6 +64,7 @@ export const validateWordsWords = (
     };
 
     const updatedSession = updateSessionState(session, updated, now);
+    updateStats(exercise);
 
     return {
         session: updatedSession,
@@ -83,6 +86,7 @@ export const validateMatchExercise = (
     };
 
     const updatedSession = updateSessionState(session, updated, now);
+    updateStats(exercise);
 
     return {
         session: updatedSession,

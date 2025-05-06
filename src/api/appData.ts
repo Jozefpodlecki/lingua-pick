@@ -20,6 +20,7 @@ const getDefaultAppData = (): AppData => {
         stats: {
             sessionCount: 0,
             updatedOn: new Date().toISOString(),
+            hangul: {},
             vocabulary: {
                 words: []
             }

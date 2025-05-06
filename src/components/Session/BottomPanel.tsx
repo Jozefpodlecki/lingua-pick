@@ -10,7 +10,7 @@ interface Props {
 const BottomPanel: React.FC<Props> = ({ exercise, onClick }) => {
     const { bgColor, message } = getFeedbackStyleAndText(exercise);
     const showButton = exercise.requiresManualCheck || exercise.isCompleted;
-    const isCorrect = "isCorrect" in exercise && exercise.isCorrect || true;
+    const isCorrect = ("isCorrect" in exercise && exercise.isCorrect) || true;
 
     return (
         <div

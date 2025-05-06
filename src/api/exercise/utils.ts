@@ -1,7 +1,7 @@
 import { BaseExercise, Exercise, ExerciseType, QuizSession, UserStats } from "../../models";
 import { getAppData, saveAppData } from "../appData";
 import { getKrWords } from "../kr";
-import { updateStats } from "../stats";
+import { updateWordStats } from "../stats";
 import { computeDuration } from "../utils";
 import { v4 as uuidv4 } from "uuid";
 
@@ -76,15 +76,4 @@ export const updateSessionState = (
         exercises: updatedExercises,
         duration: computeDuration(session.createdOn, now),
     };
-};
-
-export const updateAppDataStats = (
-    session: QuizSession,
-    id: number,
-    isCorrect: boolean
-) => {
-    const data = getAppData();
-    updateStats(data.stats, id, isCorrect);
-    const updatedSessions = data.sessions.map((s) => (s.id === session.id ? session : s));
-    saveAppData({ ...data, sessions: updatedSessions });
 };
