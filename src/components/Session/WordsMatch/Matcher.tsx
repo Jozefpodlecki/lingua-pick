@@ -1,34 +1,21 @@
 import { useEffect, useState } from "react";
-import { Option, WordsMatchExercise } from "../../../models";
-
-type EnhancedOption = Option & { 
-    order: number;
-    isExcluded: boolean;
-};
+import { WordsMatchExercise } from "../../../models";
+import { EnhancedOption, getDefaultMatchState, MatchState } from "../utils";
 
 interface Props {
     exercise: WordsMatchExercise;
     onChange: (updated: WordsMatchExercise) => void;
 }
 
-interface State {
-    selected: EnhancedOption | null;
-    flashRed: number[];
-    flashGreen: number[];
-    correctIds: Set<number>;
-    incorrectIds: Set<number>;
-    items: EnhancedOption[]
-}
 
 const Matcher = ({ exercise, onChange }: Props) => {
-    const [state, setState] = useState<State>({
-        selected: null,
-        flashRed: [],
-        flashGreen: [],
-        correctIds: new Set(),
-        incorrectIds: new Set(),
-        items: exercise.items.map((pr, index) => ({...pr, order: index, isExcluded: false}))
-    });
+    const [state, setState] = useState<MatchState>(getDefaultMatchState(exercise));
+
+    useEffect(() => {
+        if(state.id !== exercise.id) {
+            setState(getDefaultMatchState(exercise));
+        }
+    }, [state.id, exercise.id]);
 
     const _onClick = (e: React.MouseEvent<HTMLElement>) => {
         const id = Number(e.currentTarget.dataset.id);

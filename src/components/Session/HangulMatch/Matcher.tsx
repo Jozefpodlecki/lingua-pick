@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { HangulMatchExercise, Option } from "../../../models";
+import useSpeechSynthesis from "../../../hooks/useSpeechSynthesis";
+import { getDefaultMatchState } from "../utils";
 
 type EnhancedOption = Option & { 
     order: number;
@@ -22,25 +24,14 @@ interface State {
 }
 
 const Matcher = ({ exercise, onChange }: Props) => {
-    const [state, setState] = useState<State>(getDefaultState(exercise));
+    const { speak } = useSpeechSynthesis("ko-KR");
+    const [state, setState] = useState<State>(getDefaultMatchState(exercise));
 
     useEffect(() => {
         if(state.id !== exercise.id) {
-            setState(getDefaultState(exercise));
+            setState(getDefaultMatchState(exercise));
         }
     }, [state.id, exercise.id]);
-
-    function getDefaultState(exercise: HangulMatchExercise): State {
-        return {
-            id: exercise.id,
-            selected: null,
-            flashRed: [],
-            flashGreen: [],
-            correctIds: new Set(),
-            incorrectIds: new Set(),
-            items: exercise.items.map((pr, index) => ({...pr, order: index, isExcluded: false}))
-        };
-    }
 
     const _onClick = (event: React.MouseEvent<HTMLElement>) => {
         const currentTarget = event.currentTarget;
@@ -48,6 +39,10 @@ const Matcher = ({ exercise, onChange }: Props) => {
         const order = Number(event.currentTarget.dataset.order);
         const item = state.items.find(pr => pr.order === order)!;
         const selected = state.selected;
+        
+        if(item.canPlay) {
+            speak(item.value);
+        }
 
         if (!selected) {
             setState((s) => ({ ...s, selected: item }));

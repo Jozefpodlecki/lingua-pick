@@ -1,8 +1,35 @@
-import { Exercise } from "../../models";
+import { Option, Exercise, WordsMatchExercise, HangulMatchExercise } from "../../models";
 
 interface FeedbackResult {
     bgColor: string;
     message: string | null;
+}
+
+export type EnhancedOption = Option & { 
+    order: number;
+    isExcluded: boolean;
+};
+
+export interface MatchState {
+    id: string;
+    selected: EnhancedOption | null;
+    flashRed: number[];
+    flashGreen: number[];
+    correctIds: Set<number>;
+    incorrectIds: Set<number>;
+    items: EnhancedOption[]
+}
+
+export function getDefaultMatchState(exercise: HangulMatchExercise | WordsMatchExercise): MatchState {
+    return {
+        id: exercise.id,
+        selected: null,
+        flashRed: [],
+        flashGreen: [],
+        correctIds: new Set(),
+        incorrectIds: new Set(),
+        items: exercise.items.map((pr, index) => ({...pr, order: index, isExcluded: false}))
+    };
 }
 
 export function getFeedbackStyleAndText(exercise: Exercise): FeedbackResult {
@@ -12,10 +39,17 @@ export function getFeedbackStyleAndText(exercise: Exercise): FeedbackResult {
 
     const isCorrect = "isCorrect" in exercise && typeof exercise.isCorrect === "boolean"
         ? exercise.isCorrect
-        : null;
+        : true;
 
     if (isCorrect === true) {
-        return { bgColor: "bg-green-700", message: "That's right!" };
+        switch(exercise.type) {
+            case "words-match":
+            case "hangul-match":
+                return { bgColor: "bg-green-700", message: "Good job!" };
+            default:
+                return { bgColor: "bg-green-700", message: "That's right!" };
+        }
+        
     }
 
     if (isCorrect === false) {

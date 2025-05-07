@@ -39,6 +39,7 @@ export const generateSentenceTypingExercise = (
         .map((value, id) => ({
             id,
             value,
+            canPlay: false,
         }));
 
     return {
@@ -80,8 +81,8 @@ export const generateWordsMatchExercise = (usedWordIds: number[], base: BaseExer
 
         const translation = shuffleArray(word.translations)[0];
 
-        items.push({ id, value: word.hangul });
-        items.push({ id, value: translation });
+        items.push({ id, value: word.hangul, canPlay: true });
+        items.push({ id, value: translation, canPlay: false });
 
         ids.add(id);
         id++;
@@ -117,12 +118,14 @@ export const generateHangulMatchExercise = (base: BaseExercise): HangulMatchExer
 
         items.push({
             id,
-            value: romanized
+            value: romanized,
+            canPlay: false
         });
 
         items.push({
             id,
-            value: hangul
+            value: hangul,
+            canPlay: true
         });
 
         ids.add(id);

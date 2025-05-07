@@ -4,10 +4,10 @@ const useSpeechSynthesis = (lang: string = "ko-KR") => {
     const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
     if (!utteranceRef.current) {
-       
+        (window as any).utterances = [];
         utteranceRef.current = new SpeechSynthesisUtterance();
         utteranceRef.current.lang = lang;
-       
+        (window as any).utterances.push( utteranceRef.current );
     }
 
     const speak = (text: string) => {
@@ -16,9 +16,11 @@ const useSpeechSynthesis = (lang: string = "ko-KR") => {
                 return reject(new Error("SpeechSynthesisUtterance is not initialized"));
             }
 
-            (window as any).utterances = [];
-            const speechSynthesisUtterance = new SpeechSynthesisUtterance("ko-KR");
-            (window as any).utterances.push( speechSynthesisUtterance );
+            const speechSynthesisUtterance = utteranceRef.current;
+            // (window as any).utterances = [];
+            // const speechSynthesisUtterance = new SpeechSynthesisUtterance();
+            // speechSynthesisUtterance.lang = "ko-KR";
+            // (window as any).utterances.push( speechSynthesisUtterance );
 
             speechSynthesisUtterance.text = text;
             speechSynthesisUtterance.onend = () => resolve();

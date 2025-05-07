@@ -15,6 +15,7 @@ export type Exercise = WordWordExercise
 export interface Option {
     id: number;
     value: string;
+    canPlay: boolean;
 }
 
 export interface ExerciseType {

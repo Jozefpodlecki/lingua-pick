@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { getRandomWord, KrWord } from "../../api";
-import { Dice3Icon } from "lucide-react";
+import { Dice3Icon, Play } from "lucide-react";
 import Breadcrumbs from "./Breadcrumbs";
+import useSpeechSynthesis from "../../hooks/useSpeechSynthesis";
 
 const Main: React.FC = () => {
+    const { speak } = useSpeechSynthesis("ko-KR");
     const [word, setWord] = useState<KrWord | null>(null);
 
     const fetchWord = () => {
         const newWord = getRandomWord();
         setWord(newWord);
     };
+
+    const onPlay = () => {
+        speak(word!.hangul);
+    }
 
     useEffect(() => {
         fetchWord();
@@ -24,7 +30,7 @@ const Main: React.FC = () => {
         <div className="flex flex-col items-center justify-center">
             {word && (
                 <div className="text-center space-y-4">
-                    <h1 className="text-6xl font-bold">{word.hangul}</h1>
+                    <h1 className="text-6xl font-bold">{word.hangul}</h1><Play onClick={onPlay} className="cursor-pointer w-5 h-5 inline" />
                     <p className="text-2xl text-gray-300">{word.romanized}</p>
                     <div className="text-xl text-gray-400">
                         {word.translations.join(", ")}
