@@ -1,115 +1,141 @@
 import { useEffect, useState } from "react";
 import { WordsWordsExercise } from "@/models";
 import { EnhancedMatchPairOption } from "../utils";
+import useSpeechSynthesis from "@/hooks/useSpeechSynthesis";
 
 interface Props {
-  exercise: WordsWordsExercise;
-  onChange: (updated: WordsWordsExercise) => void;
+    exercise: WordsWordsExercise;
+    onChange: (updated: WordsWordsExercise) => void;
 }
 
 interface MatcherState {
-	id: string;
-	selectedId: number | null;
-	selectedMatchId: number | null;
-	left: EnhancedMatchPairOption[];
+    id: string;
+    selected: EnhancedMatchPairOption | null;
+    left: EnhancedMatchPairOption[];
     right: EnhancedMatchPairOption[];
 }
 
 const Matcher = ({ exercise, onChange }: Props) => {
-	const [{
-		selectedId,
-		selectedMatchId,
-		left,
-		right
-	}, setState] = useState<MatcherState>(defaultState(exercise));
+    const { speak } = useSpeechSynthesis("ko-KR");
 
-  	useEffect(() => {
-		if (!left.find(pr => !pr.isExcluded)) {
-			onChange({
-				...exercise,
-				
-			})
-		}
-	}, [left]);
+    const [state, setState] = useState<MatcherState>(getDefaultState(exercise));
 
-	function defaultState(exercise: WordsWordsExercise): MatcherState {
-		return {
-			id: exercise.id,
-			selectedId: null,
-			selectedMatchId: null,
-			left: exercise.left.map((pr) => ({...pr, isExcluded: false})),
-			right: exercise.right.map((pr) => ({...pr, isExcluded: false})),
-		}
-	}
+    useEffect(() => {
+        if (state.id !== exercise.id) {
+            setState(getDefaultState(exercise));
+        }
+    }, [exercise.id]);
 
-	const onSelect = (event: React.MouseEvent<HTMLElement>) => {
-		const currentTarget = event.currentTarget;
-		const id = Number(currentTarget.dataset.id);
-		const matchId = Number(currentTarget.dataset.matchid);
+    useEffect(() => {
+        const allMatched =
+            state.left.every((item) => item.isExcluded) &&
+            state.right.every((item) => item.isExcluded);
 
-		if (selectedId === null) {
-			setState(pr => ({
-				...pr,
-				selectedId: id,
-				selectedMatchId: matchId
-			}))
-			return;	
-		}
+        if (allMatched) {
+            onChange({ ...exercise });
+        }
+    }, [state.left, state.right]);
 
-		if(id === selectedId) {
-			setState(pr => ({
-				...pr,
-				selectedId: null,
-				selectedMatchId: null
-			}))
-			return;
-		}
+    function getDefaultState(exercise: WordsWordsExercise): MatcherState {
+        return {
+            id: exercise.id,
+            selected: null,
+            left: exercise.left.map((pr) => ({ ...pr, isExcluded: false })),
+            right: exercise.right.map((pr) => ({ ...pr, isExcluded: false })),
+        };
+    }
 
-		if(selectedMatchId === matchId) {
+    const onSelect = (event: React.MouseEvent<HTMLElement>) => {
+        const id = Number(event.currentTarget.dataset.id);
+        const matchId = Number(event.currentTarget.dataset.matchid);
+        const side = event.currentTarget.dataset.side as "left" | "right";
 
+        const item =
+            side === "left"
+                ? state.left.find((x) => x.id === id)
+                : state.right.find((x) => x.id === id);
 
-			return;
-		}
-	};
+        if (!item || item.isExcluded) return;
 
-  return (
-    <div className="w-full max-w-xl mx-auto p-4 text-white">
-      <h2 className="text-xl mb-4">Match the words</h2>
-      <div className="grid grid-cols-2 gap-6">
-        <div>
-          <ul className="space-y-2">
-            {left.map((item) => (
-              <li
-                key={item.id}
-                data-id={item.id}
-				data-matchid={item.matchId}
-                onClick={onSelect}
-                className={`cursor-pointer px-2 py-1 rounded hover:bg-gray-600 ${selectedId === item.id ? "bg-blue-600" : "bg-gray-700"}`}
-              >
-                {item.value}
-              </li>
-            ))}
-          </ul>
+        if (item.canPlay) speak(item.value);
+
+        const selected = state.selected;
+
+        if (!selected) {
+            setState((prev) => ({ ...prev, selected: item }));
+            return;
+        }
+
+        if (selected.id === item.id) {
+            setState((prev) => ({ ...prev, selected: null }));
+            return;
+        }
+
+        const isMatch = selected.matchId === item.matchId;
+
+        if (isMatch) {
+            setTimeout(() => {
+                setState((prev) => ({
+                    ...prev,
+                    selected: null,
+                    left: prev.left.map((x) =>
+                        [item.id, selected.id].includes(x.id) ? { ...x, isExcluded: true } : x
+                    ),
+                    right: prev.right.map((x) =>
+                        [item.id, selected.id].includes(x.id) ? { ...x, isExcluded: true } : x
+                    ),
+                }));
+            }, 100);
+        } else {
+            setState((prev) => ({ ...prev, selected: null }));
+        }
+    };
+
+    const getItemClass = (item: EnhancedMatchPairOption) => {
+        if (item.isExcluded) return "bg-gray-600 text-white opacity-50 pointer-events-none";
+        if (state.selected?.id === item.id) return "bg-blue-600 text-white";
+        return "bg-gray-700 hover:bg-gray-600 cursor-pointer";
+    };
+
+    return (
+        <div className="w-full max-w-xl mx-auto p-4 text-white">
+            <h2 className="text-xl mb-4">Match the words</h2>
+            <div className="grid grid-cols-2 gap-6">
+                <div>
+                    <ul className="space-y-2">
+                        {state.left.map((item) => (
+                            <li
+                                key={item.id}
+                                data-id={item.id}
+                                data-matchid={item.matchId}
+                                data-side="left"
+                                onClick={onSelect}
+                                className={`px-2 py-1 rounded text-center transition-colors ${getItemClass(item)}`}
+                            >
+                                {item.value}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+                <div>
+                    <ul className="space-y-2">
+                        {state.right.map((item) => (
+                            <li
+                                key={item.id}
+                                data-id={item.id}
+                                data-matchid={item.matchId}
+                                data-side="right"
+                                onClick={onSelect}
+                                className={`px-2 py-1 rounded text-center transition-colors ${getItemClass(item)}`}
+                            >
+                                {item.value}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
         </div>
-
-        <div>
-          <ul className="space-y-2">
-            {right.map((item) => (
-              <li
-                key={item.id}
-				data-id={item.id}
-				data-matchid={item.matchId}
-                onClick={onSelect}
-                className={`cursor-pointer px-2 py-1 rounded hover:bg-gray-600 ${selectedId === item.id ? "bg-green-600" : "bg-gray-700"}`}
-              >
-                {item.value}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Matcher;

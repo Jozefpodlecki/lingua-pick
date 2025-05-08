@@ -57,7 +57,7 @@ export interface WordWordExercise extends BaseExercise {
 
 export interface WordImageExercise extends BaseExercise {
     type: "word-image";
-    options: Option[];
+    options: ImageOption[];
     prompt: string;
     selectedOptionId: number;
     correctOptionId: number;

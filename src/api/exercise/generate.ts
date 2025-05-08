@@ -67,7 +67,7 @@ export const generateWordsWordsExercise = (usedWordIds: number[], base: BaseExer
         const translation = shuffleArray(word.translations)[0];
         const pair = [
             { id, matchId: word.id, value: word.hangul, canPlay: true },
-            { id, matchId: word.id, value: translation, canPlay: false },
+            { id: id + selected.length, matchId: word.id, value: translation, canPlay: false },
         ];
         const [source, target] = Math.random() < 0.5 ? [left, right] : [right, left];
         source.push(pair[0]);

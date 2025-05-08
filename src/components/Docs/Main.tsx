@@ -45,7 +45,7 @@ const Docs: React.FC = () => {
     return (
         <div className="flex flex-col min-h-screen bg-black text-white">
             <div className="p-4">
-                <Breadcrumbs selectedTitle={state.selectedTitle} />
+                <Breadcrumbs selectedTitle={"Documentation"} />
             </div>
             <div className="flex flex-1 h-full">
                 <TableOfContents

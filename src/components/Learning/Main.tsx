@@ -22,7 +22,7 @@ const Main: React.FC = () => {
     return (
         <main className="flex flex-col min-h-screen bg-black text-white">
             <div className="p-4">
-                <Breadcrumbs selectedTitle={selectedContent?.title || "Learning"} />
+                <Breadcrumbs selectedTitle={"Learning"} />
             </div>
 
             <div className="flex flex-1 h-full">

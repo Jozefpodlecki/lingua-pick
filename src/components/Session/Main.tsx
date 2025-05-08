@@ -95,6 +95,7 @@ const SessionComponent: React.FC = () => {
         switch(exercise.type) {
             case "hangul-match":
             case "words-match":
+            case "words-words":
                 onCheckInner(session!, exercise);
                 return;
                 break;

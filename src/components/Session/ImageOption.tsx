@@ -7,7 +7,7 @@ interface Props {
     onClick(event: React.MouseEvent<HTMLElement>): void;
 }
 
-const ImageOption = ({ option, correctOptionId, selectedOptionId, onClick }: Props) => {
+const ImageOptionItem: React.FC<Props> = ({ option, correctOptionId, selectedOptionId, onClick }: Props) => {
     const isSelected = selectedOptionId === option.id;
     const isCorrect = correctOptionId === option.id;
 
@@ -38,4 +38,4 @@ const ImageOption = ({ option, correctOptionId, selectedOptionId, onClick }: Pro
     );
 };
 
-export default ImageOption;
+export default ImageOptionItem;
