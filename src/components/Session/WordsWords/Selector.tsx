@@ -13,6 +13,8 @@ interface MatcherState {
     selected: EnhancedMatchPairOption | null;
     left: EnhancedMatchPairOption[];
     right: EnhancedMatchPairOption[];
+    flashRed: number[];
+    flashGreen: number[];
 }
 
 const Matcher = ({ exercise, onChange }: Props) => {
@@ -42,12 +44,13 @@ const Matcher = ({ exercise, onChange }: Props) => {
             selected: null,
             left: exercise.left.map((pr) => ({ ...pr, isExcluded: false })),
             right: exercise.right.map((pr) => ({ ...pr, isExcluded: false })),
+            flashRed: [],
+            flashGreen: [],
         };
     }
 
     const onSelect = (event: React.MouseEvent<HTMLElement>) => {
         const id = Number(event.currentTarget.dataset.id);
-        const matchId = Number(event.currentTarget.dataset.matchid);
         const side = event.currentTarget.dataset.side as "left" | "right";
 
         const item =
@@ -55,11 +58,15 @@ const Matcher = ({ exercise, onChange }: Props) => {
                 ? state.left.find((x) => x.id === id)
                 : state.right.find((x) => x.id === id);
 
-        if (!item || item.isExcluded) return;
-
-        if (item.canPlay) speak(item.value);
+        if (!item || item.isExcluded) {
+            return;
+        }
 
         const selected = state.selected;
+
+        if (item.canPlay && (!selected || selected && selected.id !== item.id)) {
+            speak(item.value);
+        }
 
         if (!selected) {
             setState((prev) => ({ ...prev, selected: item }));
@@ -74,26 +81,45 @@ const Matcher = ({ exercise, onChange }: Props) => {
         const isMatch = selected.matchId === item.matchId;
 
         if (isMatch) {
+            setState((prev) => ({
+				...prev,
+				selected: null,
+				flashGreen: [selected.id, item.id],
+				left: prev.left.map((x) =>
+					[item.id, selected.id].includes(x.id) ? { ...x, isExcluded: true } : x
+				),
+				right: prev.right.map((x) =>
+					[item.id, selected.id].includes(x.id) ? { ...x, isExcluded: true } : x
+				),
+			}));
+
+			setTimeout(() => {
+				setState((prev) => ({
+					...prev,
+					flashGreen: [],
+				}));
+			}, 500);
+        } else {
+            setState((prev) => ({
+                ...prev,
+                flashRed: [selected.id, item.id],
+            }));
+
             setTimeout(() => {
                 setState((prev) => ({
                     ...prev,
-                    selected: null,
-                    left: prev.left.map((x) =>
-                        [item.id, selected.id].includes(x.id) ? { ...x, isExcluded: true } : x
-                    ),
-                    right: prev.right.map((x) =>
-                        [item.id, selected.id].includes(x.id) ? { ...x, isExcluded: true } : x
-                    ),
+					selected: null,
+                    flashRed: [],
                 }));
-            }, 100);
-        } else {
-            setState((prev) => ({ ...prev, selected: null }));
+            }, 500);
         }
     };
 
     const getItemClass = (item: EnhancedMatchPairOption) => {
+		if (state.flashRed.includes(item.id)) return "bg-red-900 text-white pointer-events-none";
+        if (state.flashGreen.includes(item.id)) return "bg-green-900 text-white pointer-events-none";
         if (item.isExcluded) return "bg-gray-600 text-white opacity-50 pointer-events-none";
-        if (state.selected?.id === item.id) return "bg-blue-600 text-white";
+        if (state.selected?.id === item.id) return "cursor-pointer bg-blue-600 text-white";
         return "bg-gray-700 hover:bg-gray-600 cursor-pointer";
     };
 
@@ -110,7 +136,7 @@ const Matcher = ({ exercise, onChange }: Props) => {
                                 data-matchid={item.matchId}
                                 data-side="left"
                                 onClick={onSelect}
-                                className={`px-2 py-1 rounded text-center transition-colors ${getItemClass(item)}`}
+                                className={`px-2 py-1 text-lg rounded text-center transition-colors ${getItemClass(item)}`}
                             >
                                 {item.value}
                             </li>
@@ -126,7 +152,7 @@ const Matcher = ({ exercise, onChange }: Props) => {
                                 data-matchid={item.matchId}
                                 data-side="right"
                                 onClick={onSelect}
-                                className={`px-2 py-1 rounded text-center transition-colors ${getItemClass(item)}`}
+                                className={`px-2 py-1 text-lg rounded text-center transition-colors ${getItemClass(item)}`}
                             >
                                 {item.value}
                             </li>

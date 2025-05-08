@@ -77,6 +77,9 @@ export const generateWordsWordsExercise = (usedWordIds: number[], base: BaseExer
         id++;
     }
 
+    left.sort(() => Math.random() - 0.5);
+    right.sort(() => Math.random() - 0.5);
+
     return {
         ...base,
         requiresManualCheck: false,
