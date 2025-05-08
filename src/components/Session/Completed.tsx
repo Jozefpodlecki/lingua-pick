@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { QuizSession } from "../../models";
+import { QuizSession } from "@/models";
 import ReactECharts from "echarts-for-react";
 
 interface Props {

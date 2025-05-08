@@ -1,4 +1,4 @@
-import { Option, Exercise, WordsMatchExercise, HangulMatchExercise } from "../../models";
+import { Option, Exercise, WordsMatchExercise, HangulMatchExercise, MatchPairOption } from "../../models";
 
 interface FeedbackResult {
     bgColor: string;
@@ -7,6 +7,10 @@ interface FeedbackResult {
 
 export type EnhancedOption = Option & { 
     order: number;
+    isExcluded: boolean;
+};
+
+export type EnhancedMatchPairOption = MatchPairOption & {
     isExcluded: boolean;
 };
 

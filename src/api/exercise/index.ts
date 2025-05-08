@@ -1,4 +1,4 @@
-import { Exercise, ExerciseTypes, QuizSession, ValidateExerciseResult } from "../../models";
+import { Exercise, ExerciseTypes, QuizSession, ValidateExerciseResult } from "@/models";
 import { createBaseExercise, getRandomItem } from "./utils";
 import { generateHangulMatchExercise, generateSentenceTypingExercise, generateWordBasedExercise, generateWordsMatchExercise, generateWordsWordsExercise } from "./generate";
 import { validateMatchExercise, validateSentenceTyping, validateSimpleOptionExercise, validateWordsWords } from "./validate";
@@ -21,7 +21,7 @@ export const generateExercise = (opions: CreateExerciseOptions): Exercise => {
         case "sentence-typing":
             return generateSentenceTypingExercise(base);
         case "words-words":
-            return generateWordsWordsExercise(base);
+            return generateWordsWordsExercise(opions.usedWordIds, base);
         case "words-match":
             return generateWordsMatchExercise(opions.usedWordIds, base);
         case "hangul-match":

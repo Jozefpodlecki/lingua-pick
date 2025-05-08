@@ -1,7 +1,7 @@
-import { Option } from "../../models";
+import { ImageOption } from "@/models";
 
 interface Props {
-    option: Option;
+    option: ImageOption;
     correctOptionId: number | null;
     selectedOptionId: number | null;
     onClick(event: React.MouseEvent<HTMLElement>): void;

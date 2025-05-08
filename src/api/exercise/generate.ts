@@ -1,4 +1,4 @@
-import { BaseExercise, Exercise, HangulMatchExercise, SentenceTypingExercise, WordImageExercise, WordsMatchExercise, WordsWordsExercise, WordWordExercise } from "../../models";
+import { BaseExercise, Exercise, HangulMatchExercise, MatchPairOption, SentenceTypingExercise, WordImageExercise, WordsMatchExercise, WordsWordsExercise, WordWordExercise } from "@/models";
 import { getRandomSentence, getRomanizedToHangul } from "../kr";
 import { getStats } from "../stats";
 import { getAvailableWords, getRandomItem, shuffleArray } from "./utils";
@@ -54,15 +54,35 @@ export const generateSentenceTypingExercise = (
     };
 };
 
-export const generateWordsWordsExercise = (base: BaseExercise): WordsWordsExercise => {
+export const generateWordsWordsExercise = (usedWordIds: number[], base: BaseExercise): WordsWordsExercise => {
+    const stats = getStats();
+    const selected = getAvailableWords(stats, usedWordIds, 5);
+    const left = new Array<MatchPairOption>();
+    const right = new Array<MatchPairOption>();
+    const ids = new Set<number>();
+    let id = 0;
 
+    for(const word of selected) {
+
+        const translation = shuffleArray(word.translations)[0];
+        const pair = [
+            { id, matchId: word.id, value: word.hangul, canPlay: true },
+            { id, matchId: word.id, value: translation, canPlay: false },
+        ];
+        const [source, target] = Math.random() < 0.5 ? [left, right] : [right, left];
+        source.push(pair[0]);
+        target.push(pair[1]);
+
+        ids.add(id);
+        id++;
+    }
 
     return {
         ...base,
         requiresManualCheck: false,
         type: "words-words" as const,
-        left: [],
-        right: [],
+        left,
+        right,
 
     };
 };

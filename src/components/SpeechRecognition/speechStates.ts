@@ -1,4 +1,4 @@
-import { SpeechRecognitionState } from "@models";
+import { SpeechRecognitionState } from "@/models";
 
 export const speechState = {
     idle: { type: "idle" } as SpeechRecognitionState,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Exercise } from "../../models";
+import { Exercise } from "@/models";
 import { getFeedbackStyleAndText } from "./utils";
 
 interface Props {

@@ -1,4 +1,4 @@
-import { WordImageExercise } from "../../models";
+import { WordImageExercise } from "@/models";
 import ImageOption from "./ImageOption";
 
 interface Props {
@@ -20,7 +20,7 @@ const WordImageSelector = ({ exercise, onChange }: Props) => {
 
     return (
         <div className="">
-            <h1 className="text-4xl font-bold mb-4 text-center noto-sans-kr-300">{exercise.question}</h1>
+            <h1 className="text-4xl font-bold mb-4 text-center noto-sans-kr-300">{exercise.prompt}</h1>
             <ul className="flex items-center justify-center space-y-4">
                 {exercise.options.map((option) => <ImageOption
                     key={option.id}

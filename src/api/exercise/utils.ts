@@ -1,7 +1,5 @@
-import { BaseExercise, Exercise, ExerciseType, QuizSession, UserStats } from "../../models";
-import { getAppData, saveAppData } from "../appData";
+import { BaseExercise, Exercise, ExerciseType, QuizSession, UserStats } from "@/models";
 import { getKrWords, KrWord } from "../kr";
-import { updateWordStats } from "../stats";
 import { computeDuration } from "../utils";
 import { v4 as uuidv4 } from "uuid";
 

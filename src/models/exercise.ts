@@ -12,8 +12,21 @@ export type Exercise = WordWordExercise
     | WordsMatchExercise
     | HangulMatchExercise;
 
+export interface ImageOption {
+    id: number;
+    value: string;
+    imageSrc: string;
+}
+
 export interface Option {
     id: number;
+    value: string;
+    canPlay: boolean;
+}
+
+export interface MatchPairOption {
+    id: number;
+    matchId: number;
     value: string;
     canPlay: boolean;
 }
@@ -64,8 +77,8 @@ export interface SentenceTypingExercise extends BaseExercise {
 
 export interface WordsWordsExercise extends BaseExercise {
     type: "words-words";
-    left: Option[];
-    right: Option[];
+    left: MatchPairOption[];
+    right: MatchPairOption[];
     requiresManualCheck: false;
 }
 

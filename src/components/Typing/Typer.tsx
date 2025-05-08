@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Breadcrumbs from "./Breadcrumbs";
-import kroman from "kroman";
 import { convertRomanizedToHangul } from "./romanToHangulMap";
-import useSpeechSynthesis from "../../hooks/useSpeechSynthesis";
+import useSpeechSynthesis from "@/hooks/useSpeechSynthesis";
 import { Play } from "lucide-react";
-import { getRandomSentence } from "../../api";
+import { getRandomSentence } from "@/api";
 
 interface State {
     hangul: string;

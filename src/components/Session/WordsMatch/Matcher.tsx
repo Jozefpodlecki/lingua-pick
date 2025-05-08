@@ -17,9 +17,9 @@ const Matcher = ({ exercise, onChange }: Props) => {
         }
     }, [state.id, exercise.id]);
 
-    const _onClick = (e: React.MouseEvent<HTMLElement>) => {
-        const id = Number(e.currentTarget.dataset.id);
-        const order = Number(e.currentTarget.dataset.order);
+    const _onClick = (event: React.MouseEvent<HTMLElement>) => {
+        const id = Number(event.currentTarget.dataset.id);
+        const order = Number(event.currentTarget.dataset.order);
         const item = state.items.find(pr => pr.order === order)!;
         const selected = state.selected;
 

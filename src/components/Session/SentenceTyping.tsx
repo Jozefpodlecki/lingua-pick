@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SentenceTypingExercise, Option } from "../../models";
+import { SentenceTypingExercise, Option } from "@/models";
 
 interface Props {
     exercise: SentenceTypingExercise;
@@ -16,7 +16,7 @@ const SentenceTyping = ({ exercise, onChange }: Props) => {
         const value = e.currentTarget.dataset.value!;
         if (isSelected(id)) return;
 
-        const updated = [...selected, { id, value }];
+        const updated = [...selected, { id, value, canPlay: false }];
         setSelected(updated);
 
         onChange({
