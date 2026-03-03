@@ -1,0 +1,16 @@
+[package]
+name = "lingua-pick-store"
+version = "0.0.1"
+edition = "2024"
+rust-version = "1.92"
+
+[dependencies]
+anyhow = "1.0.90"
+log = "0.4.18"
+chrono = { version = "0.4.31", features = ["serde"] }
+rand = "0.9.0"
+serde_json = { version = "1.0", features = ["preserve_order"] }
+serde = { version = "1.0", features = ["derive"] }
+duckdb = { version = "1.4.4", features = ["r2d2"] }
+r2d2 = "0.8.10"
+uuid = { version = "1.17.0", features = ["v4", "serde"] }

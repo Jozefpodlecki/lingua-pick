@@ -1,0 +1,35 @@
+[package]
+name = "lingua-pick-app"
+version = "0.1.0"
+description = "lingua-pick-app"
+authors = ["Jozef Podlecki"]
+edition = "2021"
+
+[lib]
+name = "lingua_pick_app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.5.5", features = [] }
+
+[dependencies]
+tokio = { version = "1.48.0", features = ["rt", "macros"] }
+anyhow = "1.0.90"
+tauri = { version = "2.10.2", features = ["image-png", "tray-icon"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+log = "0.4.18"
+thiserror = "2.0.17"
+uuid = { version = "1.17.0", features = ["v4", "v7"] }
+async-trait = "0.1.89"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-shell = "2.3.1"
+tauri-plugin-clipboard-manager = "2.3.0"
+tauri-plugin-updater = "2.9.0"
+tauri-plugin-opener = "2.5.0"
+tauri-plugin-log = "2.7.0"
+tauri-plugin-window-state = "2.4.0"
+tauri-plugin-process = "2.3.0"
+tauri-plugin-global-shortcut = "2.3.0"
+tauri-plugin-single-instance = "2.3.4"
