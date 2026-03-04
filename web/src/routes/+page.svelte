@@ -1,6 +1,9 @@
 <script lang="ts">
-    import RecentProjects from "./RecentProjects.svelte";
+    import Loader from "$lib/components/Loader.svelte";
 
+    
 </script>
 
-<RecentProjects/>
+<main class="flex h-screen size-full justify-center items-center">
+    <Loader/>
+</main>

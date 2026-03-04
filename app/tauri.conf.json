@@ -1,0 +1,61 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "lingua-pick",
+  "version": "0.1.0",
+  "identifier": "com.jozef.linguapick",
+  "build": {
+    "frontendDist": "../web/src",
+    "devUrl": "http://localhost:5173"
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEE0M0Y3N0JENDVBN0IwM0UKUldRK3NLZEZ2WGMvcEI2VEJnVFc4VTN5Q2xQbUpXMHpKRkVTNWQyTHFrdk4vc3NaRTIxQlhISnUK",
+      "endpoints": [
+        "https://github.com/Jozefpodlecki/lingua-pick/releases/latest"
+      ]
+    }
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "Lingua Pick",
+        "label": "starter",
+        "url": "/starter",
+        "width": 600,
+        "height": 400,
+        "resizable": false,
+        "fullscreen": false,
+        "maximized": false,
+        "useHttpsScheme": true
+      },
+      {
+        "title": "Lingua Pick",
+        "label": "main",
+        "url": "/",
+        "width": 800,
+        "height": 600,
+        "resizable": false,
+        "fullscreen": false,
+        "maximized": true,
+        "visible": false,
+        "focus": false,
+        "useHttpsScheme": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

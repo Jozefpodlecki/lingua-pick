@@ -1,5 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    ananke_app_lib::run()
+    lingua_pick_app_lib::run()
 }

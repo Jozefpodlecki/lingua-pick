@@ -22,6 +22,15 @@ log = "0.4.18"
 thiserror = "2.0.17"
 uuid = { version = "1.17.0", features = ["v4", "v7"] }
 async-trait = "0.1.89"
+cpal = { version = "0.17.3" }
+whisper-rs = { version = "0.15.1" }
+jsonwebtoken = "10.3.0"
+argon2 = { version = "0.5.3" }
+rand = "0.10.0"
+whoami = "2.1.1"
+phc = "0.6.0-rc.1 "
+chrono = { version = "0.4.31", features = ["serde"] }
+lingua-pick-store = { path = "../crates/store" }
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-shell = "2.3.1"
