@@ -1,4 +1,4 @@
-import type { LoadResult, LoginArgs, Project, UpdateStatus } from "$lib/types/app";
+import type { Context, LoadResult, LoginArgs, Project, UpdateStatus, UserProfile } from "$lib/types/app";
 import { invoke } from "@tauri-apps/api/core";
 import { emit, listen, type EventCallback, type UnlistenFn } from "@tauri-apps/api/event";
 
@@ -12,13 +12,22 @@ export const checkUpdates = async (handler: (event: { payload: UpdateStatus }) =
 
 export const install = (): Promise<void> => emit("install");
 
-export const login = (args: LoginArgs & Record<string, unknown>): Promise<string> => invoke("login", args);
+export const loginWithCreds = (args: LoginArgs & Record<string, unknown>): Promise<string> => invoke("login_with_creds", args);
 
 export const loginWithWindows = (): Promise<string> => invoke("login_with_windows");
 
-export const getTest = (): Promise<void> => {
+export const getCurrentProfile = (token: string): Promise<UserProfile | null> => invoke("get_current_profile", { token });
 
-    localStorage.getItem("context");
+export const setAppContext = (context: Context): Promise<void> => {
+    const json = JSON.stringify(context);
+    localStorage.setItem("context", json);
 
     return Promise.resolve()
+}
+
+export const getAppContext = (): Promise<Context | null> => {
+
+    const context = JSON.parse(localStorage.getItem("context") || null as any) || null;
+
+    return Promise.resolve(context)
 }

@@ -2,6 +2,8 @@
 pub mod app;
 #[macro_use]
 pub mod audio;
+#[macro_use]
+mod profile;
 mod list;
 mod models;
 mod error;

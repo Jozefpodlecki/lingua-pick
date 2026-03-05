@@ -1,14 +1,11 @@
-use std::path::PathBuf;
-
 use anyhow::anyhow;
 use chrono::Utc;
-use jsonwebtoken::{EncodingKey, Header};
-use lingua_pick_store::{User, UserRepository};
+use lingua_pick_store::{User, UserProfile, UserProfileRepository, UserRepository};
 use rand::{distr::Alphanumeric, RngExt};
 use tauri::{command, State};
 use uuid::Uuid;
 
-use crate::{context::AppContext, handlers::{error::{AppError, AppResult}, models::{LoadResult, LoginArgs}}, notifier::SetupEndedNotifier, services::{AppPasswordHasher, JwtClaims, JwtService}};
+use crate::{context::AppContext, handlers::{error::{AppError, AppResult}, models::{AppUserProfile, LoadResult, LoginArgs}}, notifier::SetupEndedNotifier, services::{AppPasswordHasher, JwtClaims, JwtService}};
 
 #[command]
 pub async fn load_app<'a>(
@@ -63,7 +60,9 @@ pub async fn login_with_windows<'a>(
     let now = Utc::now().timestamp() as usize;
     let exp = now + 60 * 60 * 24;
     let claims = JwtClaims {
-        sub: user.user_name,
+        sub: user.id,
+        user_name: user.user_name,
+        iss: "lingua-pick".into(),
         company: "lingua-pick".into(),
         iat: now,
         exp,
@@ -76,7 +75,7 @@ pub async fn login_with_windows<'a>(
 }
 
 #[command]
-pub async fn login<'a>(
+pub async fn login_with_creds<'a>(
     args: LoginArgs,
     user_repository: State<'a, UserRepository>,
     password_hasher: State<'a, AppPasswordHasher>,
@@ -99,7 +98,9 @@ pub async fn login<'a>(
     let now = Utc::now().timestamp() as usize;
     let exp = now + 60 * 60 * 24;
     let claims = JwtClaims {
-        sub: user.user_name,
+        sub: user.id,
+        user_name: user.user_name,
+        iss: "lingua-pick".into(),
         company: "lingua-pick".into(),
         iat: now,
         exp,
@@ -109,4 +110,19 @@ pub async fn login<'a>(
     let token = jwt_service.encode(claims).map_err(|e| AppError::Command(anyhow::anyhow!("Could not generate JWT: {}", e)))?;
 
     Ok(token)
+}
+
+#[command]
+pub async fn get_current_profile<'a>(
+    token: String, 
+    profile_repository: State<'a, UserProfileRepository>,
+    jwt_service: State<'a, JwtService>,) -> AppResult<Option<AppUserProfile>> {
+    
+    let token = jwt_service.decode(&token).map_err(|err| AppError::Command(anyhow::anyhow!("Could not decode JWT: {}", err)))?;
+    
+    let user_id = token.claims.sub;
+    let profile = profile_repository.get_by_user(user_id)?
+        .map(AppUserProfile::from);
+    
+    Ok(profile)
 }

@@ -5,7 +5,7 @@ use tauri::{AppHandle, Emitter, Manager};
 use log::*;
 use tokio::{spawn, sync::Mutex, time::sleep};
 
-use crate::updater::{fake::{FakeUpdateBuilder}, plugin::AppUpdater, traits::UpdateProvider, UpdateResult};
+use crate::updater::{fake::FakeUpdateBuilder, plugin::AppUpdater, traits::{UpdateCheckResult, UpdateProvider}, UpdateResult};
 
 pub struct UpdateManager {
     app_handle: AppHandle,
@@ -46,41 +46,50 @@ impl UpdateManager {
     async fn check_inner(app_handle: &AppHandle, provider: &mut dyn UpdateProvider) -> Result<()> {
         provider.setup()?;
 
-        let can_update = provider.check().await?;
+        let check_result = provider.check().await?;
 
-        match can_update {
-            true => {
-                let version: Arc<str> = provider.version().into();
+        match check_result {
+            UpdateCheckResult::NewVersion => {
+                let version: Arc<str> = provider.version().unwrap().into();
                 app_handle.emit("on-update", UpdateResult::Found { version: &version }).unwrap();
                 sleep(Duration::from_millis(250)).await;
 
                 provider.download(
-                {
-                    let mut downloaded = 0;
-                    let version = version.clone();
-                    let app_handle = app_handle.clone();
-                    Box::new(move |chunk, file_size| {
-                        downloaded += chunk;
-                        app_handle.emit("on-update", UpdateResult::Downloading {
-                            version: &version,
-                            downloaded,
-                            file_size,
-                        }).unwrap();
-                    })
-                },
-                {
-                    let version = version.clone();
-                    let app_handle = app_handle.clone();
-                    Box::new(move || {
-                        app_handle.emit("on-update", UpdateResult::Downloaded {
-                            version: &version,
-                        }).unwrap();
-                    })
-                }
-            ).await?;
+                    {
+                        let mut downloaded = 0;
+                        let version = version.clone();
+                        let app_handle = app_handle.clone();
+                        Box::new(move |chunk, file_size| {
+                            downloaded += chunk;
+                            app_handle.emit("on-update", UpdateResult::Downloading {
+                                version: &version,
+                                downloaded,
+                                file_size,
+                            }).unwrap();
+                        })
+                    },
+                    {
+                        let version = version.clone();
+                        let app_handle = app_handle.clone();
+                        Box::new(move || {
+                            app_handle.emit("on-update", UpdateResult::Downloaded {
+                                version: &version,
+                            }).unwrap();
+                        })
+                    }
+                ).await?;
+            }
+            UpdateCheckResult::Downloaded => {
+                let version = provider.version().unwrap();
+                app_handle.emit("on-update", UpdateResult::Downloaded {
+                    version: version,
+                }).unwrap();
             },
-            false => {
+            UpdateCheckResult::Latest => {
                 app_handle.emit("on-update", UpdateResult::Latest).unwrap();
+            },
+            UpdateCheckResult::Error(err) => {
+                app_handle.emit("on-update", UpdateResult::Error { message: &err }).unwrap();
             },
         }
 

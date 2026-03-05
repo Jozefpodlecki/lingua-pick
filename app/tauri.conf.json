@@ -27,7 +27,8 @@
         "resizable": false,
         "fullscreen": false,
         "maximized": false,
-        "useHttpsScheme": true
+        "useHttpsScheme": true,
+        "decorations": false
       },
       {
         "title": "Lingua Pick",

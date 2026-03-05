@@ -1,6 +1,6 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/geist-mono";
-
+@import url('https://fonts.googleapis.com/css2?family=Cascadia+Mono:ital,wght@0,200..700;1,200..700&display=swap');
 @import "tailwindcss";
 
 @plugin '@tailwindcss/typography';
@@ -10,7 +10,19 @@
 
 }
 
+@theme {
+    --font-cascadia-mono: 'Cascadia Mono', sans-serif;
+}
+
 html, body {
     background: black;
     color: white;
+}
+
+@layer base {
+
+    button,
+    [role='button'] {
+        cursor: default;
+    }
 }

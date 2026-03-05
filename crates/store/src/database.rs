@@ -103,12 +103,14 @@ impl UserProfileRepository {
         Ok(())
     }
 
-    pub fn get_by(&self, user_id: Uuid) -> Result<()> {
+    pub fn get_by_user(&self, user_id: Uuid) -> Result<Option<UserProfile>> {
         let connection = self.0.get()?;
 
-        connection.execute(GET_ACTIVE_USER_PROFILE_BY_USER, [user_id])?;
+        let profile = connection
+            .query_row(GET_ACTIVE_USER_PROFILE_BY_USER, [user_id], UserProfile::from_row)
+            .optional()?;
 
-        Ok(())
+        Ok(profile)
     }
 }
 

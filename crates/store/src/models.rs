@@ -33,6 +33,21 @@ pub struct UserProfile {
     pub target_language_id: Uuid
 }
 
+impl UserProfile {
+    pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
+
+        Ok(Self {
+            id: row.get(0)?,
+            user_id: row.get(1)?,
+            created_on: row.get(2)?,
+            updated_on: row.get(3)?,
+            is_active: row.get(4)?,
+            source_language_id: row.get(5)?,
+            target_language_id: row.get(6)?,
+        })
+    }
+}
+
 #[derive(Debug)]
 pub struct Language {
     pub id: Uuid,

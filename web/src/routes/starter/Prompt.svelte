@@ -4,6 +4,7 @@
     import { onMount } from "svelte";
     import { Window } from "@tauri-apps/api/window";
     import Loader from "$lib/components/Loader.svelte";
+    import ProgressBar from "./ProgressBar.svelte";
 
     let prompt = $state("Starting");
     let progress = $state(0);
@@ -23,7 +24,7 @@
 
     async function onUpdate(event: { payload: UpdateStatus }) {
         const { payload } = event;
-        
+        console.log(payload)
         switch(payload.type) {
             case "checking":
                 prompt = "Checking updates...";
@@ -67,35 +68,31 @@
 
 </script>
 
-<main class="flex h-screen size-full justify-center items-center">
-    <section class="flex flex-col items-center w-64">
-        {#if downloading}
-            <div class="progress-bar-container w-full h-4 bg-gray-300 rounded overflow-hidden">
-                <div 
-                    class="progress-bar bg-blue-500 h-full transition-all duration-200" 
-                    style="width: {progress * 100}%"
-                ></div>
-            </div>
-        {:else if downloaded}
-            <div class="flex flex-col gap-2 w-full">
-                <button 
-                    data-action="install"
-                    type="button"
-                    class="cursor-pointer px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    onclick={onInstall}>
-                    Install 
-                </button>
-                <button 
-                    data-action="continue"
-                    type="button"
-                    class="cursor-pointer px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                    onclick={onContinue}>
-                    Continue
-                </button>
-            </div>
-        {:else}
-            <Loader/>
-        {/if}
+<section data-tauri-drag-region class="flex flex-col items-center w-64">
+    {#if downloading}
+        <ProgressBar
+            text={prompt}
+            progress={progress}/>
+        
+    {:else if downloaded}
         <div class="mt-2 text-sm text-center">{prompt}</div>
-    </section>
-</main>
+        <div class="flex flex-col gap-2 w-full">
+            <button 
+                data-action="install"
+                type="button"
+                class="px-4 py-2 bg-blue-500/50 text-white rounded hover:bg-blue-600 text-sm"
+                onclick={onInstall}>
+                Install 
+            </button>
+            <button 
+                data-action="continue"
+                type="button"
+                class="px-4 py-2 bg-gray-500/50 text-white rounded hover:bg-gray-600 text-sm"
+                onclick={onContinue}>
+                Continue
+            </button>
+        </div>
+    {:else}
+        <Loader/>
+    {/if}
+</section>

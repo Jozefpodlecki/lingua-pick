@@ -1,4 +1,4 @@
-use lingua_pick_store::DatabaseManager;
+use lingua_pick_store::*;
 use tauri::Runtime;
 
 use crate::{context::AppContext, handlers::generate_handlers, notifier::SetupEndedNotifier, services::*, setup::setup_app};
@@ -20,7 +20,16 @@ impl<R: Runtime> BuilderExtensions for tauri::Builder<R> {
         let path = "lingua-pick.duckdb";
         let database = DatabaseManager::new(path.into())?;
         database.ensure_created()?;
-        let builder = self.manage(database);
+
+        let pool = database.pool().clone();
+        
+        let builder = self
+            .manage(database)
+            .manage(UserRepository::new(pool.clone()))
+            .manage(UserProfileRepository::new(pool.clone()))
+            .manage(LanguageRepository::new(pool.clone()))
+            .manage(SessionRepository::new(pool.clone()));
+            // .manage(UserRepository::new(pool.clone()))
 
         Ok(builder)
     }
@@ -47,11 +56,16 @@ pub fn run() {
             .target(tauri_plugin_log::Target::new(
                 tauri_plugin_log::TargetKind::Stdout,
             ))
+            // .filter(filter)
+            .level_for("tao", log::LevelFilter::Error)
             .build())
         .plugin(tauri_plugin_single_instance::init(|_app, _argv, _cwd| {}))
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(generate_handlers())
+        // .channel_interceptor(|_, _, _, _| {
+        //     true
+        // })
         .setup(setup_app)
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -15,6 +15,7 @@ pub enum UpdateResult<'a> {
     Downloading {
         version: &'a str,
         downloaded: usize,
+        #[serde(rename = "fileSize")] 
         file_size: Option<u64>
     },
     Downloaded {
@@ -29,7 +30,7 @@ pub enum UpdateResult<'a> {
 pub fn setup_updater(app_handle: &AppHandle) {
 
     let builder = FakeUpdateBuilder::new()
-        .new_synthetic("1.0.0", 100)
+        .new_synthetic("1.0.0", 1000)
         .latest();
     let update_manager = UpdateManager::fake(app_handle.clone(), builder);
     app_handle.manage(update_manager);

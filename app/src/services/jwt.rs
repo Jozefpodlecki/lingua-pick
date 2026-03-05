@@ -1,11 +1,14 @@
 use jsonwebtoken::{EncodingKey, Header, decode, Validation, DecodingKey, TokenData};
 use serde::{Serialize, Deserialize};
+use uuid::Uuid;
 use std::env;
 use anyhow::Result;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct JwtClaims {
-    pub sub: Box<str>,
+    pub sub: Uuid,
+    pub user_name: Box<str>,
+    pub iss: Box<str>,
     pub company: Box<str>,
     pub iat: usize,   
     pub exp: usize,

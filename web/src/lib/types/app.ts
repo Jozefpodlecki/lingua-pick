@@ -13,6 +13,20 @@ export interface LoginArgs {
     password: string;
 }
 
+export interface UserProfile {
+
+}
+
+export interface Context {
+    token: string;
+    updatedOn: string;
+    profile: UserProfile | null;
+}
+
+export interface UserProfile {
+    
+}
+
 export type UpdateStatus = { type: "checking" } 
     | { type: "found", version: string }
     | { type: "latest", version: string }

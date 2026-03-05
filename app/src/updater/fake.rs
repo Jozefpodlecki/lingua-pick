@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::VecDeque, fs::File, io::{BufReader, Read}, path::PathBuf, sync::{Arc, Mutex}, time::Duration};
+use std::{cell::RefCell, collections::VecDeque, fs::File, io::{BufReader, Read}, path::PathBuf, sync::{Arc, Mutex}, time::Duration, usize};
 use anyhow::{anyhow, Result};
 use async_trait::async_trait;
 use tokio::time::sleep;
@@ -27,6 +27,18 @@ impl FakeUpdateBuilder {
             delay: Duration::from_millis(100),
         });
         
+        self
+    }
+
+    pub fn infinite_download(mut self, version: &str) -> Self {
+        self.options.push(FakeUpdateOption::Synthetic {
+            version: version.into(),
+            with_total_header: true,
+            total_size: 200 * 1024 * 1024,
+            iterations: usize::MAX,
+            delay: Duration::from_millis(100),
+        });
+   
         self
     }
 
@@ -121,13 +133,15 @@ pub enum FakeUpdateOption {
 pub struct FakeUpdater {
     pub options: VecDeque<FakeUpdateOption>,
     pub current: FakeUpdateOption,
+    pub has_downloaded: bool
 }
 
 impl FakeUpdater {
     pub fn new(options: Vec<FakeUpdateOption>) -> Self {
         Self {
             options: options.into(),
-            current: FakeUpdateOption::Idle
+            current: FakeUpdateOption::Idle,
+            has_downloaded: false,
         }
     }
 }
@@ -136,6 +150,11 @@ impl FakeUpdater {
 impl UpdateProvider for FakeUpdater {
 
     fn setup(&mut self) -> Result<()> {
+
+        if self.has_downloaded {
+            return Ok(())
+        }
+        
         let option = self.options.pop_front().unwrap_or(FakeUpdateOption::Idle);
         self.current = option;
 
@@ -145,26 +164,30 @@ impl UpdateProvider for FakeUpdater {
         }
     }
 
-    async fn check(&mut self) -> Result<bool> {
+    async fn check(&mut self) -> Result<UpdateCheckResult> {
+
+        if self.has_downloaded {
+            return Ok(UpdateCheckResult::Downloaded)
+        }
 
         match &self.current {
-            FakeUpdateOption::Failed { error, is_fatal: false } => Err(anyhow!(error.to_string())),
-            FakeUpdateOption::Latest => Ok(false),
-            FakeUpdateOption::Synthetic { .. } => Ok(true),
-            FakeUpdateOption::Binary { .. } => Ok(true),
-            _ => Ok(false),
+            FakeUpdateOption::Failed { error, is_fatal: false } => Ok(UpdateCheckResult::Error(error.to_string())),
+            FakeUpdateOption::Latest => Ok(UpdateCheckResult::Latest),
+            FakeUpdateOption::Synthetic { .. } => Ok(UpdateCheckResult::NewVersion),
+            FakeUpdateOption::Binary { .. } => Ok(UpdateCheckResult::NewVersion),
+            _ => Ok(UpdateCheckResult::Latest),
         }
     }
 
-    fn version(&self) -> &str {
+    fn version(&self) -> Option<&str> {
         match &self.current {
             FakeUpdateOption::Binary { version, .. } => {
-                &version
+                Some(&version)
             }
             FakeUpdateOption::Synthetic { version, .. } => {
-                &version
+                Some(&version)
             }
-            _ => unreachable!("Should not enter")
+            _ => None
         }
     }
 
@@ -192,6 +215,7 @@ impl UpdateProvider for FakeUpdater {
                     sleep(*delay).await;
                 }
 
+                self.has_downloaded = true;
                 on_finish();
 
                 Ok(())
@@ -214,6 +238,7 @@ impl UpdateProvider for FakeUpdater {
                     on_chunk(last_chunk_size, total_size_arg);
                 }
 
+                self.has_downloaded = true;
                 on_finish();
 
                 Ok(())
