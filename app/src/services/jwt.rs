@@ -1,4 +1,4 @@
-use jsonwebtoken::{EncodingKey, Header, decode, Validation, DecodingKey, TokenData};
+use jsonwebtoken::{crypto::CryptoProvider, decode, DecodingKey, EncodingKey, Header, TokenData, Validation};
 use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 use std::env;
@@ -25,7 +25,7 @@ impl JwtService {
     pub fn new() -> Result<Self> {
 
         let secret = env::var("JWT_SECRET").unwrap_or_else(|_| {
-            "nxN6LIHkXbhE+pFjzipwu14cqfA9Z4IU2axPvnIJ4VXDiCFvmtQwe+8CbLFYlNo+c fUKyC2ZYLeSutEThlwi+QE=".to_string()
+            "nxN6LIHkXbhE+pFjzipwu14cqfA9Z4IU2axPvnIJ4VXDiCFvmtQwe+8CbLFYlNo+cfUKyC2ZYLeSutEThlwi+QE=".to_string()
         });
 
         let encoding_key = EncodingKey::from_base64_secret(&secret)?;

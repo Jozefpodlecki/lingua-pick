@@ -43,7 +43,7 @@ pub fn run() {
         .manage(SetupEndedNotifier::new())
         .manage(context)
         .manage(AppPasswordHasher::new())
-        .manage(JwtService::new())
+        .manage(JwtService::new().expect("Fatal"))
         .manage(TranscriptionService::new().expect("Fatal"))
         .manage(AudioManager::new().expect("Fatal"))
         .setup_db().expect("Test")

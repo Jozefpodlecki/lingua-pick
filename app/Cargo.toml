@@ -24,7 +24,7 @@ uuid = { version = "1.17.0", features = ["v4", "v7"] }
 async-trait = "0.1.89"
 cpal = { version = "0.17.3" }
 whisper-rs = { version = "0.15.1" }
-jsonwebtoken = "10.3.0"
+jsonwebtoken = { version = "10.3.0", features = ["rust_crypto"] }
 argon2 = { version = "0.5.3" }
 rand = "0.10.0"
 whoami = "2.1.1"

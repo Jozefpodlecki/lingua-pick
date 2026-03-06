@@ -68,7 +68,7 @@
 
 </script>
 
-<section data-tauri-drag-region class="flex flex-col items-center w-64">
+<section data-tauri-drag-region class="flex flex-col items-center w-64 gap-4">
     {#if downloading}
         <ProgressBar
             text={prompt}
@@ -80,14 +80,14 @@
             <button 
                 data-action="install"
                 type="button"
-                class="px-4 py-2 bg-blue-500/50 text-white rounded hover:bg-blue-600 text-sm"
+                class="px-4 py-2 bg-blue-500/50 text-white rounded hover:bg-blue-600/50 text-sm"
                 onclick={onInstall}>
                 Install 
             </button>
             <button 
                 data-action="continue"
                 type="button"
-                class="px-4 py-2 bg-gray-500/50 text-white rounded hover:bg-gray-600 text-sm"
+                class="px-4 py-2 bg-gray-500/50 text-white rounded hover:bg-gray-600/50 text-sm"
                 onclick={onContinue}>
                 Continue
             </button>
