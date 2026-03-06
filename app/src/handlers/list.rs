@@ -8,6 +8,10 @@ pub fn generate_handlers() -> Box<dyn Fn(Invoke) -> bool + Send + Sync> {
         load_app,
         login_with_creds,
         login_with_windows,
-        get_current_profile
+        get_current_profile,
+        get_all_profiles,
+        get_all_languages,
+        start_recording,
+        stop_recording
     ])
 }

@@ -1,10 +1,11 @@
-use chrono::Utc;
+use chrono::{Local, Utc};
 use lingua_pick_store::{DatabaseManager, LanguageRepository, User, UserRepository};
 use uuid::Uuid;
 
 fn main() {
-    let path = "test.duckdb";
-    let manager = DatabaseManager::new(path.into()).unwrap();
+    let now = Local::now();
+    let db_path = format!("test_{}.duckdb", now.format("%M%S"));
+    let manager = DatabaseManager::new(db_path.into()).unwrap();
     manager.ensure_created().unwrap();
 
     let languages = LanguageRepository::new(manager.pool().clone());

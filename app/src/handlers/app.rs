@@ -112,17 +112,3 @@ pub async fn login_with_creds<'a>(
     Ok(token)
 }
 
-#[command]
-pub async fn get_current_profile<'a>(
-    token: String, 
-    profile_repository: State<'a, UserProfileRepository>,
-    jwt_service: State<'a, JwtService>,) -> AppResult<Option<AppUserProfile>> {
-    
-    let token = jwt_service.decode(&token).map_err(|err| AppError::Command(anyhow::anyhow!("Could not decode JWT: {}", err)))?;
-    
-    let user_id = token.claims.sub;
-    let profile = profile_repository.get_by_user(user_id)?
-        .map(AppUserProfile::from);
-    
-    Ok(profile)
-}

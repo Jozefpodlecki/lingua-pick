@@ -1,0 +1,9 @@
+[package]
+name = "lingua-pick-ai"
+version = "0.0.1"
+edition = "2024"
+rust-version = "1.92"
+
+[dependencies]
+anyhow = "1.0.90"
+log = "0.4.18"

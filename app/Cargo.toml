@@ -31,6 +31,7 @@ whoami = "2.1.1"
 phc = "0.6.0-rc.1 "
 chrono = { version = "0.4.31", features = ["serde"] }
 lingua-pick-store = { path = "../crates/store" }
+lingua-pick-ai = { path = "../crates/ai" }
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-shell = "2.3.1"

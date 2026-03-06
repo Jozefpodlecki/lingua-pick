@@ -54,10 +54,17 @@ VALUES
 
 pub const GET_ACTIVE_USER_PROFILE_BY_USER: &str = r#"
 SELECT
-    *
+    upr.*
 FROM user_profile upr
-WHERE user_id = ?
-    AND is_active = true
+WHERE upr.user_id = ?
+    AND upr.is_active = true
+"#;
+
+pub const GET_USER_PROFILE_BY_USER: &str = r#"
+SELECT
+    upr.*
+FROM user_profile upr
+WHERE upr.user_id = ?
 "#;
 
 pub const UPDATE_USER_PROFILE_SET_ACTIVE: &str = r#"
@@ -77,8 +84,8 @@ SELECT
     lan.id,
     lan.created_on,
     lan.name,
-    lan.iso2,
-    lan.iso3,
+    lan.iso639_1,
+    lan.iso639_3,
 FROM language lan
 "#;
 
@@ -91,3 +98,17 @@ VALUES
     DO UPDATE SET
         version = EXCLUDED.version,
         updated_on = EXCLUDED.updated_on;"#;
+
+pub const INSERT_EXERCISE: &str = r#"
+INSERT INTO exercise
+VALUES
+(?, ?, ?, ?, ?, ?, ?)
+"#;
+
+pub const GET_CHARACTERS_BY_LANGUAGE_SAMPLE: &str = r#"
+SELECT
+    chr.*
+FROM character chr
+WHERE chr.language_id = ?
+USING SAMPLE 10 ROWS;
+"#;
