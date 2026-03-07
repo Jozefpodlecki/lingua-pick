@@ -17,8 +17,8 @@ impl User {
         Ok(Self {
             id: row.get(0)?,
             created_on: row.get(1)?,
-            user_name: row.get::<usize, String>(2)?.into_boxed_str(),
-            password_hash: row.get::<usize, Vec<u8>>(3)?,
+            user_name: row.get(2)?,
+            password_hash: row.get(3)?,
         })
     }
 }
@@ -30,8 +30,8 @@ pub struct UserProfile {
     pub created_on: DateTime<Utc>,
     pub updated_on: DateTime<Utc>,
     pub is_active: bool,
-    pub source_language_id: Uuid,
-    pub target_language_id: Uuid
+    pub source_language_id: u32,
+    pub target_language_id: u32
 }
 
 impl UserProfile {
@@ -52,7 +52,7 @@ impl UserProfile {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Language {
-    pub id: Uuid,
+    pub id: u32,
     pub created_on: DateTime<Utc>,
     pub name: Box<str>,
     pub iso639_1: Option<Box<str>>,
@@ -62,12 +62,12 @@ pub struct Language {
 impl Language {
     pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
 
-        Ok(Language {
+        Ok(Self {
             id: row.get(0)?,
             created_on: row.get(1)?,
-            name: row.get::<usize, String>(2)?.into_boxed_str(),
-            iso639_1: row.get::<usize, Option<String>>(3)?.map(|s| s.into_boxed_str()),
-            iso639_3: row.get::<usize, String>(4)?.into_boxed_str(),
+            name: row.get(2)?,
+            iso639_1: row.get(3)?,
+            iso639_3: row.get(4)?,
         })
     }
 }
@@ -81,12 +81,38 @@ pub struct Session {
     pub completed_on: Option<DateTime<Utc>>,
     pub exercise_count: u8,
     pub total_exercise_count: u8,
+    pub current_exercise_id: Option<Uuid>
+}
+
+impl Session {
+    pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
+        Ok(Self {
+            id: row.get(0)?,
+            user_profile_id: row.get(1)?,
+            created_on: row.get(2)?,
+            updated_on: row.get(3)?,
+            completed_on: row.get(4)?,
+            exercise_count: row.get(5)?,
+            total_exercise_count: row.get(6)?,
+            current_exercise_id: row.get(7)?,
+        })
+    }
 }
 
 #[derive(Debug)]
 pub struct Exercise {
     pub id: Uuid,
     pub created_on: DateTime<Utc>,
+}
+
+impl Exercise {
+    pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
+        Ok(Self {
+            id: row.get(0)?,
+            created_on: row.get(1)?,
+            
+        })
+    }
 }
 
 #[derive(Debug)]
@@ -98,6 +124,17 @@ pub struct ExerciseType {
     pub modality: Box<str>,
 }
 
+impl ExerciseType {
+    pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
+        Ok(Self {
+            id: row.get(0)?,
+            created_on: row.get(1)?,
+            name: row.get(2)?,
+            description: row.get(3)?,
+            modality: row.get(4)?,
+        })
+    }
+}
 
 #[derive(Debug)]
 pub struct Lexeme {

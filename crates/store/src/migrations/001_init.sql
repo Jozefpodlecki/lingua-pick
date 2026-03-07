@@ -23,17 +23,18 @@ CREATE TABLE user_profile (
     created_on TIMESTAMP NOT NULL,
     updated_on TIMESTAMP NOT NULL,
     is_active BOOL NOT NULL,
-    source_language_id UUID NOT NULL,
-    target_language_id UUID NOT NULL
+    source_language_id INTEGER NOT NULL,
+    target_language_id INTEGER NOT NULL
 );
 
+CREATE SEQUENCE language_sequence;
 CREATE TABLE language (
-    id UUID NOT NULL PRIMARY KEY,
-    created_on TIMESTAMP NOT NULL,
+    id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('language_sequence'),
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name NVARCHAR(50) NOT NULL,
     iso639_1 CHAR(2) NULL,
     iso639_3 CHAR(3) NOT NULL,
-    parent_id UUID NULL,
+    parent_id INTEGER NULL REFERENCES language(id),
     UNIQUE (iso639_3)
 );
 
@@ -52,22 +53,25 @@ CREATE TABLE session (
 CREATE TABLE session_user (
     session_id UUID NOT NULL,
     user_id UUID NOT NULL,
+    created_on TIMESTAMP NOT NULL,
     PRIMARY KEY(session_id, user_id),
     FOREIGN KEY (session_id) REFERENCES session(id),
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
+CREATE SEQUENCE exercise_type_sequence;
 CREATE TABLE exercise_type (
-    id UUID PRIMARY KEY,
-    created_on TIMESTAMP NOT NULL,
+    id TINYINT PRIMARY KEY DEFAULT nextval('exercise_type_sequence'),
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name NVARCHAR(50) NOT NULL,
     description TEXT NULL,
     modality NVARCHAR(20) NOT NULL
 );
 
+CREATE SEQUENCE exercise_sequence;
 CREATE TABLE exercise (
-    id UUID NOT NULL PRIMARY KEY,
-    type_id UUID NOT NULL,
+    id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('exercise_sequence'),
+    type_id TINYINT NOT NULL,
     session_id UUID NOT NULL,
     created_on TIMESTAMP NOT NULL,
     completed_on TIMESTAMP NULL,
@@ -78,93 +82,103 @@ CREATE TABLE exercise (
 );
 
 CREATE TABLE exercise_allowed_type (
-    source_language_id UUID NOT NULL REFERENCES language(id),
-    target_language_id UUID NOT NULL REFERENCES language(id),
-    type_id UUID NOT NULL REFERENCES exercise_type(id),
+    source_language_id INTEGER NOT NULL REFERENCES language(id),
+    target_language_id INTEGER NOT NULL REFERENCES language(id),
+    type_id TINYINT NOT NULL REFERENCES exercise_type(id),
     PRIMARY KEY(source_language_id, target_language_id, type_id)
 );
 
+CREATE SEQUENCE script_sequence;
 CREATE TABLE script (
-    id UUID PRIMARY KEY,
+    id INTEGER PRIMARY KEY DEFAULT nextval('script_sequence'),
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name NVARCHAR(50) NOT NULL,
     iso15924 CHAR(4) NOT NULL UNIQUE
 );
 
 CREATE TABLE language_script (
-    language_id UUID NOT NULL,
-    script_id UUID NOT NULL,
+    language_id INTEGER NOT NULL,
+    script_id INTEGER NOT NULL,
     is_primary BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (language_id, script_id),
     FOREIGN KEY (language_id) REFERENCES language(id),
     FOREIGN KEY (script_id) REFERENCES script(id)
 );
 
+CREATE SEQUENCE character_sequence;
 CREATE TABLE character (
-    id UUID PRIMARY KEY,
-    language_id UUID NOT NULL,
+    id INTEGER PRIMARY KEY DEFAULT nextval('character_sequence'),
+    language_id INTEGER NOT NULL,
     char NVARCHAR(10) NOT NULL,
-    script_id UUID NOT NULL,
+    script_id INTEGER NOT NULL,
     FOREIGN KEY (script_id) REFERENCES script(id),
     UNIQUE(language_id, char)
 );
 
+CREATE SEQUENCE character_reading_sequence;
 CREATE TABLE character_reading (
-    id UUID PRIMARY KEY,
-    character_id UUID NOT NULL,
+    id INTEGER PRIMARY KEY DEFAULT nextval('character_reading_sequence'),
+    character_id INTEGER NOT NULL,
     system NVARCHAR(50) NOT NULL,
     value TEXT NOT NULL,
     UNIQUE(character_id, system, value)
 );
 
+CREATE SEQUENCE lexeme_sequence;
 CREATE TABLE lexeme (
-    id UUID PRIMARY KEY,
-    language_id UUID NOT NULL,
+    id INTEGER PRIMARY KEY DEFAULT nextval('lexeme_sequence'),
+    language_id INTEGER NOT NULL,
     created_on TIMESTAMP NOT NULL,
     text NVARCHAR(100) NOT NULL,
     normalized NVARCHAR(100) NULL
 );
 
+CREATE SEQUENCE lexeme_reading_sequence;
 CREATE TABLE lexeme_reading (
-    id UUID PRIMARY KEY,
-    lexeme_id UUID NOT NULL REFERENCES lexeme(id),
+    id INTEGER PRIMARY KEY DEFAULT nextval('lexeme_reading_sequence'),
+    lexeme_id INTEGER NOT NULL REFERENCES lexeme(id),
     system NVARCHAR(50) NOT NULL,
     value NVARCHAR(50) NOT NULL,
     UNIQUE(lexeme_id, system, value)
 );
 
+CREATE SEQUENCE meaning_sequence;
 CREATE TABLE meaning (
-    id UUID PRIMARY KEY,
+    id INTEGER PRIMARY KEY DEFAULT nextval('meaning_sequence'),
     created_on TIMESTAMP NOT NULL,
     description TEXT NOT NULL
 );
 
 CREATE TABLE lexeme_meaning (
-    lexeme_id UUID NOT NULL REFERENCES lexeme(id),
-    meaning_id UUID NOT NULL REFERENCES meaning(id),
+    lexeme_id INTEGER NOT NULL REFERENCES lexeme(id),
+    meaning_id INTEGER NOT NULL REFERENCES meaning(id),
     PRIMARY KEY(lexeme_id, meaning_id)
 );
 
+CREATE SEQUENCE classification_system_sequence;
 CREATE TABLE classification_system (
-    id UUID PRIMARY KEY,
-    language_id UUID NOT NULL,
+    id INTEGER PRIMARY KEY DEFAULT nextval('classification_system_sequence'),
+    language_id INTEGER NOT NULL,
     name NVARCHAR(50) NOT NULL
 );
 
+CREATE SEQUENCE classification_level_sequence;
 CREATE TABLE classification_level (
-    id UUID PRIMARY KEY,
-    system_id UUID NOT NULL,
+    id INTEGER PRIMARY KEY DEFAULT nextval('classification_level_sequence'),
+    system_id INTEGER NOT NULL,
     name NVARCHAR(50) NOT NULL,
-    difficulty INTEGER NOT NULL
+    difficulty TINYINT NOT NULL
 );
 
 CREATE TABLE lexeme_classification (
-    lexeme_id UUID NOT NULL REFERENCES lexeme(id),
-    level_id UUID NOT NULL REFERENCES classification_level(id),
+    lexeme_id INTEGER NOT NULL REFERENCES lexeme(id),
+    level_id INTEGER NOT NULL REFERENCES classification_level(id),
     PRIMARY KEY(lexeme_id, level_id)
 );
 
+CREATE SEQUENCE user_skill_metric_sequence;
 CREATE TABLE user_skill_metric (
-    id UUID NOT NULL PRIMARY KEY,
+    id UUID NOT NULL PRIMARY KEY DEFAULT nextval('user_skill_metric_sequence'),
     metric TEXT NOT NULL,
     value DOUBLE NOT NULL,
     updated_on TIMESTAMP NOT NULL,
@@ -173,23 +187,23 @@ CREATE TABLE user_skill_metric (
 
 CREATE TABLE user_character_stat (
     id UUID NOT NULL REFERENCES user_profile(id),
-    character_id UUID NOT NULL,
-    times_seen INT NOT NULL DEFAULT 0,
-    times_correct INT NOT NULL DEFAULT 0,
-    times_pronounced_correct INT NOT NULL DEFAULT 0,
-    times_heard_correct INT NOT NULL DEFAULT 0,
-    last_seen TIMESTAMP NULL,
+    character_id INTEGER NOT NULL,
+    times_seen INTEGER NOT NULL DEFAULT 0,
+    times_correct INTEGER NOT NULL DEFAULT 0,
+    times_pronounced_correct INTEGER NOT NULL DEFAULT 0,
+    times_heard_correct INTEGER NOT NULL DEFAULT 0,
+    updated_on TIMESTAMP NOT NULL,
     PRIMARY KEY(id, character_id)
 );
 
 CREATE TABLE user_lexeme_stat (
     id UUID NOT NULL REFERENCES user_profile(id),
-    lexeme_id UUID NOT NULL,
-    times_seen INT NOT NULL DEFAULT 0,
-    times_correct INT NOT NULL DEFAULT 0,
-    times_pronounced_correct INT NOT NULL DEFAULT 0,
-    times_heard_correct INT NOT NULL DEFAULT 0,
-    last_seen TIMESTAMP NULL,
+    lexeme_id INTEGER NOT NULL,
+    times_seen INTEGER NOT NULL DEFAULT 0,
+    times_correct INTEGER NOT NULL DEFAULT 0,
+    times_pronounced_correct INTEGER NOT NULL DEFAULT 0,
+    times_heard_correct INTEGER NOT NULL DEFAULT 0,
+    updated_on TIMESTAMP NOT NULL,
     PRIMARY KEY(id, lexeme_id)
 );
 

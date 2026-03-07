@@ -1,34 +1,43 @@
 INSERT INTO script
+(
+    name,
+    iso15924
+)
 VALUES
-(uuidv7(), CURRENT_TIMESTAMP, 'Latin'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Cyrillic'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Arabic'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Greek'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Hebrew'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Devanagari'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Bengali'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Gurmukhi'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Gujarati'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Oriya'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Tamil'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Telugu'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Kannada'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Malayalam'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Sinhala'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Thai'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Lao'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Burmese'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Han'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Hangul'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Hiragana'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Katakana'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Yi'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Armenian'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Georgian'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Mongolian'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Thaana'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Ethiopic'),
-(uuidv7(), CURRENT_TIMESTAMP, 'Canadian Aboriginal');
+('Latin', 'Latn'),
+('Cyrillic', 'Cyrl'),
+('Arabic', 'Arab'),
+('Greek', 'Grek'),
+('Hebrew', 'Hebr'),
+('Devanagari', 'Deva'),
+('Bengali', 'Beng'),
+('Gurmukhi', 'Guru'),
+('Gujarati', 'Gujr'),
+('Oriya', 'Orya'),
+('Tamil', 'Taml'),
+('Telugu', 'Telu'),
+('Kannada', 'Knda'),
+('Malayalam', 'Mlym'),
+('Sinhala', 'Sinh'),
+('Thai', 'Thai'),
+('Lao', 'Laoo'),
+('Burmese', 'Mymr'),
+('Han', 'Hani'),
+('Hangul', 'Hang'),
+('Hiragana', 'Hira'),
+('Katakana', 'Kana'),
+('Yi', 'Yiii'),
+('Armenian', 'Armn'),
+('Georgian', 'Geor'),
+('Mongolian', 'Mong'),
+('Thaana', 'Thaa'),
+('Ethiopic', 'Ethi'),
+('Canadian Aboriginal', 'Cans'),
+('Tibetan','Tibt'),
+('Khmer','Khmr'),
+('Cherokee','Cher'),
+('Han Simplified','Hans'),
+('Han Traditional','Hant');
 
 INSERT INTO language_script (language_id, script_id, is_primary)
 
@@ -212,3 +221,17 @@ SELECT lan.id, scr.id, TRUE
 FROM language lan
 JOIN script scr ON scr.name = 'Ethiopic'
 WHERE lan.iso639_1 IN ('am','ti');
+
+UNION ALL
+
+SELECT lan.id, scr.id, FALSE
+FROM language lan
+JOIN script scr ON scr.name = 'Latin'
+WHERE lan.iso639_1 = 'sr';
+
+UNION ALL
+
+SELECT lan.id, scr.id, FALSE
+FROM language lan
+JOIN script scr ON scr.name = 'Cyrillic'
+WHERE lan.iso639_1 = 'uz';

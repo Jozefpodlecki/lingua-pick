@@ -1,9 +1,9 @@
 use anyhow::Result;
-use duckdb::{params, DuckdbConnectionManager};
+use duckdb::{params, DuckdbConnectionManager, OptionalExt};
 use r2d2::Pool;
 use uuid::Uuid;
 
-use crate::{queries::*, Exercise};
+use crate::{queries::*, Exercise, ExerciseType};
 
 pub struct ExerciseRepository(Pool<DuckdbConnectionManager>);
 
@@ -12,7 +12,17 @@ impl ExerciseRepository {
         Self(pool)
     }
 
-    pub fn create(&self, entity: Exercise) -> Result<()> {
+    pub fn get_by_id(&self, id: Uuid) -> Result<Option<Exercise>> {
+        let connection = self.0.get()?;
+
+        let entity = connection
+            .query_row(GET_EXERCISE_BY_ID, [id], Exercise::from_row)
+            .optional()?;
+
+        Ok(entity)
+    }
+
+    pub fn create(&self, entity: Exercise) -> Result<Exercise> {
         let connection = self.0.get()?;
 
         let params = params![
@@ -22,6 +32,24 @@ impl ExerciseRepository {
 
         connection.execute(INSERT_EXERCISE, params)?;
 
-        Ok(())
+        Ok(entity)
+    }
+}
+
+pub struct ExerciseTypeRepository(Pool<DuckdbConnectionManager>);
+
+impl ExerciseTypeRepository {
+    pub fn new(pool: Pool<DuckdbConnectionManager>) -> Self {
+        Self(pool)
+    }
+
+    pub fn get_by_language_id(&self, language_id: Uuid) -> Result<Option<ExerciseType>> {
+        let connection = self.0.get()?;
+
+        let entity = connection
+            .query_row(GET_EXERCISE_TYPES, [language_id], ExerciseType::from_row)
+            .optional()?;
+
+        Ok(entity)
     }
 }

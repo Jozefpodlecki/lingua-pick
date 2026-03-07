@@ -88,6 +88,8 @@ impl BuilderExtensions for tauri::Builder<Wry> {
         builder = builder
             .manage(SetupEndedNotifier::new())
             .manage(context)
+            .manage(IdGenerator::new())
+            .manage(SystemClock::new())
             .manage(AppPasswordHasher::new())
             .manage(JwtService::new().expect("Fatal"))
             .manage(TranscriptionService::new().expect("Fatal"))

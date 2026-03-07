@@ -30,6 +30,7 @@ rand = "0.10.0"
 whoami = "2.1.1"
 phc = "0.6.0-rc.1 "
 chrono = { version = "0.4.31", features = ["serde"] }
+reqwest = { version = "0.13.1", features = ["json", "gzip"] }
 lingua-pick-store = { path = "../crates/store" }
 lingua-pick-ai = { path = "../crates/ai" }
 

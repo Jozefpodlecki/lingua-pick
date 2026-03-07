@@ -1,4 +1,4 @@
-use tauri::{Builder, EventLoopMessage, Wry};
+#![allow(warnings)]
 
 use crate::context::AppContext;
 use crate::builder::BuilderExtensions;
@@ -16,16 +16,11 @@ mod builder;
 pub fn run() {
     let context = AppContext::new();
 
-    // let test: Builder<Wry> = tauri::Builder::default();
-
     tauri::Builder::default()
         .setup_services(context)
-        .setup_db().expect("Test")
+        .setup_db().expect("Could not setup db")
         .setup_plugins()
         .setup_handlers()
-        // .channel_interceptor(|_, _, _, _| {
-        //     true
-        // })
         .setup_hook(setup_app)
         .build_and_run();
 }

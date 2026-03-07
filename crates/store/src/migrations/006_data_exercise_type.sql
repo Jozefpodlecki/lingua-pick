@@ -1,6 +1,11 @@
 INSERT INTO exercise_type
+(
+    name,
+    description,
+    modality
+)
 VALUES
-(uuidv7(), CURRENT_TIMESTAMP, 'translate-sentence', '
+('translate-sentence', '
 This exercise type requires the learner to translate a complete sentence from the source language into the target language. The goal is to evaluate the learner’s ability to correctly map meaning, grammar, and vocabulary between languages while producing a natural sentence in the target language.
 
 The system will provide:

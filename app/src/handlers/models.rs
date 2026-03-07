@@ -19,8 +19,8 @@ pub struct LoginArgs {
 pub struct AppUserProfile {
     pub id: Uuid,
     pub user_id: Uuid,
-    pub source_language_id: Uuid,
-    pub target_language_id: Uuid
+    pub source_language_id: u32,
+    pub target_language_id: u32
 }
 
 impl From<UserProfile> for AppUserProfile {

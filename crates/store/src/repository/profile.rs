@@ -19,8 +19,8 @@ impl UserProfileRepository {
         let params = params![
             entity.id,
             entity.user_id,
-            entity.created_on.naive_utc(),
-            entity.updated_on.naive_utc(),
+            entity.created_on,
+            entity.updated_on,
             entity.is_active,
             entity.source_language_id,
             entity.target_language_id
