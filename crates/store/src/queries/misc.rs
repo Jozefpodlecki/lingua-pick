@@ -90,10 +90,15 @@ VALUES
         version = EXCLUDED.version,
         updated_on = EXCLUDED.updated_on;"#;
 
-pub const GET_CHARACTERS_BY_LANGUAGE_SAMPLE: &str = r#"
-SELECT
-    chr.*
-FROM character chr
-WHERE chr.language_id = ?
-USING SAMPLE 10 ROWS;
+
+pub const INSERT_WOTD: &str = r#"
+INSERT INTO word_of_the_day
+VALUES
+(?, ?, ?)
 "#;
+
+pub const GET_WOTD_BY_ID: &str = r#"
+SELECT
+    wotd.*
+FROM word_of_the_day wotd
+WHERE id = ?"#;

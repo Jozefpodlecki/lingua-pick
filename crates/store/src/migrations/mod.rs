@@ -9,8 +9,8 @@ use crate::queries::*;
 pub const MIGRATIONS: &[(&str, &str)] = &[
     (include_str!("./001_init.sql"), "migrations/001_init.sql"),
     (include_str!("./002_data_languages.sql"), "migrations/002_data_languages.sql"),
-    (include_str!("./003_data_script.sql"), "migrations/003_data_script.sql"),
-    (include_str!("./004_data_lexeme.sql"), "migrations/004_data_lexeme.sql"),
+    (include_str!("./003_data_assets.sql"), "migrations/003_data_assets.sql"),
+    (include_str!("./004_data_script.sql"), "migrations/004_data_script.sql"),
     (include_str!("./005_data_character.sql"), "migrations/005_data_character.sql"),
 ];
 

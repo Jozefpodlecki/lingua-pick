@@ -12,7 +12,7 @@ impl UserProfileRepository {
         Self(pool)
     }
 
-    pub fn create(&self, entity: UserProfile) -> Result<()> {
+    pub fn create(&self, entity: UserProfile) -> Result<UserProfile> {
 
         let connection = self.0.get()?;
 
@@ -28,7 +28,7 @@ impl UserProfileRepository {
 
         connection.execute(INSERT_USER_PROFILE, params)?;
 
-        Ok(())
+        Ok(entity)
     }
 
     pub fn set_active(&self, id: Uuid) -> Result<()> {

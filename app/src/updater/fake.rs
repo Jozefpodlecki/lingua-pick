@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use tokio::time::sleep;
 use serde::{Deserialize, Serialize};
 
-use crate::updater::traits::*;
+use crate::updater::{traits::*, *};
 use super::traits::{UpdateProvider};
 
 pub struct FakeUpdateBuilder {

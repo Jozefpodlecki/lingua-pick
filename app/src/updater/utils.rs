@@ -4,29 +4,6 @@ use log::*;
 
 use crate::updater::{fake::FakeUpdateBuilder, manager::{UpdateManager}};
 
-#[derive(Debug, Serialize, Clone)]
-#[serde(tag = "type", rename_all = "camelCase")]
-pub enum UpdateResult<'a> {
-    Idle,
-    Checking,
-    Found {
-        version: &'a str,
-    },
-    Downloading {
-        version: &'a str,
-        downloaded: usize,
-        #[serde(rename = "fileSize")] 
-        file_size: Option<u64>
-    },
-    Downloaded {
-        version: &'a str,
-    },
-    Latest,
-    Error {
-        message: &'a str
-    }
-}
-
 pub fn setup_updater(app_handle: &AppHandle) {
 
     let builder = FakeUpdateBuilder::new()

@@ -53,7 +53,7 @@ impl BuilderExtensions for tauri::Builder<Wry> {
             .manage(SessionRepository::new(pool.clone()))
             .manage(LexemeRepository::new(pool.clone()))
             .manage(ExerciseRepository::new(pool.clone()))
-            .manage(CharacterRepository::new(pool.clone()))
+            .manage(GraphemeRepository::new(pool.clone()))
             .manage(UserStatRepository::new(pool.clone()))
             .manage(UserSkillMetricRepository::new(pool.clone()));
 
@@ -90,6 +90,7 @@ impl BuilderExtensions for tauri::Builder<Wry> {
             .manage(context)
             .manage(IdGenerator::new())
             .manage(SystemClock::new())
+            .manage(DefaultResourceFetcher::new())
             .manage(AppPasswordHasher::new())
             .manage(JwtService::new().expect("Fatal"))
             .manage(TranscriptionService::new().expect("Fatal"))

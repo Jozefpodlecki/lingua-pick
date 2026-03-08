@@ -1,15 +1,6 @@
 use anyhow::Result;
 
-pub type ChunkCallback = Box<dyn FnMut(usize, Option<u64>) + Send>;
-pub type FinishCallback = Box<dyn FnOnce() + Send>;
-
-pub enum UpdateCheckResult {
-    Latest,
-    Downloaded,
-    NewVersion,
-    Error(String)
-}
-
+use crate::updater::{ChunkCallback, FinishCallback, UpdateCheckResult};
 #[async_trait::async_trait]
 pub trait UpdateProvider: Send + Sync + 'static {
     fn version(&self) -> Option<&str>;

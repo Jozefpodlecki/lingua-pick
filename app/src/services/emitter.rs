@@ -1,7 +1,7 @@
 use serde::Serialize;
 use tauri::{AppHandle, Emitter};
 
-
+#[derive(Clone)]
 pub struct AppEmitter(AppHandle);
 
 impl AppEmitter {

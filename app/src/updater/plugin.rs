@@ -5,7 +5,7 @@ use async_trait::async_trait;
 use tauri::AppHandle;
 use tauri_plugin_updater::{Update, Updater, UpdaterExt};
 
-use crate::updater::traits::{ChunkCallback, FinishCallback, UpdateCheckResult};
+use crate::updater::{ChunkCallback, FinishCallback, UpdateCheckResult};
 
 use super::traits::{UpdateProvider};
 

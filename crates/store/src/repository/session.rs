@@ -13,7 +13,7 @@ impl SessionRepository {
         Self(pool)
     }
 
-    pub fn create(&self, entity: Session) -> Result<()> {
+    pub fn create(&self, entity: Session) -> Result<Session> {
         let connection = self.0.get()?;
 
         let params = params![
@@ -29,7 +29,7 @@ impl SessionRepository {
 
         connection.execute(INSERT_SESSION, params)?;
 
-        Ok(())
+        Ok(entity)
     }
 
     pub fn link_to_user(&self, id: Uuid, user_id: Uuid) -> Result<()> {

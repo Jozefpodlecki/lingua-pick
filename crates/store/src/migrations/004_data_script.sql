@@ -1,3 +1,24 @@
+INSERT INTO reading_system
+(
+    name,
+    type
+)
+VALUES
+('IPA', 'phonetic'),               -- International Phonetic Alphabet (linguistic standard)
+('Hanyu Pinyin', 'romanization'),  -- Standard Mandarin romanization (ISO 7098):contentReference[oaicite:1]{index=1}
+('Wade-Giles', 'romanization'),
+('Gwoyeu Romatzyh', 'romanization'), -- historic Chinese romanization:contentReference[oaicite:2]{index=2}
+('Yale', 'romanization'),          -- used for various languages (Cantonese, Korean, etc.):contentReference[oaicite:3]{index=3}
+('Jyutping', 'romanization'),      -- popular Cantonese scheme:contentReference[oaicite:4]{index=4}
+('Hepburn', 'romanization'),       -- Japanese romanization (rōmaji):contentReference[oaicite:5]{index=5}
+('Kunrei-shiki', 'romanization'),  -- Japanese romanization standardized under ISO 3602:contentReference[oaicite:6]{index=6}
+('JSL', 'romanization'),           -- Nihon/Japanese system used in academic context:contentReference[oaicite:7]{index=7}
+('Revised Romanization (Korean)', 'romanization'), -- Korean official system:contentReference[oaicite:8]{index=8}
+('McCune-Reischauer', 'romanization'), -- classic Korean romanization:contentReference[oaicite:9]{index=9}
+('Bopomofo (Zhuyin)', 'phonetic'), -- Chinese phonetic syllabary:contentReference[oaicite:10]{index=10}
+('ALA-LC', 'romanization'),        -- Library of Congress romanization schemes:contentReference[oaicite:11]{index=11}
+('BGN/PCGN', 'romanization');      -- US/UK joint romanization standards:contentReference[oaicite:12]{index=12}
+
 INSERT INTO script
 (
     name,
@@ -220,14 +241,14 @@ UNION ALL
 SELECT lan.id, scr.id, TRUE
 FROM language lan
 JOIN script scr ON scr.name = 'Ethiopic'
-WHERE lan.iso639_1 IN ('am','ti');
+WHERE lan.iso639_1 IN ('am','ti')
 
 UNION ALL
 
 SELECT lan.id, scr.id, FALSE
 FROM language lan
 JOIN script scr ON scr.name = 'Latin'
-WHERE lan.iso639_1 = 'sr';
+WHERE lan.iso639_1 = 'sr'
 
 UNION ALL
 

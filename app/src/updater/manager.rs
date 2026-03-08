@@ -5,7 +5,7 @@ use tauri::{AppHandle, Emitter, Manager};
 use log::*;
 use tokio::{spawn, sync::Mutex, time::sleep};
 
-use crate::updater::{fake::FakeUpdateBuilder, plugin::AppUpdater, traits::{UpdateCheckResult, UpdateProvider}, UpdateResult};
+use crate::updater::{fake::FakeUpdateBuilder, plugin::AppUpdater, traits::UpdateProvider, UpdateCheckResult, UpdateResult};
 
 pub struct UpdateManager {
     app_handle: AppHandle,

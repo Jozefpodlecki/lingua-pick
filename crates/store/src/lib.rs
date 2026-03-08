@@ -1,3 +1,5 @@
+#![allow(warnings)]
+
 mod database;
 mod migrations;
 mod models;

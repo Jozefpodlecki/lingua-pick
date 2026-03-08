@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::{Date, DateTime, NaiveDate, Utc};
 use duckdb::Row;
 use serde::Serialize;
 use uuid::Uuid;
@@ -57,17 +57,43 @@ pub struct Language {
     pub name: Box<str>,
     pub iso639_1: Option<Box<str>>,
     pub iso639_3: Box<str>,
+    pub ietf_bcp_47: Box<str>,
+    pub is_dialect: bool,
+    pub is_regional_standard: bool,
+    pub parent_id: Option<u32>
 }
 
 impl Language {
     pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
-
         Ok(Self {
             id: row.get(0)?,
             created_on: row.get(1)?,
             name: row.get(2)?,
             iso639_1: row.get(3)?,
             iso639_3: row.get(4)?,
+            ietf_bcp_47: row.get(5)?,
+            is_dialect: row.get(6)?,
+            is_regional_standard: row.get(7)?,
+            parent_id: row.get(8)?,
+        })
+    }
+}
+
+pub struct LanguageAsset {
+    pub id: u32,
+    pub created_on: DateTime<Utc>,
+    pub file_name: Box<str>,
+    pub language_id: u32,
+}
+
+impl LanguageAsset {
+    pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
+
+        Ok(Self {
+            id: row.get(0)?,
+            created_on: row.get(1)?,
+            file_name: row.get(2)?,
+            language_id: row.get(3)?,
         })
     }
 }
@@ -138,20 +164,98 @@ impl ExerciseType {
 
 #[derive(Debug)]
 pub struct Lexeme {
-    pub id: Uuid,
+    pub id: u32,
+    pub created_on: DateTime<Utc>,
+    pub text: Box<str>,
+    pub language_id: u32,
+    pub normalized: Box<str>,
+}
+
+impl Lexeme {
+    pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
+
+        Ok(Self {
+            id: row.get(0)?,
+            created_on: row.get(1)?,
+            text: row.get(2)?,
+            language_id: row.get(3)?,
+            normalized: row.get(4)?,
+        })
+    }
 }
 
 #[derive(Debug)]
-pub struct Character {
-    pub id: Uuid,
+pub struct LexemeReading {
+    pub id: u32,
+    pub lexeme_id: u32,
+    pub system: Box<str>,
+    pub value: Box<str>,
 }
 
-impl Character {
+impl LexemeReading {
     pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
-
-        Ok(Character {
+        Ok(Self {
             id: row.get(0)?,
-            
+            lexeme_id: row.get(1)?,
+            system: row.get(2)?,
+            value: row.get(3)?
+        })
+    }
+}
+
+#[derive(Debug)]
+pub struct Grapheme {
+    pub id: u32,
+    pub created_on: DateTime<Utc>,
+    pub script_id: u32,
+    pub symbol: Box<str>,
+}
+
+impl Grapheme {
+    pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
+        Ok(Self {
+            id: row.get(0)?,
+            created_on: row.get(1)?,
+            script_id: row.get(2)?,
+            symbol: row.get(3)?
+        })
+    }
+}
+
+#[derive(Debug)]
+pub struct GraphemeReading {
+    pub id: u32,
+    pub grapheme_id: u32,
+    pub language_id: u32,
+    pub system: Box<str>,
+    pub value: Box<str>,
+}
+
+impl GraphemeReading {
+    pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
+        Ok(Self {
+            id: row.get(0)?,
+            grapheme_id: row.get(1)?,
+            language_id: row.get(2)?,
+            system: row.get(3)?,
+            value: row.get(3)?
+        })
+    }
+}
+
+#[derive(Debug)]
+pub struct WordOfTheDay {
+    pub id: NaiveDate,
+    pub lexeme_id: u32,
+    pub language_id: u32
+}
+
+impl WordOfTheDay {
+    pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
+        Ok(Self {
+            id: row.get(0)?,
+            lexeme_id: row.get(1)?,
+            language_id: row.get(2)?
         })
     }
 }

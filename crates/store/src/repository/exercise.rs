@@ -43,13 +43,17 @@ impl ExerciseTypeRepository {
         Self(pool)
     }
 
-    pub fn get_by_language_id(&self, language_id: Uuid) -> Result<Option<ExerciseType>> {
+    pub fn get_by_language_id(&self, language_id: Uuid) -> Result<Box<[ExerciseType]>> {
         let connection = self.0.get()?;
 
-        let entity = connection
-            .query_row(GET_EXERCISE_TYPES, [language_id], ExerciseType::from_row)
-            .optional()?;
+        let mut statement = connection.prepare(GET_EXERCISE_TYPES)?;
+        let rows = statement.query_map([language_id], ExerciseType::from_row)?;
 
-        Ok(entity)
+        let mut entities = vec![];
+        for row in rows {
+            entities.push(row?);
+        }
+
+        Ok(entities.into_boxed_slice())
     }
 }

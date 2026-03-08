@@ -12,7 +12,7 @@ CREATE TABLE migrations (
 
 CREATE TABLE user (
     id UUID NOT NULL PRIMARY KEY,
-    created_on TIMESTAMP NOT NULL,
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     username NVARCHAR(50) NOT NULL,
     password_hash BLOB NOT NULL
 );
@@ -27,15 +27,34 @@ CREATE TABLE user_profile (
     target_language_id INTEGER NOT NULL
 );
 
+CREATE SEQUENCE part_of_speech_sequence;
+
+CREATE TABLE part_of_speech (
+    id INTEGER PRIMARY KEY DEFAULT nextval('part_of_speech_sequence'),
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    name NVARCHAR(50) NOT NULL UNIQUE,
+    description TEXT NULL
+);
+
 CREATE SEQUENCE language_sequence;
 CREATE TABLE language (
     id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('language_sequence'),
     created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name NVARCHAR(50) NOT NULL,
     iso639_1 CHAR(2) NULL,
-    iso639_3 CHAR(3) NOT NULL,
-    parent_id INTEGER NULL REFERENCES language(id),
-    UNIQUE (iso639_3)
+    iso639_3 CHAR(3) NULL,
+    ietf_bcp_47 NVARCHAR(20) NOT NULL,
+    is_dialect BOOLEAN DEFAULT FALSE,
+    is_regional_standard BOOLEAN DEFAULT FALSE,
+    parent_id INTEGER NULL REFERENCES language(id)
+);
+
+CREATE SEQUENCE language_asset_sequence;
+CREATE TABLE language_asset (
+    id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('language_asset_sequence'),
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    file_name NVARCHAR(50) NOT NULL,
+    language_id INTEGER NOT NULL REFERENCES language(id)
 );
 
 CREATE TABLE session (
@@ -57,6 +76,21 @@ CREATE TABLE session_user (
     PRIMARY KEY(session_id, user_id),
     FOREIGN KEY (session_id) REFERENCES session(id),
     FOREIGN KEY (user_id) REFERENCES user(id)
+);
+
+CREATE SEQUENCE meaning_sequence;
+CREATE TABLE meaning (
+    id INTEGER PRIMARY KEY DEFAULT nextval('meaning_sequence'),
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    description TEXT NOT NULL
+);
+
+CREATE SEQUENCE reading_system_sequence;
+CREATE TABLE reading_system (
+    id INTEGER PRIMARY KEY DEFAULT nextval('reading_system_sequence'),
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    name NVARCHAR(50) NOT NULL UNIQUE,
+    type NVARCHAR(20) NULL
 );
 
 CREATE SEQUENCE exercise_type_sequence;
@@ -105,31 +139,12 @@ CREATE TABLE language_script (
     FOREIGN KEY (script_id) REFERENCES script(id)
 );
 
-CREATE SEQUENCE character_sequence;
-CREATE TABLE character (
-    id INTEGER PRIMARY KEY DEFAULT nextval('character_sequence'),
-    language_id INTEGER NOT NULL,
-    char NVARCHAR(10) NOT NULL,
-    script_id INTEGER NOT NULL,
-    FOREIGN KEY (script_id) REFERENCES script(id),
-    UNIQUE(language_id, char)
-);
-
-CREATE SEQUENCE character_reading_sequence;
-CREATE TABLE character_reading (
-    id INTEGER PRIMARY KEY DEFAULT nextval('character_reading_sequence'),
-    character_id INTEGER NOT NULL,
-    system NVARCHAR(50) NOT NULL,
-    value TEXT NOT NULL,
-    UNIQUE(character_id, system, value)
-);
-
 CREATE SEQUENCE lexeme_sequence;
 CREATE TABLE lexeme (
     id INTEGER PRIMARY KEY DEFAULT nextval('lexeme_sequence'),
-    language_id INTEGER NOT NULL,
-    created_on TIMESTAMP NOT NULL,
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     text NVARCHAR(100) NOT NULL,
+    language_id INTEGER NOT NULL,    
     normalized NVARCHAR(100) NULL
 );
 
@@ -142,11 +157,30 @@ CREATE TABLE lexeme_reading (
     UNIQUE(lexeme_id, system, value)
 );
 
-CREATE SEQUENCE meaning_sequence;
-CREATE TABLE meaning (
-    id INTEGER PRIMARY KEY DEFAULT nextval('meaning_sequence'),
+CREATE SEQUENCE grapheme_sequence;
+CREATE TABLE grapheme (
+    id INTEGER PRIMARY KEY DEFAULT nextval('grapheme_sequence'),
     created_on TIMESTAMP NOT NULL,
-    description TEXT NOT NULL
+    script_id INTEGER NOT NULL,
+    symbol NVARCHAR(10) NOT NULL,
+    FOREIGN KEY (script_id) REFERENCES script(id)
+);
+
+CREATE SEQUENCE grapheme_reading_sequence;
+CREATE TABLE grapheme_reading (
+    id INTEGER PRIMARY KEY DEFAULT nextval('grapheme_reading_sequence'),
+    grapheme_id INTEGER NOT NULL,
+    language_id INTEGER NOT NULL,
+    system NVARCHAR(20) NOT NULL,
+    value NVARCHAR(20) NOT NULL,
+    FOREIGN KEY (language_id) REFERENCES language(id),
+    FOREIGN KEY (grapheme_id) REFERENCES grapheme(id)
+);
+
+CREATE TABLE lexeme_pos (
+    lexeme_id INTEGER NOT NULL REFERENCES lexeme(id),
+    pos_id INTEGER NOT NULL REFERENCES part_of_speech(id),
+    PRIMARY KEY(lexeme_id, pos_id)
 );
 
 CREATE TABLE lexeme_meaning (
@@ -185,15 +219,15 @@ CREATE TABLE user_skill_metric (
     FOREIGN KEY (id) REFERENCES user_profile(id)
 );
 
-CREATE TABLE user_character_stat (
+CREATE TABLE user_grapheme_stat (
     id UUID NOT NULL REFERENCES user_profile(id),
-    character_id INTEGER NOT NULL,
+    grapheme_id INTEGER NOT NULL,
     times_seen INTEGER NOT NULL DEFAULT 0,
     times_correct INTEGER NOT NULL DEFAULT 0,
     times_pronounced_correct INTEGER NOT NULL DEFAULT 0,
     times_heard_correct INTEGER NOT NULL DEFAULT 0,
     updated_on TIMESTAMP NOT NULL,
-    PRIMARY KEY(id, character_id)
+    PRIMARY KEY(id, grapheme_id)
 );
 
 CREATE TABLE user_lexeme_stat (
@@ -207,9 +241,15 @@ CREATE TABLE user_lexeme_stat (
     PRIMARY KEY(id, lexeme_id)
 );
 
+CREATE TABLE word_of_the_day (
+    id DATE PRIMARY KEY,
+    lexeme_id INTEGER NOT NULL REFERENCES lexeme(id),
+    language_id INTEGER NOT NULL REFERENCES language(id)
+);
+
 CREATE INDEX IX_user_profile_user_id ON user_profile(user_id);
 CREATE INDEX IX_exercise_session_id ON exercise(session_id);
 CREATE INDEX IX_user_profile_active_lang ON user_profile(is_active, source_language_id, target_language_id);
 CREATE INDEX IX_session_user_user_id ON session_user(user_id);
-CREATE INDEX IX_character_script ON character(script_id);
+CREATE INDEX IX_grapheme_script ON grapheme(script_id);
 CREATE INDEX IX_language_iso639_1 ON language(iso639_1);

@@ -2,12 +2,20 @@
 SET VARIABLE language_id = (SELECT id FROM language WHERE iso639_3 = 'zho');
 
 INSERT INTO lexeme
+(
+    language_id,
+    text,
+    normalized
+)
 VALUES
-(uuidv7(), getvariable('language_id'), CURRENT_TIMESTAMP, '你好', '你好');
+(getvariable('language_id'), '你好', '你好');
 
 INSERT INTO meaning
+(
+    description
+)
 VALUES
-(uuidv7(), CURRENT_TIMESTAMP, 'A greeting used to say hello in Mandarin');
+('A greeting used to say hello in Mandarin');
 
 INSERT INTO lexeme_meaning
 VALUES

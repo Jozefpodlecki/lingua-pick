@@ -10,6 +10,16 @@ use crate::{migrations::apply_migrations, models::*, queries::*};
 pub struct DatabaseManager(Pool<DuckdbConnectionManager>);
 
 impl DatabaseManager {
+     pub fn memory() -> Result<Self> {
+        let manager = DuckdbConnectionManager::memory()?;
+        
+        let pool = r2d2::Pool::builder()
+            .max_size(15)
+            .build(manager)?;
+
+        Ok(Self(pool))
+    }
+
     pub fn new(path: PathBuf) -> Result<Self> {
         let manager = DuckdbConnectionManager::file(path)?;
         
