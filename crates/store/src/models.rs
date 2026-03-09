@@ -56,10 +56,11 @@ pub struct Language {
     pub created_on: DateTime<Utc>,
     pub name: Box<str>,
     pub iso639_1: Option<Box<str>>,
-    pub iso639_3: Box<str>,
+    pub iso639_3: Option<Box<str>>,
     pub ietf_bcp_47: Box<str>,
     pub is_dialect: bool,
     pub is_regional_standard: bool,
+    pub is_macro_language: bool,
     pub parent_id: Option<u32>
 }
 
@@ -74,7 +75,8 @@ impl Language {
             ietf_bcp_47: row.get(5)?,
             is_dialect: row.get(6)?,
             is_regional_standard: row.get(7)?,
-            parent_id: row.get(8)?,
+            is_macro_language: row.get(8)?,
+            parent_id: row.get(9)?,
         })
     }
 }
@@ -87,6 +89,19 @@ pub struct LanguageAsset {
 }
 
 impl LanguageAsset {
+    pub fn kind(&self) -> &'static str {
+        
+        if self.file_name.contains("lexemes.json") {
+            return "lexemes";
+        }
+
+        if self.file_name.contains("graphemes.json") {
+            return "graphemes";
+        }
+
+        "unknown"
+    }
+
     pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
 
         Ok(Self {
@@ -98,7 +113,8 @@ impl LanguageAsset {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Session {
     pub id: Uuid,
     pub user_profile_id: Uuid,
@@ -127,23 +143,34 @@ impl Session {
 
 #[derive(Debug)]
 pub struct Exercise {
-    pub id: Uuid,
+    pub id: u32,
+    pub type_id: u8,
+    pub session_id: Uuid,
     pub created_on: DateTime<Utc>,
+    pub completed_on: Option<DateTime<Utc>>,
+    pub data: Box<str>,
+    pub result: Option<Box<str>>,
+    pub verdict: Option<Box<str>>,
 }
 
 impl Exercise {
     pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
         Ok(Self {
             id: row.get(0)?,
-            created_on: row.get(1)?,
-            
+            type_id: row.get(1)?,
+            session_id: row.get(2)?,
+            created_on: row.get(3)?,
+            completed_on: row.get(4)?,
+            data: row.get(5)?,
+            result: row.get(6)?,
+            verdict: row.get(7)?
         })
     }
 }
 
 #[derive(Debug)]
 pub struct ExerciseType {
-    pub id: Uuid,
+    pub id: u8,
     pub created_on: DateTime<Utc>,
     pub name: Box<str>,
     pub description: Box<str>,
@@ -256,6 +283,29 @@ impl WordOfTheDay {
             id: row.get(0)?,
             lexeme_id: row.get(1)?,
             language_id: row.get(2)?
+        })
+    }
+}
+
+#[derive(Debug)]
+pub struct LanguageFeature {
+    pub id: NaiveDate,
+    pub created_on: DateTime<Utc>,
+    pub language_id: u32,
+    pub name: Box<str>,
+    pub description: Box<str>,
+    pub parent_id: Option<u32>,
+}
+
+impl LanguageFeature {
+    pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
+        Ok(Self {
+            id: row.get(0)?,
+            created_on: row.get(1)?,
+            language_id: row.get(2)?,
+            name: row.get(3)?,
+            description: row.get(4)?,
+            parent_id: row.get(5)?,
         })
     }
 }

@@ -1,8 +1,10 @@
+use std::path::PathBuf;
+
 use futures_util::StreamExt;
 use lingua_pick_store::*;
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Listener, Manager};
-use tokio::task;
+use tokio::{fs::File, task};
 use log::*;
 use url::Url;
 use uuid::Uuid;
@@ -81,7 +83,7 @@ impl ProfileManager {
     }
 
     async fn create_profile(resolver: DependencyResolver, emitter: &AppEmitter, payload: &str) -> Result<()> {
-        let args: CreateProfileArgs = serde_json::from_str(payload)?;
+        let args: CreateProfileArgs = serde_json::from_str(payload).map_err(|_| CreateProfileError::Download)?;
         let CreateProfileArgs {
             token,
             source_language_id,
@@ -101,26 +103,16 @@ impl ProfileManager {
         let assets = lang_asset_repo.get_by_language_id(target_language_id).map_err(|_| CreateProfileError::Download)?;
         for asset in assets {
 
-            let uri = format!("file://C:/repos/lingua-pick/{}", asset.file_name);
+            let uri = format!("file://{}/{}", context.current_dir.display(), asset.file_name);
             let url = Url::parse(&uri).map_err(|_| CreateProfileError::Download)?;
-
-            let kind = {
-                if asset.file_name.contains("lexemes.json") {
-                    return "lexemes";
-                }
-
-                if asset.file_name.contains("graphemes.json") {
-                    return "graphemes";
-                }
-
-                "unknown"
-            };
 
             if url.scheme() == "file" && !url.to_file_path().unwrap().exists() {
                 let uri = format!("https://raw.githubusercontent.com/Jozefpodlecki/lingua-pick/{}", asset.file_name);
                 let url = Url::parse(&uri).map_err(|_| CreateProfileError::Download)?;
 
-                let stream = reqwest::get(uri).await
+                let path = context.current_dir.join(&*asset.file_name);
+                let writer = File::create(path);
+                let mut stream = reqwest::get(uri).await
                     .map_err(|_| CreateProfileError::Download)?
                     .bytes_stream();
 
@@ -130,7 +122,7 @@ impl ProfileManager {
                     emitter.emit("status", &CreateProfileEvent::Downloading {
                         downloaded: 0,
                         file_size: 0,
-                        kind
+                        kind: asset.kind()
                     });
                 }
             }

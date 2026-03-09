@@ -49,3 +49,26 @@ impl LanguageRepository {
     }
 }
 
+pub struct LanguageFeatureRepository(Pool<DuckdbConnectionManager>);
+
+impl LanguageFeatureRepository {
+    pub fn new(pool: Pool<DuckdbConnectionManager>) -> Self {
+        Self(pool)
+    }
+
+    pub fn get_by_language_id(&self, language_id: u32) -> Result<Box<[Language]>> {
+        let connection = self.0.get()?;
+
+        let count: usize = connection.query_row(GET_LANGUAGES_COUNT, [], |row| row.get(0))?;
+
+        let mut statement = connection.prepare(GET_LANGUAGES)?;
+        let rows = statement.query_map([], Language::from_row)?;
+
+        let mut languages = Vec::with_capacity(count);
+        for row in rows {
+            languages.push(row?);
+        }
+
+        Ok(languages.into_boxed_slice())
+    }
+}

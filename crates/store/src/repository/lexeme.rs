@@ -22,6 +22,20 @@ impl LexemeRepository {
         Ok(entity)
     }
 
+    pub fn get_by_language_id(&self, language_id: u32) -> Result<Box<[Lexeme]>> {   
+        let connection = self.0.get()?;
+
+        let mut statement = connection.prepare(GET_LEXEME_BY_LANGUAGE_ID)?;
+        let rows = statement.query_map([language_id], Lexeme::from_row)?;
+
+        let mut entities = vec![];
+        for row in rows {
+            entities.push(row?);
+        }
+
+        Ok(entities.into_boxed_slice())
+    }
+
     pub fn bulk_insert(&self) -> Result<()> {   
         let connection = self.0.get()?;
 

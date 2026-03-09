@@ -50,6 +50,7 @@ impl BuilderExtensions for tauri::Builder<Wry> {
             .manage(UserRepository::new(pool.clone()))
             .manage(UserProfileRepository::new(pool.clone()))
             .manage(LanguageRepository::new(pool.clone()))
+            .manage(LanguageFeatureRepository::new(pool.clone()))
             .manage(SessionRepository::new(pool.clone()))
             .manage(LexemeRepository::new(pool.clone()))
             .manage(ExerciseRepository::new(pool.clone()))

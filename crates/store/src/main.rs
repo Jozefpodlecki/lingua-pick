@@ -52,15 +52,49 @@ fn main() {
 
     let session_repo = SessionRepository::new(manager.pool().clone());
 
-    session_repo.create(session).unwrap();
+    let session = session_repo.create(session).unwrap();
+    let session = session_repo.get_by_id(session.id).unwrap().unwrap();
 
-    // dbg!(user);
+    let exercise_type_repo = ExerciseTypeRepository::new(manager.pool().clone());
+
+    let exercise_types = exercise_type_repo.get_by_language_id(target_lang.id).unwrap();
+    let exercise_type = exercise_types.into_vec().into_iter().next().unwrap();
+
+    let exercise_repo = ExerciseRepository::new(manager.pool().clone());
+
+    let mut exercise = Exercise {
+        id: 0,
+        type_id: exercise_type.id,
+        session_id: session.id,
+        created_on: Utc::now(),
+        completed_on: None,
+        data: "".into(),
+        result: None,
+        verdict: None,
+    };
+
+    exercise.id = exercise_repo.create(&exercise).unwrap();
+    let exercise = exercise_repo.get_by_id(exercise.id).unwrap().unwrap();
+
+    dbg!(&exercise);
+    session_repo.link_to_user(session.id, user.id).unwrap();
+    session_repo.set_exercise(session.id, exercise.id).unwrap();
+
+    exercise_repo.set_result(exercise.id, "").unwrap();
+    exercise_repo.set_verdict(exercise.id, "").unwrap();
+    exercise_repo.complete(exercise.id, Utc::now()).unwrap();
+
+    let lexeme_repo = LexemeRepository::new(manager.pool().clone());
+
+    let lexemes = lexeme_repo.get_by_language_id(target_lang.id).unwrap();
+
+    let first = lexemes.into_vec().into_iter().next().unwrap();
 
     let wotd_repo = WordOfTheDayRepository::new(manager.pool().clone());
 
     let wotd = WordOfTheDay {
         id: Utc::now().date_naive(),
-        lexeme_id: 1,
+        lexeme_id: first.id,
         language_id: target_lang.id,
     };
 

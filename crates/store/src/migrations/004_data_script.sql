@@ -1,3 +1,23 @@
+INSERT INTO part_of_speech
+(
+    name,
+    description
+)
+VALUES
+('noun', 'Person, place, thing, or idea'),
+('verb', 'Action or state'),
+('adjective', 'Describes a noun'),
+('adverb', 'Modifies a verb, adjective, or other adverb'),
+('pronoun', 'Substitutes for a noun'),
+('preposition', 'Shows relation between nouns/pronouns and other words'),
+('conjunction', 'Connects words, phrases, or clauses'),
+('interjection', 'Expresses emotion or exclamation'),
+('article', 'Definite or indefinite article'),
+('numeral', 'Indicates number or order'),
+('particle', 'Function word with grammatical role'),
+('auxiliary verb', 'Helps form tense, mood, or voice'),
+('modal verb', 'Expresses possibility, necessity, or permission');
+
 INSERT INTO reading_system
 (
     name,

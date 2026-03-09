@@ -46,7 +46,18 @@ CREATE TABLE language (
     ietf_bcp_47 NVARCHAR(20) NOT NULL,
     is_dialect BOOLEAN DEFAULT FALSE,
     is_regional_standard BOOLEAN DEFAULT FALSE,
+    is_macro_language BOOLEAN DEFAULT FALSE,
     parent_id INTEGER NULL REFERENCES language(id)
+);
+
+CREATE SEQUENCE language_feature_sequence;
+CREATE TABLE language_feature (
+    id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('language_feature_sequence'),
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    language_id INTEGER NOT NULL REFERENCES language(id),
+    name VARCHAR(100) NOT NULL,
+    description TEXT NULL ,
+    parent_id INTEGER NULL REFERENCES language_feature(id)
 );
 
 CREATE SEQUENCE language_asset_sequence;
@@ -65,7 +76,7 @@ CREATE TABLE session (
     completed_on TIMESTAMP NULL,
     exercise_count TINYINT NOT NULL,
     total_exercise_count TINYINT NOT NULL,
-    current_exercise_id UUID NULL,
+    current_exercise_id INTEGER NULL,
     FOREIGN KEY (user_profile_id) REFERENCES user_profile(id)
 );
 
@@ -76,21 +87,6 @@ CREATE TABLE session_user (
     PRIMARY KEY(session_id, user_id),
     FOREIGN KEY (session_id) REFERENCES session(id),
     FOREIGN KEY (user_id) REFERENCES user(id)
-);
-
-CREATE SEQUENCE meaning_sequence;
-CREATE TABLE meaning (
-    id INTEGER PRIMARY KEY DEFAULT nextval('meaning_sequence'),
-    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    description TEXT NOT NULL
-);
-
-CREATE SEQUENCE reading_system_sequence;
-CREATE TABLE reading_system (
-    id INTEGER PRIMARY KEY DEFAULT nextval('reading_system_sequence'),
-    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    name NVARCHAR(50) NOT NULL UNIQUE,
-    type NVARCHAR(20) NULL
 );
 
 CREATE SEQUENCE exercise_type_sequence;
@@ -115,11 +111,25 @@ CREATE TABLE exercise (
     FOREIGN KEY (type_id) REFERENCES exercise_type(id),
 );
 
-CREATE TABLE exercise_allowed_type (
-    source_language_id INTEGER NOT NULL REFERENCES language(id),
-    target_language_id INTEGER NOT NULL REFERENCES language(id),
-    type_id TINYINT NOT NULL REFERENCES exercise_type(id),
-    PRIMARY KEY(source_language_id, target_language_id, type_id)
+CREATE SEQUENCE meaning_sequence;
+CREATE TABLE meaning (
+    id INTEGER PRIMARY KEY DEFAULT nextval('meaning_sequence'),
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    description TEXT NOT NULL
+);
+
+CREATE SEQUENCE reading_system_sequence;
+CREATE TABLE reading_system (
+    id INTEGER PRIMARY KEY DEFAULT nextval('reading_system_sequence'),
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    name NVARCHAR(50) NOT NULL UNIQUE,
+    type NVARCHAR(20) NULL
+);
+
+CREATE TABLE language_exercise_type (
+    language_id INTEGER NOT NULL REFERENCES language(id),
+    exercise_type_id TINYINT NOT NULL REFERENCES exercise_type(id),
+    PRIMARY KEY(language_id, exercise_type_id)
 );
 
 CREATE SEQUENCE script_sequence;
@@ -249,6 +259,7 @@ CREATE TABLE word_of_the_day (
 
 CREATE INDEX IX_user_profile_user_id ON user_profile(user_id);
 CREATE INDEX IX_exercise_session_id ON exercise(session_id);
+CREATE INDEX IX_lexeme_language_id ON lexeme(language_id);
 CREATE INDEX IX_user_profile_active_lang ON user_profile(is_active, source_language_id, target_language_id);
 CREATE INDEX IX_session_user_user_id ON session_user(user_id);
 CREATE INDEX IX_grapheme_script ON grapheme(script_id);

@@ -17,25 +17,6 @@ SELECT
 FROM migrations
 WHERE file_name = ?"#;
 
-pub const INSERT_SESSION: &str = r#"
-INSERT INTO session
-VALUES
-(?, ?, ?, ?, ?, ?, ?, ?)
-"#;
-
-pub const GET_SESSION_BY_ID: &str = r#"
-SELECT
-    *
-FROM session
-WHERE id = ?
-"#;
-
-pub const INSERT_SESSION_USER: &str = r#"
-INSERT INTO session_user
-VALUES
-(?, ?, ?)
-"#;
-
 pub const INSERT_USER: &str = r#"
 INSERT INTO user
 VALUES

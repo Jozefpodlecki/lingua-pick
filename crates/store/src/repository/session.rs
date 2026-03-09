@@ -1,6 +1,6 @@
 use anyhow::Result;
-use chrono::Utc;
-use duckdb::{params, DuckdbConnectionManager};
+use chrono::{DateTime, Utc};
+use duckdb::{params, DuckdbConnectionManager, OptionalExt};
 use r2d2::Pool;
 use uuid::Uuid;
 
@@ -46,11 +46,26 @@ impl SessionRepository {
         Ok(())
     }
 
-    pub fn get_by_id(&self, id: Uuid) -> Result<()> {
+    pub fn set_exercise(&self, id: Uuid, exercise_id: u32) -> Result<()> {
         let connection = self.0.get()?;
 
-        connection.execute(GET_SESSION_BY_ID, [id])?;
+        let params = params![
+            exercise_id,
+            id
+        ];
+
+        connection.execute(UPDATE_SESSION_SET_EXERCISE, params)?;
 
         Ok(())
+    }
+
+    pub fn get_by_id(&self, id: Uuid) -> Result<Option<Session>> {
+        let connection = self.0.get()?;
+
+        let entity = connection
+            .query_row(GET_SESSION_BY_ID, [id], Session::from_row)
+            .optional()?;
+
+        Ok(entity)
     }
 }

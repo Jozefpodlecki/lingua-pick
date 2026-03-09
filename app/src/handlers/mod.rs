@@ -1,17 +1,21 @@
 #[macro_use]
-pub mod app;
+mod app;
 
 #[macro_use]
-pub mod audio;
+mod audio;
 
 #[macro_use]
 mod profile;
+
+#[macro_use]
+mod session;
 
 mod list;
 mod models;
 mod error;
 
 pub use app::*;
-pub use profile::*;
 pub use audio::*;
+pub use profile::*;
+pub use session::*;
 pub use list::*;

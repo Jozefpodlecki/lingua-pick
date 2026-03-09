@@ -13,6 +13,12 @@ export interface LoginArgs {
     password: string;
 }
 
+export interface CreateProfileArgs {
+    token: string;
+    sourceLanguageId: string;
+    targetLanguageId: string;
+}
+
 export interface UserProfile {
 
 }
@@ -32,3 +38,18 @@ export type UpdateStatus = { type: "checking" }
     | { type: "latest", version: string }
     | { type: "downloading", version: string, downloaded: number, fileSize: number }
     | { type: "downloaded", version: string };
+
+export interface Language {
+    id: string;
+    name: string;
+}
+
+export interface LanguageFeature {
+    id: number;
+    name: string;
+    description: string;
+}
+
+export interface Session {
+    id: string;
+}

@@ -53,4 +53,27 @@ pub async fn get_all_languages<'a>(
     
     Ok(items)
 }
-    // let lang = whoami::lang();
+
+#[command]
+pub async fn get_default_language<'a>(
+    token: String, 
+    lang_repository: State<'a, LanguageRepository>,
+    jwt_service: State<'a, JwtService>,) -> AppResult<Option<Language>> {
+    
+    let token = jwt_service.decode(&token)
+        .map_err(|err| AppError::Command(anyhow::anyhow!("Could not decode JWT: {}", err)))?;
+
+    let lang = whoami::lang_prefs()
+        .map_err(|err| AppError::Command(anyhow::anyhow!("Could retrieve language preferences: {}", err)))?;
+
+    
+    for lang in lang.message_langs() {
+       let tag = lang.to_string();
+        let iso639 = tag.split('-').next().unwrap_or(&tag);
+        println!("{iso639}");
+    }
+
+    let items = lang_repository.get_by_iso639_3("en")?;
+    
+    Ok(items)
+}
