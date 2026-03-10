@@ -11,6 +11,7 @@ pub fn generate_handlers() -> Box<dyn Fn(Invoke) -> bool + Send + Sync> {
         get_current_profile,
         get_all_profiles,
         get_all_languages,
+        get_default_language,
         start_recording,
         stop_recording,
         get_session

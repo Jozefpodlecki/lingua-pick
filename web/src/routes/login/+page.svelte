@@ -1,9 +1,10 @@
 <script lang="ts">
     import { setAppContext, loginWithCreds, loginWithWindows, getCurrentProfile } from "$lib/api/app";
     import { appName } from "$lib/constants";
-    import type { Context } from "$lib/types/app";
+    import type { Context, UserProfile } from "$lib/types/app";
     import type { MouseEventHandler } from "svelte/elements";
     import { error } from '@tauri-apps/plugin-log';
+    import { goto } from "$app/navigation";
 
     let state = $state({
         username: "",
@@ -14,12 +15,15 @@
 
     const onSubmit: MouseEventHandler<HTMLElement> = async (event) => {
         const { action } = event.currentTarget.dataset;
-        console.log(event.currentTarget)
+
         try {
+            let context: Context;
+            let profile: UserProfile | null = null;
+
             if(action === "login") {
                 const token = await loginWithCreds(state);
-                const profile = await getCurrentProfile(token);
-                const context: Context = {
+                profile = await getCurrentProfile(token);
+                context = {
                     token,
                     profile,
                     updatedOn: new Date().toISOString()
@@ -29,14 +33,20 @@
 
             if(action === "loginWindows") {
                 const token = await loginWithWindows();
-                const profile = await getCurrentProfile(token);
-                const context: Context = {
+                profile = await getCurrentProfile(token);
+                context = {
                     token,
                     profile,
                     updatedOn: new Date().toISOString()
                 };
                 await setAppContext(context);
             }
+
+            if(!profile) {
+                goto('/profile');
+            }
+            
+            
         } catch (err) {
             await error("Login failed: " + err);
         }

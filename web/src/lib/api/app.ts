@@ -36,7 +36,7 @@ export const createProfile = (args: CreateProfileArgs): Promise<void> => emit("c
 
 export const getDefaultLanguage = (token: string): Promise<Language | null> => invoke("get_default_language");
 
-export const getAllLanguages = (token: string): Promise<Language[]> => invoke("get_all_languages");
+export const getAllLanguages = (token: string): Promise<Language[]> => invoke("get_all_languages", { token });
 
 export const getLanguageFeatures = (token: string, id: number): Promise<LanguageFeature[]> => invoke("get_language_features");
 
