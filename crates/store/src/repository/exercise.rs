@@ -103,6 +103,16 @@ impl ExerciseTypeRepository {
         Self(pool)
     }
 
+    pub fn get_by_name(&self, name: &str) -> Result<Option<ExerciseType>> {
+        let connection = self.0.get()?;
+
+        let entity = connection
+            .query_row(GET_EXERCISE_TYPE_BY_NAME, [name], ExerciseType::from_row)
+            .optional()?;
+
+        Ok(entity)
+    }
+
     pub fn get_by_language_id(&self, language_id: u32) -> Result<Box<[ExerciseType]>> {
         let connection = self.0.get()?;
 

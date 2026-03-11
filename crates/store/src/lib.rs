@@ -6,6 +6,9 @@ mod models;
 mod queries;
 mod repository;
 
+#[cfg(test)]
+mod tests;
+
 pub use models::*;
 pub use database::*;
 pub use repository::*;

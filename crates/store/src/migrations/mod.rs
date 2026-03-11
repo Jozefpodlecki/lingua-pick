@@ -12,6 +12,8 @@ pub const MIGRATIONS: &[(&str, &str)] = &[
     (include_str!("./003_data_assets.sql"), "migrations/003_data_assets.sql"),
     (include_str!("./004_data_script.sql"), "migrations/004_data_script.sql"),
     (include_str!("./005_data_exercise_type.sql"), "migrations/005_data_exercise_type.sql"),
+    (include_str!("./006_data_language_features.sql"), "migrations/006_data_language_features.sql"),
+    (include_str!("./007_data_language_features_map.sql"), "migrations/007_data_language_features_map.sql"),
     (include_str!("./999_data_sample.sql"), "migrations/999_data_sample.sql"),
 ];
 

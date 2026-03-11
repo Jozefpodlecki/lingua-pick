@@ -39,6 +39,13 @@ VALUES
 (?, ?, ?, ?, ?, ?, ?)
 "#;
 
+pub const GET_USER_PROFILE_BY_ID: &str = r#"
+SELECT
+    upr.*
+FROM user_profile upr
+WHERE upr.id = ?
+"#;
+
 pub const GET_ACTIVE_USER_PROFILE_BY_USER: &str = r#"
 SELECT
     upr.*
@@ -56,7 +63,7 @@ WHERE upr.user_id = ?
 
 pub const UPDATE_USER_PROFILE_SET_ACTIVE: &str = r#"
 UPDATE user_profile
-SET is_active = true
+SET is_active = ?
 WHERE id = ?
 "#;
 

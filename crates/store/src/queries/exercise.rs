@@ -35,6 +35,13 @@ WHERE ext.id IN (SELECT alo.exercise_type_id FROM allowed alo)
     OR NOT EXISTS (SELECT 1 FROM allowed);
 "#;
 
+pub const GET_EXERCISE_TYPE_BY_NAME: &str = r#"
+SELECT
+    ext.*
+FROM exercise_type ext
+WHERE ext.name = ?
+"#;
+
 pub const UPDATE_EXERCISE_SET_DATA: &str = r#"
 UPDATE exercise
 SET data = ?

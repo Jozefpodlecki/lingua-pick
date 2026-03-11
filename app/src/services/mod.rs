@@ -9,6 +9,7 @@ mod listener;
 mod clock;
 mod dep_resolver;
 mod resource;
+mod wotd;
 
 pub use audio::*;
 pub use transcribe::*;
@@ -21,3 +22,4 @@ pub use listener::*;
 pub use clock::*;
 pub use dep_resolver::*;
 pub use resource::*;
+pub use wotd::*;

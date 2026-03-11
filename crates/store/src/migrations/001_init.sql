@@ -54,10 +54,15 @@ CREATE SEQUENCE language_feature_sequence;
 CREATE TABLE language_feature (
     id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('language_feature_sequence'),
     created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    language_id INTEGER NOT NULL REFERENCES language(id),
     name VARCHAR(100) NOT NULL,
     description TEXT NULL ,
     parent_id INTEGER NULL REFERENCES language_feature(id)
+);
+
+CREATE TABLE language_feature_language (
+    language_id INTEGER NOT NULL REFERENCES language(id),
+    feature_id INTEGER NOT NULL REFERENCES language_feature(id),
+    PRIMARY KEY (language_id, feature_id)
 );
 
 CREATE SEQUENCE language_asset_sequence;
@@ -108,7 +113,7 @@ CREATE TABLE exercise (
     data TEXT NOT NULL,
     result TEXT NULL,
     verdict TEXT NULL,
-    FOREIGN KEY (type_id) REFERENCES exercise_type(id),
+    FOREIGN KEY (type_id) REFERENCES exercise_type(id)
 );
 
 CREATE SEQUENCE meaning_sequence;
@@ -222,11 +227,12 @@ CREATE TABLE lexeme_classification (
 
 CREATE SEQUENCE user_skill_metric_sequence;
 CREATE TABLE user_skill_metric (
-    id UUID NOT NULL PRIMARY KEY DEFAULT nextval('user_skill_metric_sequence'),
+    id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('user_skill_metric_sequence'),
+    user_profile_id UUID NOT NULL,
     metric TEXT NOT NULL,
     value DOUBLE NOT NULL,
     updated_on TIMESTAMP NOT NULL,
-    FOREIGN KEY (id) REFERENCES user_profile(id)
+    FOREIGN KEY (user_profile_id) REFERENCES user_profile(id)
 );
 
 CREATE TABLE user_grapheme_stat (
@@ -264,3 +270,4 @@ CREATE INDEX IX_user_profile_active_lang ON user_profile(is_active, source_langu
 CREATE INDEX IX_session_user_user_id ON session_user(user_id);
 CREATE INDEX IX_grapheme_script ON grapheme(script_id);
 CREATE INDEX IX_language_iso639_1 ON language(iso639_1);
+CREATE INDEX IX_language_feature_name ON language_feature(name);

@@ -31,10 +31,15 @@ FROM language_assets las
 WHERE lan.language_id = ?
 "#;
 
-
-pub const GET_LANGUAGE_FEATURES_BY_LANGUAGE_ID: &str = r#"
+pub const GET_LANGUAGE_FEATURES: &str = r#"
 SELECT
     las.*
 FROM language_feature las
-WHERE lan.language_id = ?
+"#;
+
+pub const GET_LANGUAGE_FEATURES_BY_LANGUAGE_ID: &str = r#"
+SELECT
+    lfl.*
+FROM language_feature_language lfl
+WHERE lfl.language_id = ?
 "#;

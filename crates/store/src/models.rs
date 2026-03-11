@@ -287,11 +287,10 @@ impl WordOfTheDay {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct LanguageFeature {
-    pub id: NaiveDate,
+    pub id: u32,
     pub created_on: DateTime<Utc>,
-    pub language_id: u32,
     pub name: Box<str>,
     pub description: Box<str>,
     pub parent_id: Option<u32>,
@@ -302,10 +301,24 @@ impl LanguageFeature {
         Ok(Self {
             id: row.get(0)?,
             created_on: row.get(1)?,
-            language_id: row.get(2)?,
-            name: row.get(3)?,
-            description: row.get(4)?,
-            parent_id: row.get(5)?,
+            name: row.get(2)?,
+            description: row.get(3)?,
+            parent_id: row.get(4)?,
+        })
+    }
+}
+
+#[derive(Debug)]
+pub struct LanguageFeatureLanguage {
+    pub language_id: u32,
+    pub feature_id: u32,
+}
+
+impl LanguageFeatureLanguage {
+    pub fn from_row(row: &Row<'_>) -> duckdb::Result<Self> {
+        Ok(Self {
+            language_id: row.get(0)?,
+            feature_id: row.get(1)?,
         })
     }
 }

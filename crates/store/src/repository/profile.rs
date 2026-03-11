@@ -31,10 +31,20 @@ impl UserProfileRepository {
         Ok(entity)
     }
 
-    pub fn set_active(&self, id: Uuid) -> Result<()> {
+    pub fn get_by_id(&self, id: Uuid) -> Result<Option<UserProfile>> {
         let connection = self.0.get()?;
 
-        connection.execute(UPDATE_USER_PROFILE_SET_ACTIVE, [id])?;
+        let profile = connection
+            .query_row(GET_USER_PROFILE_BY_ID, [id], UserProfile::from_row)
+            .optional()?;
+
+        Ok(profile)
+    }
+
+    pub fn set_active(&self, id: Uuid, value: bool) -> Result<()> {
+        let connection = self.0.get()?;
+
+        connection.execute(UPDATE_USER_PROFILE_SET_ACTIVE, params![value, id])?;
 
         Ok(())
     }

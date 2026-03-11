@@ -90,6 +90,7 @@ impl BuilderExtensions for tauri::Builder<Wry> {
             .manage(SetupEndedNotifier::new())
             .manage(context)
             .manage(IdGenerator::new())
+            .manage(WordOfTheDayService::new())
             .manage(SystemClock::new())
             .manage(DefaultResourceFetcher::new())
             .manage(AppPasswordHasher::new())
