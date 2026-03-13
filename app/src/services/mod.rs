@@ -10,6 +10,7 @@ mod clock;
 mod dep_resolver;
 mod resource;
 mod wotd;
+mod asset;
 
 pub use audio::*;
 pub use transcribe::*;
@@ -23,3 +24,4 @@ pub use clock::*;
 pub use dep_resolver::*;
 pub use resource::*;
 pub use wotd::*;
+pub use asset::*;

@@ -1,16 +1,19 @@
 <script lang="ts">
+    import type { DrawResult } from "$lib/types/app";
     import HanziWriter from "hanzi-writer";
     import { onMount } from "svelte";
 
     interface Props {
         character: string;
-        onComplete(): void;
+        onComplete(summary: DrawResult): void;
         locale?: "cn" | "jp";
+        enabled: boolean;
     }
 
-    let { character, onComplete, locale }: Props = $props();
+    let { character, onComplete, locale, enabled }: Props = $props();
     let container: HTMLDivElement;
-    
+    let writer: HanziWriter | null = null;
+
     onMount(() => {
         const base =
             locale === "jp"
@@ -18,7 +21,7 @@
                 ? "https://raw.githubusercontent.com/mnako/hanzi-writer-data-ja/master/data"
                 : "https://cdn.jsdelivr.net/npm/hanzi-writer-data@3.7.3";
 
-        const writer = HanziWriter.create(container, character, {
+        writer = HanziWriter.create(container, character, {
             width: 300,
             height: 300,
             showCharacter: true,
@@ -32,9 +35,14 @@
             onComplete
         });
         
-        writer.quiz();
+    })
+
+    $effect(() => {
+        if(enabled) {
+            writer?.quiz();
+        }
     })
 
 </script>
 
-<div bind:this={container}></div>
+<div data-character={character} bind:this={container}></div>

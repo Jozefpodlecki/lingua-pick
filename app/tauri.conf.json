@@ -24,6 +24,7 @@
         "url": "/starter",
         "width": 600,
         "height": 400,
+        "alwaysOnTop": true,
         "resizable": false,
         "fullscreen": false,
         "maximized": false,
@@ -38,14 +39,18 @@
         "height": 600,
         "resizable": false,
         "fullscreen": false,
-        "maximized": true,
+        "maximized": false,
         "visible": false,
         "focus": false,
         "useHttpsScheme": true
       }
     ],
     "security": {
-      "csp": null
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["$APPDATA/**", "$EXE/**", "*/**"]
+      }
     }
   },
   "bundle": {

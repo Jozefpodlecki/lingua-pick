@@ -85,6 +85,8 @@ pub struct LanguageAsset {
     pub id: u32,
     pub created_on: DateTime<Utc>,
     pub file_name: Box<str>,
+    pub file_size: u32,
+    pub file_hash: Box<str>,
     pub language_id: u32,
 }
 
@@ -108,7 +110,9 @@ impl LanguageAsset {
             id: row.get(0)?,
             created_on: row.get(1)?,
             file_name: row.get(2)?,
-            language_id: row.get(3)?,
+            file_size: row.get(3)?,
+            file_hash: row.get(4)?,
+            language_id: row.get(5)?,
         })
     }
 }
@@ -141,7 +145,8 @@ impl Session {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Exercise {
     pub id: u32,
     pub type_id: u8,

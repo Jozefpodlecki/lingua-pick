@@ -8,6 +8,7 @@
 
     type PageState =
         | { type: "loading" }
+        | { type: "error", message: string; }
         | {
             type: "loaded";
             languages: Language[];
@@ -37,8 +38,18 @@
                 target: null,
                 features: []
             };
-        } catch (err) {
-            console.error(err);
+        } catch (error: unknown) {
+            
+            let message: string;
+
+            if (error instanceof Error) {
+                message = error.message;
+            } else {
+                message = String(error);
+            }
+            
+            console.error(error);
+            // Command error: Could not decode JWT: ExpiredSignature
         }
     }
 

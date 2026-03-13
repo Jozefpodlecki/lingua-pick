@@ -2,8 +2,10 @@
 name = "lingua-pick-app"
 version = "0.1.0"
 description = "lingua-pick-app"
-authors = ["Jozef Podlecki"]
 edition = "2021"
+rust-version = "1.94.0"
+authors = ["Józef Podlecki <jozef.witold.podlecki@gmail.com>"]
+repository = "https://github.com/Jozefpodlecki/lingua-pick"
 
 [lib]
 name = "lingua_pick_app_lib"
@@ -15,7 +17,7 @@ tauri-build = { version = "2.5.5", features = [] }
 [dependencies]
 tokio = { version = "1.48.0", features = ["rt", "macros"] }
 anyhow = "1.0.90"
-tauri = { version = "2.10.2", features = ["image-png", "tray-icon"] }
+tauri = { version = "2.10.2", features = ["protocol-asset", "image-png", "tray-icon"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 log = "0.4.18"

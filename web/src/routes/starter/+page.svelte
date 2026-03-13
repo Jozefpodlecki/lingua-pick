@@ -15,7 +15,7 @@
     data-tauri-drag-region
     class="relative z-10 flex items-center justify-center h-screen w-screen"
 >
-    <div class="bg-black/80 text-center px-20 py-8 rounded-lg flex flex-col items-center gap-2">
+    <div class="bg-black/80 text-center px-20 py-8 rounded-lg flex flex-col items-center gap-4 h-60">
         <div class="flex justify-center items-center">
             <img
                 data-tauri-drag-region

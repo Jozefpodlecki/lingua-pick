@@ -70,6 +70,8 @@ CREATE TABLE language_asset (
     id INTEGER NOT NULL PRIMARY KEY DEFAULT nextval('language_asset_sequence'),
     created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     file_name NVARCHAR(50) NOT NULL,
+    file_size INTEGER NOT NULL,
+    file_hash VARCHAR(64) NOT NULL,
     language_id INTEGER NOT NULL REFERENCES language(id)
 );
 

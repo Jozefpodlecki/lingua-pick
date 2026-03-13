@@ -2,7 +2,7 @@ use anyhow::anyhow;
 use chrono::Utc;
 use lingua_pick_store::{User, UserProfile, UserProfileRepository, UserRepository};
 use rand::{distr::Alphanumeric, RngExt};
-use tauri::{command, State};
+use tauri::{command, AppHandle, Manager, State};
 use uuid::Uuid;
 
 use crate::{context::AppContext, handlers::{error::{AppError, AppResult}, models::{AppUserProfile, LoadResult, LoginArgs}}, notifier::SetupEndedNotifier, services::{AppPasswordHasher, JwtClaims, JwtService}};
@@ -112,3 +112,37 @@ pub async fn login_with_creds<'a>(
     Ok(token)
 }
 
+#[command]
+pub async fn get_asset_dir<'a>(app_handle: AppHandle, context: State<'a, AppContext>) -> AppResult<String> {
+     
+    #[cfg(not(debug_assertions))]
+    {
+        let app_data_dir = app_handle
+            .path()
+            .app_data_dir()
+            .map_err(|e| AppError::Command(anyhow::anyhow!("Could not get app data: {}", e)))?;
+
+        let dir_str = app_data_dir
+            .to_str()
+            .ok_or_else(|| AppError::Command(anyhow::anyhow!("Could not get exec dir")))?
+            .to_string();
+
+        Ok(dir_str)
+    }
+
+    #[cfg(debug_assertions)]
+    {
+        let mut dir = match app_handle.path().executable_dir() {
+            Ok(p) => p,
+            Err(_) => std::env::current_exe()?.parent().unwrap().to_path_buf(),
+        };
+
+        let dir_str = dir
+            .to_str()
+            .ok_or_else(|| anyhow::anyhow!("Could not convert exec dir to string"))?
+            .to_string();
+
+        Ok(dir_str)
+    }
+    
+}

@@ -15,6 +15,7 @@ pub fn setup_app(app: &mut App) -> Result<(), Box<dyn Error>> {
     let emitter = AppEmitter::new(app_handle.clone());
     let listener = AppListener::new(app_handle.clone());
     app_handle.manage(resolver.clone());
+    app_handle.manage(AssetResolver::new(resolver.clone()));
     app_handle.manage(ProfileManager::new(resolver, listener.clone()));
     app_handle.manage(emitter);
     app_handle.manage(listener);

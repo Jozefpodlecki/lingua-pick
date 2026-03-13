@@ -35,6 +35,7 @@ export interface UserProfile {
 
 export type UpdateStatus = { type: "checking" } 
     | { type: "found", version: string }
+    | { type: "error", message: string }
     | { type: "latest", version: string }
     | { type: "downloading", version: string, downloaded: number, fileSize: number }
     | { type: "downloaded", version: string };
@@ -52,4 +53,27 @@ export interface LanguageFeature {
 
 export interface Session {
     id: string;
+}
+
+export interface Lexeme {
+    id: number;
+    createdOn: string;
+    text: string;
+    languageId: number;
+    normalized: string;
+}
+
+export interface Meaning {
+    language: string;
+    value: string;
+    breakdown?: Breakdown[];
+}
+
+export interface Breakdown {
+    reading: string;
+    romanization?: string
+}
+export interface DrawResult {
+    character: string;
+    totalMistakes: number;
 }

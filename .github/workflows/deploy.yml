@@ -27,12 +27,12 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-      - run: npm ci
-      - run: npm run build
-      - uses: actions/configure-pages@v4
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
-      - uses: actions/deploy-pages@v4
-        id: deployment
+      # - run: npm ci
+      # - run: npm run build
+      # - uses: actions/configure-pages@v4
+      # - uses: actions/upload-pages-artifact@v3
+      #   with:
+      #     path: './dist'
+      # - uses: actions/deploy-pages@v4
+      #   id: deployment
         

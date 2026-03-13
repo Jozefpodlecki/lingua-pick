@@ -41,3 +41,7 @@ export const getAllLanguages = (token: string): Promise<Language[]> => invoke("g
 export const getLanguageFeatures = (token: string, id: number): Promise<LanguageFeature[]> => invoke("get_language_features");
 
 export const getSession = (token: string, id: string): Promise<Session> => invoke("get_session");
+
+export const getExercise = (token: string, id: string): Promise<Session> => invoke("get_exercise");
+
+export const getAppDataDir = (): Promise<string> => invoke("get_asset_dir");

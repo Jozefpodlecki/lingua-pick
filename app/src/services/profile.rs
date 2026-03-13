@@ -93,47 +93,15 @@ impl ProfileManager {
         let jwt_service = resolver.get::<JwtService>();
         let id_generator = resolver.get::<IdGenerator>();
         let profile_repo = resolver.get::<UserProfileRepository>();
-        let lexeme_repo = resolver.get::<LexemeRepository>();
-        let lang_asset_repo = resolver.get::<LanguageAssetsRepository>();
         let system_clock = resolver.get::<SystemClock>();
-        let resource_fetcher = resolver.get::<DefaultResourceFetcher>();
+        let lang_asset_repo = resolver.get::<LanguageAssetsRepository>();
+        let asset_resolver = resolver.get::<AssetResolver>();
 
         let token = jwt_service.decode(&token).map_err(|_| CreateProfileError::Auth)?;
         
         let assets = lang_asset_repo.get_by_language_id(target_language_id).map_err(|_| CreateProfileError::Download)?;
         for asset in assets {
-
-            let uri = format!("file://{}/{}", context.current_dir.display(), asset.file_name);
-            let url = Url::parse(&uri).map_err(|_| CreateProfileError::Download)?;
-
-            if url.scheme() == "file" && !url.to_file_path().unwrap().exists() {
-                let uri = format!("https://raw.githubusercontent.com/Jozefpodlecki/lingua-pick/{}", asset.file_name);
-                let url = Url::parse(&uri).map_err(|_| CreateProfileError::Download)?;
-
-                let path = context.current_dir.join(&*asset.file_name);
-                let writer = File::create(path);
-                let mut stream = reqwest::get(uri).await
-                    .map_err(|_| CreateProfileError::Download)?
-                    .bytes_stream();
-
-                while let Some(item) = stream.next().await {
-                    // println!("Chunk: {:?}", item?);
-
-                    emitter.emit("status", &CreateProfileEvent::Downloading {
-                        downloaded: 0,
-                        file_size: 0,
-                        kind: asset.kind()
-                    });
-                }
-            }
-
-
-
-            resource_fetcher.fetch(&asset.file_name);
-            // serde_json::Deserializer::from_reader
-            // asset resolver?
-
-            // lexeme_repo.bulk_insert();
+            asset_resolver.resolve(asset).await.map_err(|_| CreateProfileError::Download)?;
         }
 
         let user_id = token.claims.sub;

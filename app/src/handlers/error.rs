@@ -24,7 +24,7 @@ impl Serialize for AppError {
         S: serde::Serializer,
     {
         let error = self.source().unwrap();
-        error!("{}", error);
+        error!("AppError:Serialize: {}", error);
 
         if let Some(inner) = error.source() {
             error!("caused by: {}", inner);
