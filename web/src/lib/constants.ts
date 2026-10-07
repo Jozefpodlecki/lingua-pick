@@ -1,1 +1,0 @@
-export const appName: string = "Lingua Pick";

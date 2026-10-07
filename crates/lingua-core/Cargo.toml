@@ -1,0 +1,12 @@
+[package]
+name = "lingua-core"
+version = "0.1.0"
+edition = "2024"
+description = "Shared language-learning models and session logic."
+license-file = "../../LICENSE"
+
+[dependencies]
+serde = { version = "1.0", default-features = false, features = ["alloc", "derive"] }
+
+[dev-dependencies]
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }

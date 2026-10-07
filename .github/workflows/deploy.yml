@@ -1,38 +1,41 @@
-name: Github Pages
+name: Deploy to GitHub Pages
 
 on:
-  push:
-    branches: ["main"]
+    push:
+        branches: ["master"]
 
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: 'pages'
-  cancel-in-progress: true
+    workflow_dispatch:
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
-          cache: 'npm'
-      # - run: npm ci
-      # - run: npm run build
-      # - uses: actions/configure-pages@v4
-      # - uses: actions/upload-pages-artifact@v3
+          node-version: '22'
+      - run: npm ci
+        working-directory: ./web
+      - uses: jetli/trunk-action@v0.5.1
+      - run: rustup target add wasm32-unknown-unknown
+      - run: npx @tailwindcss/cli -i ./styles/main.css -o ./styles/output.css --minify 
+        working-directory: ./web
+      - run: trunk build --release --public-url /lingua-pick/
+        working-directory: ./web
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./web/dist/
+      # - uses: actions/upload-artifact@v7
       #   with:
-      #     path: './dist'
-      # - uses: actions/deploy-pages@v4
-      #   id: deployment
-        
+      #     name: github-pages
+      #     path: ./web/dist/
+      - uses: actions/deploy-pages@v5
+        id: deployment
