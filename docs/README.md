@@ -6,6 +6,7 @@ Start with these contributor guides:
 - [Tasks](tasks.md): actionable work and acceptance criteria.
 - [Runtime environments](runtime.md): desktop detection, maximized window, and browser sample exercises.
 - [Native storage](storage.md): DuckDB lifecycle, migrations, session history schema, and statistics.
+- [Language features](language-features.md): feature definitions, badge metadata, starter coverage, and sources.
 - [Experimental learning data](experimental-learning-data.md): file-backed harness content, curriculum, evidence, generator tools, and logging.
 - [Coding standards](../CODING_STANDARDS.md): Rust, Yew, language crates, browser storage, and validation.
 - [Documentation standards](documentation-standards.md): where to record information and how to keep it accurate.

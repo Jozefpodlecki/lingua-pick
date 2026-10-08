@@ -8,7 +8,7 @@ use crate::{
     simulator::ExerciseSimulator,
 };
 
-pub use config::RunnerConfig;
+pub use config::{DatabaseMode, RunnerConfig};
 pub use error::RunnerError;
 
 mod config;
@@ -26,10 +26,15 @@ pub struct Runner {
 
 impl Runner {
     pub fn open(config: RunnerConfig) -> Result<Self, RunnerError> {
-        tracing::info!(database = %config.database_path.display(), model = %config.model,
+        let database = match config.database_mode {
+            DatabaseMode::InMemory => ":memory:".into(),
+            _ => config.database_path.display().to_string(),
+        };
+        tracing::info!(%database, database_mode = %config.database_mode, model = %config.model,
             source = %config.source_language, target = %config.target_language, "Opening runner");
-        let stores = seed::open(
+        let stores = seed::open_with_mode(
             &config.database_path,
+            config.database_mode,
             &config.user_name,
             &config.source_language,
             &config.target_language,

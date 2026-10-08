@@ -1,9 +1,6 @@
 use super::{Runner, RunnerError};
 use crate::{
-    evaluator::{EvaluationRequest, EvaluationResult},
-    exercise_contract,
-    simulator::{SimulationPlan, SimulationRequest},
-    types::{Concept, Exercise, ExerciseConcept, ExerciseRequest, GenerationResult, Session, User},
+    evaluator::{EvaluationRequest, EvaluationResult}, exercise, simulator::{SimulationPlan, SimulationRequest}, types::{Concept, Exercise, ExerciseConcept, ExerciseRequest, GenerationResult, Session, User},
 };
 
 struct PreparedAnswer {
@@ -60,7 +57,7 @@ impl Runner {
             .into_iter()
             .find(|e| e.answered_on.is_none())
         {
-            let ids = exercise_contract::concept_ids(&exercise.payload)?;
+            let ids = exercise::concept_ids(&exercise.payload)?;
             let links = self.stores.exercise_concept_store.list(exercise.id)?;
             let linked: std::collections::BTreeSet<_> =
                 links.iter().map(|l| l.concept_id).collect();
@@ -81,8 +78,7 @@ impl Runner {
             tracing::info!(exercise_id = %exercise.id, kind = %exercise.kind, "Resuming pending exercise");
             return Ok((exercise, concepts));
         }
-        let mut tools = crate::tools::GenerationTools::new(&self.stores, request, session.id)
-            .map_err(crate::generator::ExerciseGenerationError::Generation)?;
+        let mut tools = crate::tools::GenerationTools::new(&self.stores, request, session.id)?;
         let generated = self.generator.generate(request, &mut tools).await?;
         self.persist_generated(session, generated)
     }

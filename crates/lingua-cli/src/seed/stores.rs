@@ -26,6 +26,9 @@ pub struct SeedResult {
     pub language_exercise_store: LanguageExerciseStore,
     pub script_store: ScriptStore,
     pub language_script_store: LanguageScriptStore,
+    pub language_feature_store: LanguageFeatureStore,
+    pub language_feature_value_store: LanguageFeatureValueStore,
+    pub language_feature_assignment_store: LanguageFeatureAssignmentStore,
 }
 
 pub(super) fn resolve(pool: r2d2::Pool<ConnectionManager>, state: State) -> SeedResult {
@@ -42,6 +45,9 @@ pub(super) fn resolve(pool: r2d2::Pool<ConnectionManager>, state: State) -> Seed
         learning_evidence_store: LearningEvidenceStore::new(pool.clone()),
         script_store: ScriptStore::new(pool.clone()),
         language_script_store: LanguageScriptStore::new(pool.clone()),
+        language_feature_store: LanguageFeatureStore::new(pool.clone()),
+        language_feature_value_store: LanguageFeatureValueStore::new(pool.clone()),
+        language_feature_assignment_store: LanguageFeatureAssignmentStore::new(pool.clone()),
         language_exercise_store: LanguageExerciseStore::new(pool.clone()),
         user_id: state.user_id,
         session_id: state.session_id,

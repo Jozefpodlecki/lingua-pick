@@ -4,6 +4,7 @@ use uuid::Uuid;
 
 use self::prompt::EXERCISE_INSTRUCTIONS;
 use crate::{
+    conversation,
     tools::GenerationTools,
     types::{ExerciseRequest, GenerationResult},
 };
@@ -48,14 +49,13 @@ impl ExerciseGenerator {
         let slots: Vec<Uuid> = (0..CONCEPT_SLOT_COUNT).map(|_| Uuid::now_v7()).collect();
         let prompt = build_prompt(request, &slots)?;
 
+        tracing::debug!(user_prompt = %prompt, "generation request");
+
         let response = self.request_exercise(&prompt, tools).await?;
         let mut validation_request = request.clone();
         validation_request.known_concepts = tools.retrieved_concepts();
         let result = response::decode(response, &validation_request, &validators, &slots)?;
-        tools
-            .validate_new_codes(&result)
-            .await
-            .map_err(ExerciseGenerationError::InvalidExercise)?;
+        tools.validate_new_codes(&result).await?;
         Ok(result)
     }
 
@@ -75,7 +75,7 @@ impl ExerciseGenerator {
         prompt: &str,
         tools: &mut GenerationTools,
     ) -> Result<String, ExerciseGenerationError> {
-        crate::ai_call::conversation::generate(
+        conversation::generate(
             &self.client,
             &self.model,
             EXERCISE_INSTRUCTIONS,
@@ -83,7 +83,7 @@ impl ExerciseGenerator {
             tools,
         )
         .await
-        .map_err(ExerciseGenerationError::Generation)
+        .map_err(ExerciseGenerationError::Conversation)
     }
 }
 

@@ -28,6 +28,9 @@ Use these terms consistently in product requirements, code APIs, UI copy, and de
 **Target module**
 : The Rust crate or equivalent content module that implements one course. It supplies target-specific knowledge while depending on shared domain models.
 
+**Language feature**
+: A linguistic trait of an exact learning target, such as definite articles or grammatical noun gender. Its assigned value supplies a UI badge and explanatory metadata; missing data means unknown. It is separate from exercise availability and learner knowledge. See [language features](language-features.md).
+
 **Script**
 : A writing system identified separately from the language target and exercise type, preferably with an ISO 15924 identifier such as `Latn` or `Hans`. A target may use more than one script.
 

@@ -4,7 +4,7 @@ use serde_json::Value;
 use uuid::Uuid;
 
 use super::ExerciseGenerationError;
-use crate::types::ExerciseRequest;
+use crate::{exercise, types::ExerciseRequest};
 
 pub(super) fn validate_request(request: &ExerciseRequest) -> Result<(), ExerciseGenerationError> {
     let fail = |message: &str| ExerciseGenerationError::InvalidRequest(message.into());
@@ -87,11 +87,11 @@ pub(super) fn validate_request(request: &ExerciseRequest) -> Result<(), Exercise
 }
 
 pub(super) fn concept_ids(value: &Value) -> Result<BTreeSet<Uuid>, ExerciseGenerationError> {
-    crate::exercise_contract::concept_ids(value)
+    exercise::concept_ids(value)
         .map_err(|error| ExerciseGenerationError::InvalidExercise(error.to_string()))
 }
 
 pub(super) fn validate_payload(kind: &str, data: &Value) -> Result<(), ExerciseGenerationError> {
-    crate::exercise_contract::validate_payload(kind, data)
+    exercise::validate_payload(kind, data)
         .map_err(|error| ExerciseGenerationError::InvalidExercise(error.to_string()))
 }

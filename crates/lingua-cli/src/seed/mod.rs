@@ -1,9 +1,11 @@
 use std::path::Path;
 
+pub use database_mode::DatabaseMode;
 pub use error::SeedError;
 pub use stores::SeedResult;
 
 mod database;
+mod database_mode;
 mod error;
 mod state;
 mod stores;
@@ -27,6 +29,22 @@ pub fn open(
     source_language: &str,
     target_language: &str,
 ) -> Result<SeedResult, SeedError> {
+    open_with_mode(
+        path,
+        DatabaseMode::OpenOrCreate,
+        user_name,
+        source_language,
+        target_language,
+    )
+}
+
+pub fn open_with_mode(
+    path: impl AsRef<Path>,
+    mode: DatabaseMode,
+    user_name: &str,
+    source_language: &str,
+    target_language: &str,
+) -> Result<SeedResult, SeedError> {
     if user_name.trim().is_empty()
         || source_language.split('-').next() != Some("en")
         || target_language.trim().is_empty()
@@ -35,7 +53,7 @@ pub fn open(
             "a learner name, English source and target are required".into(),
         ));
     }
-    let database = database::open(path.as_ref())?;
+    let database = database::open(path.as_ref(), mode)?;
     let state = if database.is_new {
         state::create(&database.pool, user_name, source_language, target_language)?
     } else {

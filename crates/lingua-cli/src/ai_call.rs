@@ -4,8 +4,6 @@ use lingua_ai::LlmClient;
 use tracing::Instrument;
 use uuid::Uuid;
 
-pub mod conversation;
-
 pub async fn generate(
     client: &LlmClient,
     model: &str,

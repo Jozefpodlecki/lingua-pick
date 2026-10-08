@@ -1,4 +1,5 @@
-use std::collections::BTreeMap;
+
+use std::collections::{BTreeMap, BTreeSet};
 
 use lingua_ai::LlmClient;
 use serde::Serialize;
@@ -6,9 +7,10 @@ use serde_json::{Value, json};
 use uuid::Uuid;
 
 use crate::{
-    exercise_contract as contract,
+    exercise as contract,
     types::{
-        Concept, Exercise, ExerciseDefinition, LearningEvidence, LearningStage, TeachingGuideline,
+        Concept, Exercise, ExerciseDefinition, LearningEvidence,
+        LearningStage, TeachingGuideline,
     },
 };
 
@@ -64,34 +66,62 @@ impl ExerciseEvaluator {
         }
     }
 
-    #[tracing::instrument(skip_all, err, fields(stage = "evaluation", exercise_id = %request.exercise.id))]
+    #[tracing::instrument(
+        skip_all,
+        err,
+        fields(
+            stage = "evaluation",
+            exercise_id = %request.exercise.id
+        )
+    )]
     pub async fn evaluate(
         &self,
         request: &EvaluationRequest<'_>,
     ) -> Result<EvaluationResult, EvaluationError> {
-        let ids = contract::validate_exercise(request.definition, request.exercise)?;
+        let ids = contract::validate_exercise(
+            request.definition,
+            request.exercise,
+        )?;
+
         self.validate_request(request, &ids)?;
+
         let schema = request
             .definition
             .verdict_schema
             .as_ref()
-            .ok_or_else(|| contract::invalid("definition has no verdict schema"))?;
+            .ok_or(EvaluationError::MissingVerdictSchema)?;
+
         let validator = contract::compile_schema(schema)?;
+
         if request.definition.answer_schema.is_none() {
-            let verdict = json!({"completed": true, "concept_exposures": ids});
+            let verdict = json!({
+                "completed": true,
+                "concept_exposures": ids,
+            });
+
             contract::validate_schema(&validator, &verdict)?;
+
             let concept_results = BTreeMap::new();
-            let evidence =
-                evidence::create(request, &verdict, &concept_results, &ids, &self.model)?;
+
+            let evidence = evidence::create(
+                request,
+                &verdict,
+                &concept_results,
+                &ids,
+                &self.model,
+            )?;
+
             return Ok(EvaluationResult {
                 verdict,
                 concept_results,
                 evidence,
             });
         }
+
         let answer = request
             .answer
-            .ok_or_else(|| contract::invalid("graded exercise requires an answer"))?;
+            .ok_or(EvaluationError::MissingAnswer)?;
+
         let prompt = serde_json::to_string_pretty(&EvaluationPrompt {
             contract_version: 1,
             source_language: request.source_language,
@@ -114,9 +144,24 @@ impl ExerciseEvaluator {
         )
         .await
         .map_err(EvaluationError::Generation)?;
+
         let verdict = contract::parse_response(&text, &validator)?;
-        let concept_results = response::validate(&verdict, request.exercise, answer, &ids)?;
-        let evidence = evidence::create(request, &verdict, &concept_results, &ids, &self.model)?;
+
+        let concept_results = response::validate(
+            &verdict,
+            request.exercise,
+            answer,
+            &ids,
+        )?;
+
+        let evidence = evidence::create(
+            request,
+            &verdict,
+            &concept_results,
+            &ids,
+            &self.model,
+        )?;
+
         Ok(EvaluationResult {
             verdict,
             concept_results,
@@ -127,44 +172,69 @@ impl ExerciseEvaluator {
     fn validate_request(
         &self,
         request: &EvaluationRequest<'_>,
-        ids: &std::collections::BTreeSet<Uuid>,
+        ids: &BTreeSet<Uuid>,
     ) -> Result<(), EvaluationError> {
-        if self.model.trim().is_empty()
-            || request.source_language.split('-').next() != Some("en")
-            || request.target_language.trim().is_empty()
-        {
-            return Err(contract::invalid(
-                "evaluation requires a model, English source and a target",
-            )
-            .into());
+        if self.model.trim().is_empty() {
+            return Err(EvaluationError::MissingModel);
         }
-        let supplied: std::collections::BTreeSet<_> =
-            request.concepts.iter().map(|c| c.id).collect();
-        if supplied != *ids
-            || supplied.len() != request.concepts.len()
-            || request
-                .concepts
-                .iter()
-                .any(|c| c.language_id != request.target_language)
-        {
-            return Err(contract::invalid(
-                "evaluation concepts must match the exercise and target exactly",
-            )
-            .into());
+
+        if request.source_language.split('-').next() != Some("en") {
+            return Err(EvaluationError::UnsupportedSourceLanguage(
+                request.source_language.into(),
+            ));
         }
+
+        if request.target_language.trim().is_empty() {
+            return Err(EvaluationError::MissingTargetLanguage);
+        }
+
+        let supplied: BTreeSet<_> =
+            request.concepts.iter().map(|concept| concept.id).collect();
+
+        if supplied.len() != request.concepts.len() {
+            return Err(EvaluationError::DuplicateConcepts);
+        }
+
+        if supplied != *ids {
+            return Err(EvaluationError::ConceptMismatch);
+        }
+
+        if let Some(concept) = request
+            .concepts
+            .iter()
+            .find(|concept| concept.language_id != request.target_language)
+        {
+            return Err(EvaluationError::ConceptLanguageMismatch {
+                concept_id: concept.id,
+                expected: request.target_language.into(),
+                actual: concept.language_id.clone(),
+            });
+        }
+
         match (&request.definition.answer_schema, request.answer) {
             (Some(schema), Some(answer)) => {
-                contract::validate_schema(&contract::compile_schema(schema)?, answer)?;
+                let validator = contract::compile_schema(schema)?;
+                contract::validate_schema(&validator, answer)?;
                 contract::validate_answer(request.exercise, answer)?;
             }
+
+            (Some(_), None) => {
+                return Err(EvaluationError::MissingAnswer);
+            }
+
+            (None, Some(_)) => {
+                return Err(EvaluationError::UnexpectedAnswer);
+            }
+
             (None, None) if request.exercise.kind == "dialogue" => {}
-            _ => {
-                return Err(contract::invalid(
-                    "graded exercises require answers; dialogue has none",
-                )
-                .into());
+
+            (None, None) => {
+                return Err(EvaluationError::UnsupportedUngradedKind(
+                    request.exercise.kind.clone(),
+                ));
             }
         }
+
         Ok(())
     }
 }

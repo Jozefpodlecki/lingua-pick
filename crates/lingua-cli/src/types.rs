@@ -12,6 +12,51 @@ pub struct Language {
     pub native_name: String,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct LanguageFeature {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub group_code: String,
+    pub display_order: i32,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct LanguageFeatureValue {
+    pub feature_id: String,
+    pub code: String,
+    pub badge_label: String,
+    pub description: String,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct LanguageFeatureAssignment {
+    pub language_id: String,
+    pub feature_id: String,
+    pub value_code: String,
+    pub notes: Option<String>,
+    pub example: Option<String>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct LanguageFeatureBadge {
+    pub language_id: String,
+    pub feature_id: String,
+    pub feature_name: String,
+    pub feature_description: String,
+    pub group_code: String,
+    pub display_order: i32,
+    pub value_code: String,
+    pub badge_label: String,
+    pub value_description: String,
+    pub notes: Option<String>,
+    pub example: Option<String>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct User {
     pub id: Uuid,
@@ -195,6 +240,7 @@ pub struct Concept {
     pub id: Uuid,
     pub language_id: String,
     pub skill_id: String,
+    pub topic_id: String,
     pub code: String,
     pub name: String,
     pub description: String,

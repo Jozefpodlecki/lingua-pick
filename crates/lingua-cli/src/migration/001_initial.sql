@@ -22,6 +22,33 @@ CREATE TABLE language (
     native_name VARCHAR NOT NULL
 );
 
+CREATE TABLE language_feature (
+    id VARCHAR PRIMARY KEY CHECK (length(trim(id)) > 0),
+    name VARCHAR NOT NULL CHECK (length(trim(name)) > 0),
+    description VARCHAR NOT NULL CHECK (length(trim(description)) > 0),
+    group_code VARCHAR NOT NULL CHECK (length(trim(group_code)) > 0),
+    display_order INTEGER NOT NULL DEFAULT 0 CHECK (display_order >= 0)
+);
+
+CREATE TABLE language_feature_value (
+    feature_id VARCHAR NOT NULL REFERENCES language_feature(id),
+    code VARCHAR NOT NULL CHECK (length(trim(code)) > 0),
+    badge_label VARCHAR NOT NULL CHECK (length(trim(badge_label)) > 0),
+    description VARCHAR NOT NULL CHECK (length(trim(description)) > 0),
+    PRIMARY KEY (feature_id, code)
+);
+
+CREATE TABLE language_feature_assignment (
+    language_id VARCHAR NOT NULL REFERENCES language(id),
+    feature_id VARCHAR NOT NULL,
+    value_code VARCHAR NOT NULL,
+    notes VARCHAR,
+    example VARCHAR,
+    PRIMARY KEY (language_id, feature_id),
+    FOREIGN KEY (feature_id, value_code)
+        REFERENCES language_feature_value(feature_id, code)
+);
+
 CREATE TABLE script (
     id VARCHAR PRIMARY KEY CHECK (length(id) = 4),
     name VARCHAR NOT NULL CHECK (length(trim(name)) > 0)
@@ -37,6 +64,7 @@ CREATE TABLE concept (
     id UUID PRIMARY KEY DEFAULT uuidv7(),
     language_id VARCHAR NOT NULL,
     skill_id VARCHAR NOT NULL,
+    topic_id VARCHAR NOT NULL REFERENCES topic(id),
     code VARCHAR NOT NULL,
     name VARCHAR NOT NULL,
     description VARCHAR NOT NULL,

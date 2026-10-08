@@ -95,6 +95,7 @@ impl ConceptStore {
                     &model.id,
                     &model.language_id,
                     &model.skill_id,
+                    &model.topic_id,
                     &model.code,
                     &model.name,
                     &model.description,
@@ -131,6 +132,7 @@ mod queries {
             id,
             language_id,
             skill_id,
+            topic_id,
             code,
             name,
             description
@@ -155,6 +157,7 @@ mod queries {
             id,
             language_id,
             skill_id,
+            topic_id,
             code,
             name,
             description
@@ -191,6 +194,7 @@ mod queries {
             id,
             language_id,
             skill_id,
+            topic_id,
             code,
             name,
             description
@@ -202,7 +206,8 @@ mod queries {
             $3,
             $4,
             $5,
-            $6
+            $6,
+            $7
         )
     "#;
 
@@ -224,6 +229,7 @@ mod queries {
             id,
             language_id,
             skill_id,
+            topic_id,
             code,
             name,
             description
@@ -237,6 +243,7 @@ mod queries {
             id,
             language_id,
             skill_id,
+            topic_id,
             code,
             name,
             description

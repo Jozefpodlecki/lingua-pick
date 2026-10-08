@@ -18,10 +18,12 @@ pub fn init(
     run_id: Uuid,
 ) -> Result<PathBuf, Box<dyn std::error::Error + Send + Sync>> {
     std::fs::create_dir_all(directory)?;
-    let path = directory.join(format!(
+    let mut path = directory.join(format!(
         "run-{}-{run_id}.log",
         Utc::now().format("%Y%m%dT%H%M%SZ")
     ));
+    // path = path.canonicalize()?;
+    
     let file = OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -36,6 +38,7 @@ pub fn init(
                 .with_target("lingua_cli", LevelFilter::DEBUG),
         );
     let console_layer = tracing_subscriber::fmt::layer()
+        .event_format(readable::Readable)
         .with_ansi(false)
         .with_writer(std::io::stderr)
         .with_filter(

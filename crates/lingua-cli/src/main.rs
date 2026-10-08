@@ -2,13 +2,14 @@ extern crate alloc;
 
 mod ai_call;
 mod evaluator;
-mod exercise_contract;
+mod exercise;
 mod generator;
 mod logging;
 mod migration;
 mod runner;
 mod seed;
 mod simulator;
+mod conversation;
 mod store;
 mod tools;
 mod types;

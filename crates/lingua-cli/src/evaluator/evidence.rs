@@ -6,7 +6,6 @@ use uuid::Uuid;
 
 use super::{EvaluationError, EvaluationRequest};
 use crate::{
-    exercise_contract as contract,
     types::{EvidenceMode, LearningEvidence},
 };
 
@@ -75,7 +74,7 @@ fn evidence_mode(kind: &str) -> Result<EvidenceMode, EvaluationError> {
         | "build_sentence"
         | "translate_to_target"
         | "short_response" => EvidenceMode::Production,
-        _ => return Err(contract::invalid("exercise kind has no evidence policy").into()),
+        _ => return Err(EvaluationError::UnsupportedEvidenceKind(kind.into())),
     };
     Ok(mode)
 }

@@ -1,21 +1,33 @@
 use thiserror::Error;
 
+use crate::{evaluator::EvaluationError, exercise::ContractError, generator::ExerciseGenerationError, seed::SeedError, simulator::SimulationError, store::StoreError, tools::ToolError};
+
 #[derive(Debug, Error)]
 pub enum RunnerError {
     #[error(transparent)]
-    Seed(#[from] crate::seed::SeedError),
+    Seed(#[from] SeedError),
+
     #[error(transparent)]
-    Store(#[from] crate::store::StoreError),
+    Tool(#[from] ToolError),
+    
     #[error(transparent)]
-    Generation(#[from] crate::generator::ExerciseGenerationError),
+    Store(#[from] StoreError),
+    
     #[error(transparent)]
-    Simulation(#[from] crate::simulator::SimulationError),
+    Generation(#[from] ExerciseGenerationError),
+    
     #[error(transparent)]
-    Evaluation(#[from] crate::evaluator::EvaluationError),
+    Simulation(#[from] SimulationError),
+    
     #[error(transparent)]
-    Contract(#[from] crate::exercise_contract::ContractError),
+    Evaluation(#[from] EvaluationError),
+    
+    #[error(transparent)]
+    Contract(#[from] ContractError),
+    
     #[error(transparent)]
     Serialization(#[from] serde_json::Error),
+    
     #[error("invalid runner state: {0}")]
     InvalidState(&'static str),
 }
