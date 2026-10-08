@@ -1,15 +1,12 @@
-mod language;
 
-pub use language::{Language, LanguageId, load_catalogue};
-
+use lingua_core::{Language, LanguageId, language::Languages};
 use yew::prelude::*;
 
 #[derive(Clone, PartialEq)]
 pub struct LearningContext {
-    pub catalogue: alloc::rc::Rc<alloc::vec::Vec<Language>>,
+    pub catalogue: Languages,
     pub selected_language: Option<LanguageId>,
-    pub select_language: Callback<LanguageId>,
-    pub storage_warning: Option<alloc::string::String>,
+    pub select_language: Callback<LanguageId>
 }
 
 impl LearningContext {

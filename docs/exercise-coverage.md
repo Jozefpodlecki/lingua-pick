@@ -2,7 +2,7 @@
 
 ## Status and interpretation
 
-This table covers every option in the current catalogue. It is a proposed content plan, not an implemented availability registry. No target course crate or learning UI exists yet. The core supports single-choice mechanics; translation and matching remain proposals.
+This table covers every option in the current catalogue. It is a proposed course-content plan, not an implemented availability registry. No target course crate exists yet. Browser sample sessions provide a single-choice learning UI for three targets; translation and matching remain proposals. See [runtime environments](runtime.md) for sample availability.
 
 Country/region labels come from the catalogue and aid discovery. Availability is keyed by the exact target ID, never by country alone. A language can span countries, and a country can contain several language varieties and scripts. The shared source language is English.
 

@@ -1,0 +1,10 @@
+[package]
+name = "lingua-web-core"
+version = "0.1.0"
+edition = "2024"
+description = "Reusable web shell components for Lingua Pick"
+license-file = "../../LICENSE"
+
+[dependencies]
+yew = { version = "0.23", features = ["csr"] }
+yew_icons = { version = "0.10", features = ["lucide"] }

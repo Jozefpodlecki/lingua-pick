@@ -1,6 +1,6 @@
 use lingua_core::{
-    Choice, CurriculumLevel, Exercise, ExerciseContent, ExerciseError, LanguageId, Session,
-    SessionError, SingleChoice, Text,
+    Choice, CurriculumLevel, Exercise, ExerciseContent, ExerciseError, LanguageId,
+    SESSION_EXERCISE_COUNT, Session, SessionError, SingleChoice, Text,
 };
 
 fn text(value: &str) -> Text {
@@ -40,23 +40,29 @@ fn exercise(id: &str) -> Exercise {
     }
 }
 
+fn session_exercises() -> Vec<Exercise> {
+    (1..=SESSION_EXERCISE_COUNT)
+        .map(|index| exercise(&format!("exercise-{index}")))
+        .collect()
+}
+
 #[test]
 fn invalid_answers_do_not_advance_and_valid_answers_complete_session() {
-    let mut session = Session::new(
-        LanguageId("zh-Hans-CN".into()),
-        vec![exercise("one"), exercise("two")],
-    )
-    .unwrap();
+    let mut session = Session::new(LanguageId("zh-Hans-CN".into()), session_exercises()).unwrap();
     assert_eq!(
         session.answer("missing"),
         Err(SessionError::InvalidAnswer(ExerciseError::UnknownChoice))
     );
-    assert_eq!(session.current().unwrap().id, "one");
+    assert_eq!(session.current().unwrap().id, "exercise-1");
     assert!(!session.answer("dog").unwrap().correct);
-    assert_eq!(session.current().unwrap().id, "two");
-    assert!(session.answer("cat").unwrap().correct);
+
+    for index in 2..=SESSION_EXERCISE_COUNT {
+        assert_eq!(session.current().unwrap().id, format!("exercise-{index}"));
+        assert!(session.answer("cat").unwrap().correct);
+    }
+
     assert!(session.is_complete());
-    assert_eq!(session.correct_count(), 1);
+    assert_eq!(session.correct_count(), SESSION_EXERCISE_COUNT - 1);
     assert_eq!(session.answer("cat"), Err(SessionError::Complete));
 }
 
@@ -92,18 +98,29 @@ fn serialized_choices_round_trip_and_invalid_data_cannot_bypass_validation() {
 #[test]
 fn sessions_reject_mixed_languages_and_duplicate_exercises() {
     assert_eq!(
-        Session::new(LanguageId("pt-BR".into()), vec![exercise("one")]),
+        Session::new(LanguageId("pt-BR".into()), session_exercises()),
         Err(SessionError::LanguageMismatch)
     );
+
+    let mut duplicate = session_exercises();
+    duplicate[1].id = duplicate[0].id.clone();
+
     assert_eq!(
-        Session::new(
-            LanguageId("zh-Hans-CN".into()),
-            vec![exercise("one"), exercise("one")]
-        ),
+        Session::new(LanguageId("zh-Hans-CN".into()), duplicate),
         Err(SessionError::DuplicateExerciseId)
     );
     assert_eq!(
         Session::new(LanguageId("zh-Hans-CN".into()), vec![]),
-        Err(SessionError::EmptySession)
+        Err(SessionError::ExerciseCount {
+            expected: SESSION_EXERCISE_COUNT,
+            actual: 0,
+        })
+    );
+    assert_eq!(
+        Session::new(LanguageId("zh-Hans-CN".into()), vec![exercise("only")]),
+        Err(SessionError::ExerciseCount {
+            expected: SESSION_EXERCISE_COUNT,
+            actual: 1,
+        })
     );
 }

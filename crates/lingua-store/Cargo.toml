@@ -1,0 +1,16 @@
+[package]
+name = "lingua-store"
+version = "0.1.0"
+edition = "2024"
+description = "DuckDB persistence for Lingua Pick"
+license-file = "../../LICENSE"
+
+[dependencies]
+chrono = { version = "0.4", features = ["serde"] }
+# duckdb = { version = "~1.10506.0", features = ["chrono", "uuid"] }
+duckdb-neo = { git = "https://github.com/duckdb/duckdb-rs.git" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.11"
+thiserror = "2.0"
+uuid = { version = "1", features = ["serde", "v7"] }

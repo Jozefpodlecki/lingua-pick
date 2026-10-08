@@ -1,0 +1,10 @@
+[package]
+name = "lingua-web-exercise"
+version = "0.1.0"
+edition = "2024"
+description = "Reusable exercise components for Lingua Pick"
+license-file = "../../LICENSE"
+
+[dependencies]
+lingua-core = { path = "../lingua-core" }
+yew = { version = "0.23", features = ["csr"] }

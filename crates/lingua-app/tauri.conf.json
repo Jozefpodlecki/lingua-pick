@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "identifier": "com.jozef.lingua-app",
   "build": {
-    "devUrl": "http://localhost.:1420/",
+    "devUrl": "http://localhost:1420/",
     "frontendDist": "../../web/dist"
   },
   "app": {
@@ -13,7 +13,8 @@
       {
         "title": "lingua-app",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "maximized": true
       }
     ],
     "security": {

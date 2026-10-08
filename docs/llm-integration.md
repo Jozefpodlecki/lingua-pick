@@ -1,6 +1,6 @@
 # LM Studio exercise generation
 
-Status: researched proposal. No LM Studio client, translation exercise, or matching exercise is implemented yet. This document assumes the requested application is LM Studio.
+Status: the provider-neutral `lingua-ai` facade, shared prompt contract, native LM Studio client, Tauri `send_prompt` command, and `lingua-api` invoke adapter exist. Exercise prompt construction and generated-session integration are not implemented. Translation and matching exercises are also pending. This document assumes the requested application is LM Studio.
 
 See [AI interaction contract](ai-interaction.md) for the proposed system prompt, target-language context, and available/selected word categories.
 
@@ -15,11 +15,13 @@ Run the server from LM Studio's Developer tab. Direct requests from the frontend
 ## Proposed responsibilities
 
 - `lingua-core`: exercise payloads, answer types, validation, and deterministic grading rules. Keep `no_std` with `alloc`; no HTTP or browser dependencies.
-- Web generation service: connection settings, request/response structs, prompts, HTTP calls, cancellation, timeouts, and parsing. Existing `gloo-net` facilities are a candidate; inspect the enabled features before implementing.
+- `lingua-ai`: validated generation and prompt requests, serializable prompt responses/errors, the provider interface, and conversion of a complete provider batch into a core session.
+- Native prompt service in `lingua-app`: the reusable HTTP client, timeout and response limits, LM Studio request/response envelopes, and the `send_prompt` Tauri command.
+- `lingua-api` Tauri adapter: serializes `PromptRequest`, invokes `send_prompt`, catches rejected promises, and deserializes the shared response or structured command error. Web-only runs do not invoke it; see [runtime environments](runtime.md).
 - Exercise components: translation input and matching cards. Render validated data as text.
 - Session integration: accept a validated exercise batch for its requested target and discard late results after switching languages or cancelling a request.
 
-Begin with one exercise per request and one schema per requested format. The app supplies target, translation direction, requested level, allowed vocabulary, and exercise type. The app assigns stable exercise IDs and binds the result to the requested target. Do not let the model select arbitrary target IDs or define executable UI.
+Begin with one ten-exercise batch per request and one schema per requested format. The app supplies target, translation direction, requested level, allowed vocabulary, and exercise type. The app assigns or validates stable exercise IDs and binds the result to the requested target. Reject partial batches. Do not let the model select arbitrary target IDs or define executable UI.
 
 ## Proposed payloads
 
@@ -106,14 +108,23 @@ Reject HTTP errors, absent content, truncated responses, invalid JSON, unexpecte
 
 ## Hosting
 
-First verify the integration with the locally served app and LM Studio running on the same machine. GitHub Pages hosts the frontend; it does not run LM Studio. A loopback URL refers to the learner's computer, and browser local-network policies or permissions can affect a deployed page's requests. Test deployed access separately rather than claiming that enabling CORS guarantees it. [Browser local-network access](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Local_network_access).
+The chosen product policy is native-only exercise generation. Verify LM Studio through the Tauri backend on the same machine. Local browser and GitHub Pages runs use `sample-<target-id>.json` and do not contact LM Studio. The earlier direct-browser CORS discussion describes an API capability, not the selected architecture.
 
 Keep tokens out of repository assets and build output. If authentication is used, start with a session-only token setting. Offline authored exercises should remain possible when generation is unavailable.
+
+## Implemented command contract
+
+`send_prompt` currently targets `http://127.0.0.1:1234/v1/chat/completions` and sends two messages: one system prompt and one user prompt. The shared request also carries the model identifier, maximum output tokens, optional temperature, and optional OpenAI-compatible `response_format` object. The native service forces `stream: false`.
+
+The command returns the first choice's content, model identifier, optional finish reason, and optional token usage. It rejects blank or oversized prompts, invalid token/temperature limits, connection and timeout failures, non-success HTTP responses, oversized bodies, malformed response JSON, missing choices, and empty content.
+
+This is a transport boundary. It does not yet choose a model, construct the exercise system prompt, supply categories, own versioned schemas, parse the returned content into exercises, or call `AiFacade::start_session`.
 
 ## Implementation order
 
 1. Add translation and matching payloads, answer types, and validation to the core, deciding translation grading behavior.
 2. Add complete JSON schemas and example fixtures.
-3. Add a web generation service and connection settings, using non-streaming requests first.
-4. Add modular exercise components and connect validated results to sessions.
-5. Add focused tests after the implementation settles, then verify with the actual loaded model and the local and deployed frontend origins.
+3. Add endpoint/authentication settings and model discovery to the existing native prompt service.
+4. Implement an `ExerciseProvider` that constructs the exercise request, calls `send_prompt`, parses the returned content, and invokes the AI facade.
+5. Add modular exercise components and connect validated results to sessions.
+6. Verify with an actual loaded model and test Tauri command failures manually.

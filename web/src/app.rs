@@ -1,131 +1,101 @@
-use std::rc::Rc;
-
-use alloc::string::String;
-use core::str::FromStr;
-use log::Level;
-use thiserror::Error;
-use web_sys::window;
-use web_sys::{Document, HtmlElement, Navigator, Storage, Window};
+use alloc::string::ToString;
+use alloc::{rc::Rc, string::String, vec::Vec};
+use core::{cell::Cell, str::FromStr};
+use lingua_web_core::LoadingScreen;
+use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 use yew_router::{HashRouter, Switch};
 
+use crate::client::{ApiClient, ApiError, LoadResult};
+use crate::env::AppEnvironment;
 use crate::routes::{Route, switch};
-use crate::state::{Language, LanguageId, LearningContext, load_catalogue};
-use crate::storage::StorageService;
+use crate::state::LearningContext;
 
-const SELECTED_LANGUAGE_KEY: &str = "lingua-pick.selected-language.v1";
+#[function_component(CatalogueBootstrap)]
+fn catalogue_bootstrap() -> Html {
+    let app = use_context::<AppEnvironment>().unwrap();
+    let result = use_state(|| None::<Result<LoadResult, ApiError>>);
+    let request_version = use_state(|| 0_u32);
+    let client = app.client.clone();
 
-#[derive(Debug, Clone, PartialEq, Properties)]
-pub struct AppContext {
-    pub window: Window,
-    pub document: Document,
-    pub body: HtmlElement,
-    pub local_storage: Storage,
-    pub catalogue: Rc<alloc::vec::Vec<Language>>,
-    pub navigator: Navigator,
-    pub app_name: Rc<str>,
-    pub version: Rc<str>,
-}
+    {
+        let result_setter = result.clone();
+        let client = client.clone();
 
-#[derive(Debug, Error, Clone, PartialEq)]
-pub enum AppContextError {
-    #[error("Window object not found")]
-    NoWindow,
+        use_effect_with((), move |_| {
+            let cancelled = Rc::new(Cell::new(false));
+            let request_cancelled = cancelled.clone();
 
-    #[error("localStorage is not available")]
-    NoStorage,
+            spawn_local(async move {
+                let result = client.load()
+                    .await;
 
-    #[error("Invalid language catalogue: {0}")]
-    Catalogue(String),
+                if !request_cancelled.get() {
+                    result_setter.set(Some(result));
+                }
+            });
 
-    #[error("Failed to access localStorage: {0}")]
-    StorageAccess(String),
-
-    #[error("Document object not found")]
-    NoDocument,
-
-    #[error("Document body not found")]
-    NoBody,
-}
-
-impl AppContext {
-    pub fn new() -> Result<Self, AppContextError> {
-        let window = window().ok_or(AppContextError::NoWindow)?;
-
-        let local_storage = window
-            .local_storage()
-            .map_err(|error| AppContextError::StorageAccess(alloc::format!("{error:?}")))?
-            .ok_or(AppContextError::NoStorage)?;
-
-        let document = window.document().ok_or(AppContextError::NoDocument)?;
-
-        let body = document.body().ok_or(AppContextError::NoBody)?;
-
-        let navigator = window.navigator();
-        let catalogue = Rc::new(
-            load_catalogue(include_str!("../../assets/languages.json"))
-                .map_err(AppContextError::Catalogue)?,
-        );
-        let app_name = env!("CARGO_PKG_NAME").into();
-        let version = env!("CARGO_PKG_VERSION").into();
-
-        Ok(Self {
-            window,
-            document,
-            body,
-            local_storage,
-            catalogue,
-            navigator,
-            app_name,
-            version,
-        })
+            move || cancelled.set(true)
+        });
     }
 
-    pub fn try_get_log_level_from_local_storage(&self, key: &str) -> Option<Level> {
-        let level_str = self.local_storage.get_item(key).ok().flatten()?;
+    let onretry = {
+        let catalogue = result.clone();
+        let request_version = request_version.clone();
 
-        Level::from_str(&level_str).ok()
+        Callback::from(move |_| {
+            catalogue.set(None);
+            request_version.set((*request_version).wrapping_add(1));
+        })
+    };
+
+    match result.as_ref() {
+        None => html! { <LoadingScreen message="Loading languages" /> },
+        Some(Ok(result)) => {
+            let select_language = {
+                let client = client.clone();
+
+                Callback::from(move |id: lingua_core::LanguageId| {
+                    client.set_language(&id);
+                })
+            };
+
+            let learning_context = LearningContext {
+                catalogue: result.catalogue.clone(),
+                selected_language: result.selected_language_id.clone(),
+                select_language,
+            };
+
+            html! {
+                <ContextProvider<ApiClient> context={client}>
+                    <ContextProvider<LearningContext> context={learning_context}>
+                        <HashRouter>
+                            <Switch<Route> render={switch} />
+                        </HashRouter>
+                    </ContextProvider<LearningContext>>
+                </ContextProvider<ApiClient>>
+            }
+        },
+        Some(Err(error)) => html! {
+            <main class="flex min-h-screen items-center justify-center bg-gray-950 px-6 text-gray-100" data-state="error">
+                <section class="max-w-lg text-center">
+                    <h1 class="mb-3 text-3xl font-semibold">{"Languages could not be loaded"}</h1>
+                    <p role="alert" class="mb-6 text-gray-300">{error.to_string()}</p>
+                    <button type="button" onclick={onretry}
+                        class="rounded-lg bg-teal-700 px-5 py-3 focus-visible:outline-2 focus-visible:outline-teal-400">
+                        {"Retry"}
+                    </button>
+                </section>
+            </main>
+        },
     }
 }
 
 #[function_component(App)]
-pub fn app(props: &AppContext) -> Html {
-    let storage = props.local_storage.clone();
-    let catalogue = props.catalogue.clone();
-    let selected_language = use_state(move || {
-        StorageService::new(storage, SELECTED_LANGUAGE_KEY)
-            .load::<LanguageId>()
-            .filter(|id| catalogue.iter().any(|language| &language.id == id))
-    });
-    let storage_warning = use_state(|| None::<String>);
-    let select_language =
-        {
-            let selected_language = selected_language.clone();
-            let storage_warning = storage_warning.clone();
-            let storage = props.local_storage.clone();
-            Callback::from(move |language: LanguageId| {
-                selected_language.set(Some(language.clone()));
-                let result =
-                    StorageService::new(storage.clone(), SELECTED_LANGUAGE_KEY).save(&language);
-                storage_warning.set(result.err().map(|_| String::from(
-                "Your language changed, but could not be saved. It may reset when you reload."
-            )));
-            })
-        };
-    let learning_context = LearningContext {
-        catalogue: props.catalogue.clone(),
-        selected_language: (*selected_language).clone(),
-        select_language,
-        storage_warning: (*storage_warning).clone(),
-    };
-
+pub fn app(props: &AppEnvironment) -> Html {
     html! {
-        <ContextProvider<AppContext> context={props.clone()}>
-            <ContextProvider<LearningContext> context={learning_context}>
-            <HashRouter>
-                <Switch<Route> render={switch} />
-            </HashRouter>
-            </ContextProvider<LearningContext>>
-        </ContextProvider<AppContext>>
+        <ContextProvider<AppEnvironment> context={props.clone()}>
+            <CatalogueBootstrap />
+        </ContextProvider<AppEnvironment>>
     }
 }

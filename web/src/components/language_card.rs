@@ -1,5 +1,5 @@
-use crate::state::{Language, LanguageId};
 use alloc::string::ToString;
+use lingua_core::*;
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]

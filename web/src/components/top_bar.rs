@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
+use yew_icons::{Icon, IconData};
 
 use crate::{routes::Route, state::LearningContext};
 
@@ -24,8 +25,9 @@ pub fn top_bar() -> Html {
                     <span class="text-sm text-gray-300" aria-live="polite">
                         {language_name}
                     </span>
-                    <Link<Route> to={Route::Home} classes="rounded-lg border border-gray-700 px-3 py-2 text-sm hover:border-teal-400 focus-visible:outline-2 focus-visible:outline-teal-400">
+                    <Link<Route> to={Route::Home} classes="flex rounded-lg border border-gray-700 px-3 py-2 text-sm hover:border-teal-400 focus-visible:outline-2 focus-visible:outline-teal-400">
                         {action_label}
+                        <Icon data={IconData::LUCIDE_PENCIL} width="18px" />
                     </Link<Route>>
                 </div>
             </nav>

@@ -1,6 +1,6 @@
 use yew::prelude::*;
-use yew_router::prelude::*;
 use yew_icons::{Icon, IconData};
+use yew_router::prelude::*;
 
 use crate::{components::Layout, routes::Route};
 
@@ -18,9 +18,9 @@ pub fn not_found() -> Html {
     html! {
         <Layout>
             <div class="flex flex-col items-center justify-center min-h-[60vh] text-center">
-                <Icon 
-                    data={IconData::LUCIDE_FILE_QUESTION} 
-                    class="text-gray-600 mb-6" 
+                <Icon
+                    data={IconData::LUCIDE_FILE_QUESTION}
+                    class="text-gray-600 mb-6"
                     width="80px"
                     height="80px"
                 />
@@ -29,7 +29,7 @@ pub fn not_found() -> Html {
                 <p class="text-gray-500 mb-8 max-w-md">
                     {"The page you're looking for doesn't exist or has been moved."}
                 </p>
-                <button 
+                <button
                     onclick={go_home}
                     class="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
                 >

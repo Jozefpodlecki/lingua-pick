@@ -7,26 +7,27 @@ extern crate alloc;
 extern crate std;
 
 mod app;
-mod utils;
-mod routes;
+mod env;
+mod client;
 mod components;
 mod pages;
-mod storage;
+mod routes;
+mod services;
 mod state;
+mod utils;
 
 use alloc::boxed::Box;
-use wasm_logger::{init, Config};
+use wasm_logger::{Config, init};
 use yew::Renderer;
 
-use crate::app::{App, AppContext};
+use crate::{app::App, env::AppEnvironment};
 
 #[cfg(target_arch = "wasm32")]
 #[global_allocator]
 static ALLOC: wasmalloc::WasmAlloc = wasmalloc::WasmAlloc::new();
 
 fn main() -> Result<(), Box<dyn core::error::Error>> {
-    
-    let context = AppContext::new()?;
+    let context = AppEnvironment::new()?;
 
     let level = context
         .try_get_log_level_from_local_storage("RUST_LOG")

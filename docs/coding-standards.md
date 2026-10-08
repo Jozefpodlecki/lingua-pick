@@ -6,6 +6,7 @@
 - Keep changes focused on the requested work. Preserve unrelated user changes and avoid incidental repository-wide formatting or refactoring.
 - Keep the frontend in `web/`. Put reusable language data and behavior in `crates/`, with a separate crate for each learning option, including regional varieties.
 - Share common types and behavior when useful rather than duplicating them across language crates. Keep shared learning code independent of Yew and browser APIs where practical.
+- Put app-shell primitives that do not depend on routes or app state in `lingua-web-core`, and exercise presentation primitives in `lingua-web-exercise`. Keep page composition, routing, and provider orchestration in `web/`. Put runtime detection and Tauri invocation in `lingua-api` rather than coupling components to the bridge.
 - English is the source language. Treat each regional variety as a distinct target option; never identify an option only by its display name or image.
 - Do not pre-create hundreds of empty crates. Add language crates as their content or functionality is implemented.
 

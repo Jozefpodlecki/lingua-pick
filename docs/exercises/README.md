@@ -4,9 +4,10 @@ Exercise type describes the interaction. Language variety, script, word category
 
 | Type | Learner action | Core status | UI status |
 | --- | --- | --- | --- |
-| [`single_choice`](single-choice.md) | Choose one answer card | Implemented with validation and grading | Planned |
+| [`single_choice`](single-choice.md) | Choose one answer card | Implemented with validation and grading | Implemented for browser sample sessions |
 | [`translate_sentence`](translate-sentence.md) | Translate by typing or assembling tokens | Proposed | Planned |
 | [`match_words`](match-words.md) | Pair target words with English meanings | Proposed | Planned |
+| [`dialogue`](dialogue.md) | Read bilingual turns and Continue; optionally listen or speak | Required, not implemented | Planned |
 
 See [target coverage](../exercise-coverage.md) for proposed formats per catalogue region and language variety, [UI](../ui.md) for screen behavior, and [AI interaction](../ai-interaction.md) for generation requirements.
 

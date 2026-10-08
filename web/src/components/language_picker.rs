@@ -1,13 +1,15 @@
 use crate::{
     components::LanguageCard,
     routes::Route,
-    state::{LanguageId, LearningContext},
+    state::{LearningContext},
 };
 use alloc::{
     format,
     string::{String, ToString},
     vec::Vec,
 };
+use yew_icons::{Icon, IconData};
+use lingua_core::LanguageId;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::prelude::*;
@@ -121,6 +123,10 @@ pub fn language_picker() -> Html {
         }
     }).collect::<Html>();
 
+    // TODO WE RANDOMLY PICK 3 LANGUES EXCLUDING CURRENTLY SELECTED
+    // i.e Russian, English, Thai...
+    let placeholder = "";
+
     html! {
         <section class="group/picker mx-auto max-w-3xl" data-empty={empty} data-open={expanded.clone()}>
             <h1 class="mb-3 text-4xl font-semibold">{"What would you like to learn?"}</h1>
@@ -128,7 +134,7 @@ pub fn language_picker() -> Html {
                 aria-label="Search languages" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded={expanded}
                 aria-controls="language-results" aria-activedescendant={active_descendant}
                 value={(*query).clone()} {oninput} {onfocus} {onkeydown}
-                placeholder="Try Portuguese, Brazil, or Japan"
+                placeholder={placeholder}
                 class="mb-3 w-full rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 focus-visible:outline-2 focus-visible:outline-teal-400" />
             <div class="group-data-[open=false]/picker:hidden">
                 <div id="language-results" role="listbox" aria-label="Language suggestions"

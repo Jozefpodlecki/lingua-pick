@@ -1,0 +1,16 @@
+[package]
+name = "lingua-ai"
+version = "0.1.0"
+edition = "2024"
+description = "Provider-neutral AI exercise generation facade for Lingua Pick."
+license-file = "../../LICENSE"
+
+[dependencies]
+lingua-core = { path = "../lingua-core" }
+serde = { version = "1.0", default-features = false, features = ["alloc", "derive"] }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+aimux-core = "0.5.0"
+aimux-providers = "0.5.0"
+
+[dev-dependencies]
+futures = "0.3"

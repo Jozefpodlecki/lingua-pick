@@ -1,0 +1,21 @@
+[package]
+name = "lingua-api"
+version = "0.1.0"
+edition = "2024"
+description = "Web runtime detection and native API bridge for Lingua Pick"
+license-file = "../../LICENSE"
+
+[lib]
+doctest = false
+
+[dependencies]
+lingua-ai = { path = "../lingua-ai" }
+serde = { version = "1.0", default-features = false, features = ["alloc", "derive"] }
+serde-wasm-bindgen = "0.6"
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+
+[dependencies.web-sys]
+version = "0.3"
+features = ["Location", "Window"]

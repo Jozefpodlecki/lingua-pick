@@ -3,6 +3,7 @@ use serde::{Serialize, de::DeserializeOwned};
 use serde_json::{from_str, to_string};
 use web_sys::Storage;
 
+#[derive(Debug, Clone, PartialEq)]
 pub struct StorageService {
     storage: Storage,
     key: String,

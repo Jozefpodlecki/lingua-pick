@@ -1,7 +1,13 @@
 [workspace]
 members = [
     "web",
+    "crates/lingua-ai",
+    "crates/lingua-cli",
+    "crates/lingua-api",
     "crates/lingua-app",
-    "crates/lingua-core"
+    "crates/lingua-core",
+    "crates/lingua-store",
+    "crates/lingua-web-core",
+    "crates/lingua-web-exercise"
 ]
 resolver = "2"

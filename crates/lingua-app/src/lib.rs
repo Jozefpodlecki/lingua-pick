@@ -1,13 +1,21 @@
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+mod setup;
+mod commands;
+
+use crate::commands::generate_handlers;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+
+    let mut builder = tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
-        .run(tauri::generate_context!())
+        .setup(setup::setup)
+        .invoke_handler(generate_handlers());
+
+    builder = setup::register_dependencies(builder);
+
+    let app = builder
+        .build(tauri::generate_context!())
         .expect("error while running tauri application");
+
+    app.run(|_, _| {});
 }

@@ -1,29 +1,27 @@
-use crate::{components::Layout, routes::Route, state::LearningContext};
+use crate::{components::LearningSession, routes::Route, state::LearningContext};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
 #[function_component(Learn)]
 pub fn learn() -> Html {
-    let context = use_context::<LearningContext>();
-    let selected = context.as_ref().and_then(|context| context.selected());
-    let content = if let Some(language) = selected {
-        html! {
-            <section>
-                <h1 class="mb-4 text-4xl font-semibold">{&language.name}</h1>
-                <p class="text-gray-400">{"Your language is selected. Lessons will be added here."}</p>
-            </section>
-        }
-    } else {
-        html! {
-            <section>
-                <h1 class="mb-4 text-3xl font-semibold">{"Choose a language to get started"}</h1>
-                <Link<Route> to={Route::Home} classes="text-teal-300 underline">{"Choose a language"}</Link<Route>>
-            </section>
-        }
-    };
+    let context = use_context::<LearningContext>().unwrap();
+    let selected = context.selected();
+
     html! {
-        <Layout>
-            {content}
-        </Layout>
+
     }
+    // if let (Some(language), Some(app)) = (selected, {
+    //     html! {
+    //         <LearningSession key={language.id.0.clone()} />
+    //     }
+    // } else {
+    //     html! {
+    //         <main class="flex min-h-screen items-center justify-center bg-gray-950 px-4 text-gray-100">
+    //             <section class="text-center">
+    //                 <h1 class="mb-4 text-3xl font-semibold">{"Choose a language to get started"}</h1>
+    //                 <Link<Route> to={Route::Home} classes="text-teal-300 underline">{"Choose a language"}</Link<Route>>
+    //             </section>
+    //         </main>
+    //     }
+    // }
 }
