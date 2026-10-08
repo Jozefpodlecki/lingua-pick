@@ -38,12 +38,12 @@
 
 ## Development guidance
 
-- Before making changes, read [coding standards](docs/coding-standards.md), [documentation standards](docs/documentation-standards.md), and the [project glossary](docs/glossary.md). Use [the documentation index](docs/README.md) to find additional relevant guidance.
+- Before making changes, read [coding standards](CODING_STANDARDS.md), [documentation standards](docs/documentation-standards.md), and the [project glossary](docs/glossary.md). Use [the documentation index](docs/README.md) to find additional relevant guidance.
 - Inspect the current repository structure and manifests before making changes.
 - Consult [roadmap](docs/roadmap.md) and [tasks](docs/tasks.md) for work status and dependencies. Update relevant items when implementing them; documentation alone does not complete a feature.
 - For selection, navigation, or persistence changes, read [application architecture](docs/architecture.md). Use the shared `LearningContext` for the active target.
 - For platform capabilities or exercise loading, read [runtime environments](docs/runtime.md). Web-only runs use target-specific sample JSON; native generation belongs behind the Tauri bridge.
-- For database or history changes, read [native storage](docs/storage.md). Never edit an applied migration; append a new version.
+- For database or history changes, read [native storage](docs/storage.md). Desktop store migrations are immutable once applied. The experimental `lingua-cli` database is disposable: keep its schema in 001, edit its migrations directly, and recreate the database after schema changes. Never delete an active runner's database.
 - For UI changes, read [UI specification](docs/ui.md). For learning features, read [exercise specifications](docs/exercises/README.md) and [target coverage](docs/exercise-coverage.md). Implemented behavior and proposed features are explicitly distinguished in these documents.
 - Use the existing Rust and Yew stack and check `web/Cargo.toml` for available libraries before introducing dependencies.
 - Reuse existing routing and storage utilities where appropriate.

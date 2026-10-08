@@ -3,6 +3,7 @@
 ## Where information belongs
 
 - `README.md`: project overview, prerequisites, setup, and common run/build commands.
+- `CODING_STANDARDS.md`: authoritative implementation and contributor conventions.
 - `AGENTS.md`: concise instructions for coding agents, established project constraints, and links to required documentation.
 - `docs/README.md`: an index of project documents.
 - `docs/glossary.md`: canonical project terminology. Link to a term's detailed specification instead of expanding its glossary definition into a second specification.

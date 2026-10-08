@@ -1,10 +1,11 @@
-use duckdb_neo::{
-    Parameters, r2d2::ConnectionManager, types::TimestampTzValue,
+use super::{
+    StoreError,
+    query::{read_many, read_one},
 };
+use crate::types::User;
+use duckdb_neo::{Parameters, r2d2::ConnectionManager};
 use r2d2::Pool;
 use uuid::Uuid;
-
-use crate::{store::StoreError, types::User};
 
 #[derive(Clone)]
 pub struct UserStore(Pool<ConnectionManager>);
@@ -14,88 +15,116 @@ impl UserStore {
         Self(pool)
     }
 
-    pub fn insert(
-        &self,
-        user: &User,
-    ) -> Result<(), StoreError> {
+    pub fn update(&self, model: &User) -> Result<(), StoreError> {
         let connection = self.0.get()?;
 
-        connection.execute(
-            r#"
-            INSERT INTO "user" (
-                id,
-                source_language_id,
-                username,
-                password_hash,
-                created_on,
-                updated_on
-            )
-            VALUES ($1, $2, $3, $4, $5, $6)
-            "#,
+        let updated_on = model.updated_on.to_rfc3339();
+
+        super::query::changed_one(connection.execute(
+            queries::UPDATE,
             Parameters::positional(&[
-                &user.id,
-                &user.source_language_id,
-                &user.username,
-                &user.password_hash,
-                &user.created_on.to_rfc3339(),
-                &user.updated_on.to_rfc3339()
+                &model.source_language_id,
+                &model.username,
+                &model.password_hash,
+                &updated_on,
+                &model.id,
+            ]),
+        )?)
+    }
+
+    pub fn insert(&self, model: &User) -> Result<(), StoreError> {
+        let connection = self.0.get()?;
+
+        let created_on = model.created_on.to_rfc3339();
+        let updated_on = model.updated_on.to_rfc3339();
+        connection.execute(
+            queries::INSERT,
+            Parameters::positional(&[
+                &model.id,
+                &model.source_language_id,
+                &model.username,
+                &model.password_hash,
+                &created_on,
+                &updated_on,
             ]),
         )?;
-
         Ok(())
     }
 
-    pub fn get_by_id(
-        &self,
-        user_id: Uuid,
-    ) -> Result<Option<User>, StoreError> {
+    pub fn get_by_id(&self, id: Uuid) -> Result<Option<User>, StoreError> {
         let connection = self.0.get()?;
 
-        let result = connection.query(
-            r#"
-            SELECT
-                id,
-                source_language_id,
-                username,
-                password_hash,
-                created_on,
-                updated_on
-            FROM "user"
-            WHERE id = $1
-            "#,
-            Parameters::positional(&[
-                &user_id,
-            ]),
-        )?;
-
-        for chunk in result {
-            let chunk = chunk?;
-
-            if chunk.row_count()? == 0 {
-                continue;
-            }
-
-            let id = chunk.get_vector_at::<Uuid>(0)?.get(0)?.unwrap();
-            let source_language_id = chunk.get_vector_at::<String>(1)?.get(0)?.unwrap().into();
-            let username = chunk.get_vector_at::<String>(2)?.get(0)?.unwrap().into();
-            let password_hash = chunk.get_vector_at::<String>(3)?.get(0)?.unwrap().into();
-            let created_on = chunk.get_vector_at::<TimestampTzValue>(4)?.get(0)?.unwrap();
-            let created_on = Option::<chrono::DateTime<chrono::Utc>>::from(*created_on).unwrap();
-            let updated_on = chunk.get_vector_at::<TimestampTzValue>(4)?.get(0)?.unwrap();
-            let updated_on = Option::<chrono::DateTime<chrono::Utc>>::from(*updated_on).unwrap();
-
-            let entity = User {
-                id,
-                source_language_id,
-                username,
-                password_hash,
-                created_on,
-                updated_on
-            };
-
-            return Ok(Some(entity));
-        }
-
-        Ok(None)
+        read_one(
+            &connection,
+            queries::GET_BY_ID,
+            Parameters::positional(&[&id]),
+        )
     }
+
+    pub fn list(&self) -> Result<Vec<User>, StoreError> {
+        let connection = self.0.get()?;
+
+        read_many(&connection, queries::LIST, Parameters::positional(&[]))
+    }
+}
+
+mod queries {
+    pub(super) const UPDATE: &str = r#"
+        UPDATE user
+        SET
+            source_language_id = $1,
+            username = $2,
+            password_hash = $3,
+            updated_on = $4
+        WHERE
+            id = $5
+    "#;
+
+    pub(super) const INSERT: &str = r#"
+        INSERT INTO user
+        (
+            id,
+            source_language_id,
+            username,
+            password_hash,
+            created_on,
+            updated_on
+        )
+        VALUES
+        (
+            $1,
+            $2,
+            $3,
+            $4,
+            $5,
+            $6
+        )
+    "#;
+
+    pub(super) const GET_BY_ID: &str = r#"
+        SELECT
+            id,
+            source_language_id,
+            username,
+            password_hash,
+            strftime(created_on AT TIME ZONE 'UTC', '%Y-%m-%dT%H:%M:%S.%fZ') AS created_on,
+            strftime(updated_on AT TIME ZONE 'UTC', '%Y-%m-%dT%H:%M:%S.%fZ') AS updated_on
+        FROM user
+        WHERE
+            id = $1
+    "#;
+
+    pub(super) const LIST: &str = r#"
+        SELECT
+            id,
+            source_language_id,
+            username,
+            password_hash,
+            strftime(created_on AT TIME ZONE 'UTC', '%Y-%m-%dT%H:%M:%S.%fZ') AS created_on,
+            strftime(updated_on AT TIME ZONE 'UTC', '%Y-%m-%dT%H:%M:%S.%fZ') AS updated_on
+        FROM user
+        ORDER BY
+            username,
+            id
+    "#;
 }

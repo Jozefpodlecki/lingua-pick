@@ -48,6 +48,9 @@ Use these terms consistently in product requirements, code APIs, UI copy, and de
 **Exercise type**
 : The interaction the learner performs, such as `single_choice`, `translate_sentence`, `match_words`, or `dialogue`. Language, regional variety, script, word category, and curriculum level are independent of exercise type. *Exercise format* and *interaction format* refer to the same concept, but project APIs and new documents should prefer *exercise type*.
 
+**Exercise category**
+: A pedagogical grouping of exercise definitions and teaching guidelines, such as vocabulary, grammar, or reading. The experimental harness stores these in `exercise_category`. A category is distinct from an exercise type, a vocabulary topic, and an assessed skill.
+
 **Answer**
 : The learner submission for a graded exercise. Its shape depends on the exercise type: a choice identifier, translated text, a word-bank sequence, or a completed mapping.
 

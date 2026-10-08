@@ -4,6 +4,8 @@
 
 This table covers every option in the current catalogue. It is a proposed course-content plan, not an implemented availability registry. No target course crate exists yet. Browser sample sessions provide a single-choice learning UI for three targets; translation and matching remain proposals. See [runtime environments](runtime.md) for sample availability.
 
+The separate file-backed harness now seeds exercise availability for all 100 targets. See [experimental learning data](experimental-learning-data.md) for its profiles and teaching-stage selection; these mappings do not implement frontend exercises or target course content.
+
 Country/region labels come from the catalogue and aid discovery. Availability is keyed by the exact target ID, never by country alone. A language can span countries, and a country can contain several language varieties and scripts. The shared source language is English.
 
 Formats:

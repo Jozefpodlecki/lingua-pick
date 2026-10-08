@@ -1,7 +1,11 @@
+use duckdb_neo::{Parameters, connection::Connection};
+use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
 use thiserror::Error;
-use duckdb_neo::{Parameters, connection::Connection, query_result::StatementType::Transaction};
-use sha2::{Digest, Sha256};
+
+use self::registry::MIGRATIONS;
+
+mod registry;
 
 const MIGRATION_TABLE: &str = r#"
 CREATE TABLE IF NOT EXISTS schema_migration (
@@ -30,28 +34,13 @@ pub enum MigrationError {
     UnknownMigration(u32),
 
     #[error("migration {version} has changed after being applied")]
-    ChangedMigration {
-        version: u32,
-    },
-}
+    ChangedMigration { version: u32 },
 
-const MIGRATIONS: &[Migration] = &[
-    Migration {
-        version: 1,
-        name: "initial",
-        sql: include_str!("migration/001_initial.sql"),
-    },
-    Migration {
-        version: 2,
-        name: "data_category",
-        sql: include_str!("migration/002_data_category.sql"),
-    },
-    Migration {
-        version: 3,
-        name: "data_exercise_definition",
-        sql: include_str!("migration/003_data_exercise_definition.sql"),
-    }
-];
+    #[error(
+        "existing database is missing migration {0}; startup does not modify existing databases"
+    )]
+    MissingMigration(u32),
+}
 
 #[derive(Debug, Clone)]
 struct AppliedMigration {
@@ -69,31 +58,28 @@ impl AppliedMigrations {
         self.migrations.contains_key(&version)
     }
 
-    fn insert(
-        &mut self,
-        version: u32,
-        name: String,
-        checksum: String,
-    ) {
-        self.migrations.insert(
-            version,
-            AppliedMigration {
-                name,
-                checksum,
-            },
-        );
+    fn insert(&mut self, version: u32, name: String, checksum: String) {
+        self.migrations
+            .insert(version, AppliedMigration { name, checksum });
     }
 
-    fn iter(
-        &self,
-    ) -> impl Iterator<Item = (&u32, &AppliedMigration)> {
+    fn iter(&self) -> impl Iterator<Item = (&u32, &AppliedMigration)> {
         self.migrations.iter()
     }
 }
 
-pub fn apply_migrations(
-    connection: &Connection,
-) -> Result<usize, MigrationError> {
+pub fn verify_migrations(connection: &Connection) -> Result<(), MigrationError> {
+    let applied = applied_migrations(connection)?;
+    validate_applied(&applied)?;
+    for migration in MIGRATIONS {
+        if !applied.contains(migration.version) {
+            return Err(MigrationError::MissingMigration(migration.version));
+        }
+    }
+    Ok(())
+}
+
+pub fn apply_migrations(connection: &Connection) -> Result<usize, MigrationError> {
     connection
         .execute(MIGRATION_TABLE, Parameters::None)
         .map_err(MigrationError::CouldNotCreateMigrationsTable)?;
@@ -117,14 +103,8 @@ pub fn apply_migrations(
     Ok(applied_count)
 }
 
-fn apply_migration(
-    connection: &Connection,
-    migration: &Migration,
-) -> Result<(), MigrationError> {
-    connection.execute(
-        "BEGIN TRANSACTION",
-        Parameters::None,
-    )?;
+fn apply_migration(connection: &Connection, migration: &Migration) -> Result<(), MigrationError> {
+    connection.execute("BEGIN TRANSACTION", Parameters::None)?;
 
     let result = (|| {
         execute_batch(connection, migration.sql)?;
@@ -140,11 +120,7 @@ fn apply_migration(
             )
             VALUES ($1, $2, $3)
             "#,
-            Parameters::positional(&[
-                &migration.version,
-                &migration.name,
-                &checksum,
-            ]),
+            Parameters::positional(&[&migration.version, &migration.name, &checksum]),
         )?;
 
         Ok::<_, MigrationError>(())
@@ -152,46 +128,36 @@ fn apply_migration(
 
     match result {
         Ok(()) => {
-            connection.execute(
-                "COMMIT",
-                Parameters::None,
-            )?;
+            connection.execute("COMMIT", Parameters::None)?;
 
             Ok(())
         }
 
         Err(error) => {
-            let _ = connection.execute(
-                "ROLLBACK",
-                Parameters::None,
-            );
+            let _ = connection.execute("ROLLBACK", Parameters::None);
 
             Err(error)
         }
     }
 }
 
-fn execute_batch(
-    connection: &Connection,
-    sql: &str,
-) -> Result<(), MigrationError> {
+fn execute_batch(connection: &Connection, sql: &str) -> Result<(), MigrationError> {
+    if sql.trim().is_empty() {
+        return Ok(());
+    }
+
     let statements = connection.parse(sql)?;
 
     for statement in statements {
         let statement = statement?;
 
-        connection.execute(
-            statement,
-            Parameters::None,
-        )?;
+        connection.execute(statement, Parameters::None)?;
     }
 
     Ok(())
 }
 
-fn applied_migrations(
-    connection: &Connection,
-) -> Result<AppliedMigrations, MigrationError> {
+fn applied_migrations(connection: &Connection) -> Result<AppliedMigrations, MigrationError> {
     let result = connection.query(
         r#"
         SELECT version, name, checksum
@@ -211,15 +177,9 @@ fn applied_migrations(
         let checksums = chunk.get_vector_at::<String>(2)?;
 
         for row in 0..chunk.row_count()? {
-            let version = versions
-                .get(row)?
-                .copied()
-                .expect("version is NOT NULL");
+            let version = versions.get(row)?.copied().expect("version is NOT NULL");
 
-            let name = names
-                .get(row)?
-                .map(String::from)
-                .expect("name is NOT NULL");
+            let name = names.get(row)?.map(String::from).expect("name is NOT NULL");
 
             let checksum = checksums
                 .get(row)?
@@ -233,29 +193,19 @@ fn applied_migrations(
     Ok(applied)
 }
 
-fn validate_applied(
-    applied: &AppliedMigrations,
-) -> Result<(), MigrationError> {
+fn validate_applied(applied: &AppliedMigrations) -> Result<(), MigrationError> {
     for (version, applied) in applied.iter() {
         let Some(migration) = MIGRATIONS
             .iter()
             .find(|migration| migration.version == *version)
         else {
-            return Err(
-                MigrationError::UnknownMigration(*version),
-            );
+            return Err(MigrationError::UnknownMigration(*version));
         };
 
         let expected_checksum = checksum(migration.sql);
 
-        if applied.name != migration.name
-            || applied.checksum != expected_checksum
-        {
-            return Err(
-                MigrationError::ChangedMigration {
-                    version: *version,
-                },
-            );
+        if applied.name != migration.name || applied.checksum != expected_checksum {
+            return Err(MigrationError::ChangedMigration { version: *version });
         }
     }
 

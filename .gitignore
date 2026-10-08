@@ -32,3 +32,4 @@ dist-ssr
 *.sw?
 .svelte-kit
 /*.duckdb
+/*.duckdb.wal

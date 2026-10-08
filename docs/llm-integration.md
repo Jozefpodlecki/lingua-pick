@@ -4,6 +4,8 @@ Status: the provider-neutral `lingua-ai` facade, shared prompt contract, native 
 
 See [AI interaction contract](ai-interaction.md) for the proposed system prompt, target-language context, and available/selected word categories.
 
+The separate file-backed harness now implements one-exercise generation through `LlmClient`, with pedagogical context and validated candidates. See [experimental learning data](experimental-learning-data.md) for its envelope, concept identities, and current limitations. This does not implement the frontend or Tauri generated-session flow described here.
+
 ## API approach
 
 LM Studio supports schema-constrained output on `POST /v1/chat/completions`. Supply `response_format.type = "json_schema"` with a named schema; start with `stream: false`. Parse the HTTP response, then parse the JSON string in `choices[0].message.content`. Structured output support depends on the loaded model, so test the actual model rather than assuming compatibility. [Official structured-output documentation](https://lmstudio.ai/docs/developer/openai-compat/structured-output).

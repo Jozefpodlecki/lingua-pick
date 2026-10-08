@@ -1,11 +1,11 @@
-use chrono::{DateTime, Utc};
-use duckdb_neo::{
-    Parameters, r2d2::ConnectionManager, types::TimestampTzValue,
+use super::{
+    StoreError,
+    query::{read_many, read_one},
 };
+use crate::types::UserStats;
+use duckdb_neo::{Parameters, r2d2::ConnectionManager};
 use r2d2::Pool;
 use uuid::Uuid;
-
-use crate::{store::StoreError, types::UserStats};
 
 #[derive(Clone)]
 pub struct UserStatsStore(Pool<ConnectionManager>);
@@ -15,35 +15,39 @@ impl UserStatsStore {
         Self(pool)
     }
 
-    pub fn insert(
-        &self,
-        model: &UserStats,
-    ) -> Result<(), StoreError> {
+    pub fn update(&self, model: &UserStats) -> Result<(), StoreError> {
         let connection = self.0.get()?;
 
-        let struggling_categories =
-            serde_json::to_string(&model.struggling_categories)?;
+        let updated_on = model.updated_on.to_rfc3339();
+        let categories = serde_json::to_string(&model.struggling_categories)?;
 
+        super::query::changed_one(connection.execute(
+            queries::UPDATE,
+            Parameters::positional(&[
+                &updated_on,
+                &categories,
+                &model.user_id,
+                &model.target_language_id,
+            ]),
+        )?)
+    }
+
+    pub fn insert(&self, model: &UserStats) -> Result<(), StoreError> {
+        let connection = self.0.get()?;
+
+        let created_on = model.created_on.to_rfc3339();
+        let updated_on = model.updated_on.to_rfc3339();
+        let struggling_categories = serde_json::to_string(&model.struggling_categories)?;
         connection.execute(
-            r#"
-            INSERT INTO user_stats (
-                user_id,
-                target_language_id,
-                created_on,
-                updated_on,
-                struggling_categories
-            )
-            VALUES ($1, $2, $3, $4, $5)
-            "#,
+            queries::INSERT,
             Parameters::positional(&[
                 &model.user_id,
                 &model.target_language_id,
-                &model.created_on.to_rfc3339(),
-                &model.updated_on.to_rfc3339(),
-                &struggling_categories
+                &created_on,
+                &updated_on,
+                &struggling_categories,
             ]),
         )?;
-
         Ok(())
     }
 
@@ -54,79 +58,78 @@ impl UserStatsStore {
     ) -> Result<Option<UserStats>, StoreError> {
         let connection = self.0.get()?;
 
-        let result = connection.query(
-            r#"
-            SELECT
-                user_id,
-                target_language_id,
-                created_on,
-                updated_on,
-                last_exercise::VARCHAR,
-                struggling_categories::VARCHAR
-            FROM user_stats
-            WHERE user_id = $1
-              AND target_language_id = $2
-            "#,
-            Parameters::positional(&[
-                &user_id,
-                &target_language_id,
-            ]),
-        )?;
-
-        for chunk in result {
-            let chunk = chunk?;
-
-            if chunk.row_count()? == 0 {
-                continue;
-            }
-
-            let user_id = chunk.get_vector_at::<Uuid>(0)?.get(0)?.unwrap();
-            let target_language_id = chunk.get_vector_at::<String>(1)?.get(0)?.unwrap().into();
-            let created_on = chunk.get_vector_at::<TimestampTzValue>(2)?.get(0)?.unwrap();
-            let created_on = Option::<DateTime<Utc>>::from(*created_on).unwrap();
-            let updated_on = chunk.get_vector_at::<TimestampTzValue>(3)?.get(0)?.unwrap();
-            let updated_on = Option::<DateTime<Utc>>::from(*updated_on).unwrap();
-            let struggling_categories = chunk.get_vector_at::<String>(5)?.get(0)?.unwrap();
-            let struggling_categories = serde_json::from_str(struggling_categories)?;
-
-            return Ok(Some(UserStats {
-                user_id,
-                target_language_id,
-                created_on,
-                updated_on,
-                struggling_categories
-            }));
-        }
-
-        Ok(None)
+        read_one(
+            &connection,
+            queries::GET,
+            Parameters::positional(&[&user_id, &target_language_id]),
+        )
     }
 
-    pub fn update(
-        &self,
-        model: &UserStats,
-    ) -> Result<(), StoreError> {
+    pub fn list(&self, user_id: Uuid) -> Result<Vec<UserStats>, StoreError> {
         let connection = self.0.get()?;
 
-        let struggling_categories =
-            serde_json::to_string(&model.struggling_categories)?;
-
-        connection.execute(
-            r#"
-            UPDATE user_stats
-            SET
-                updated_on = $1,
-                struggling_categories = $2,
-            WHERE user_id = $3
-              AND target_language_id = $4
-            "#,
-            Parameters::positional(&[
-                &model.updated_on.to_rfc3339(),
-                &struggling_categories,
-                &model.user_id,
-                &model.target_language_id,
-            ]),
-        )?;
-
-        Ok(())
+        read_many(
+            &connection,
+            queries::LIST,
+            Parameters::positional(&[&user_id]),
+        )
     }
+}
+
+mod queries {
+    pub(super) const UPDATE: &str = r#"
+        UPDATE user_stats
+        SET
+            updated_on = $1,
+            struggling_categories = $2
+        WHERE
+            user_id = $3
+            AND target_language_id = $4
+    "#;
+
+    pub(super) const INSERT: &str = r#"
+        INSERT INTO user_stats
+        (
+            user_id,
+            target_language_id,
+            created_on,
+            updated_on,
+            struggling_categories
+        )
+        VALUES
+        (
+            $1,
+            $2,
+            $3,
+            $4,
+            $5
+        )
+    "#;
+
+    pub(super) const GET: &str = r#"
+        SELECT
+            user_id,
+            target_language_id,
+            strftime(created_on AT TIME ZONE 'UTC', '%Y-%m-%dT%H:%M:%S.%fZ') AS created_on,
+            strftime(updated_on AT TIME ZONE 'UTC', '%Y-%m-%dT%H:%M:%S.%fZ') AS updated_on,
+            struggling_categories
+        FROM user_stats
+        WHERE
+            user_id = $1
+            AND target_language_id = $2
+    "#;
+
+    pub(super) const LIST: &str = r#"
+        SELECT
+            user_id,
+            target_language_id,
+            strftime(created_on AT TIME ZONE 'UTC', '%Y-%m-%dT%H:%M:%S.%fZ') AS created_on,
+            strftime(updated_on AT TIME ZONE 'UTC', '%Y-%m-%dT%H:%M:%S.%fZ') AS updated_on,
+            struggling_categories
+        FROM user_stats
+        WHERE
+            user_id = $1
+        ORDER BY
+            target_language_id
+    "#;
 }
